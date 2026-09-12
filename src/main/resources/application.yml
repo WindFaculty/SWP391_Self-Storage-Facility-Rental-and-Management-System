@@ -1,0 +1,50 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+spring:
+  application:
+    name: storage-management
+
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=StorageDB;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: YourStrongPassword123!
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+    open-in-view: false
+
+  mvc:
+    problemdetails:
+      enabled: true
+
+# Security & JWT Configurations
+app:
+  jwt:
+    secret: 9a6f8b2c4e1d3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f3a
+    expiration-ms: 86400000 # 24 hours
+    refresh-expiration-ms: 604800000 # 7 days
+
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+      - http://localhost:3000
+      - http://127.0.0.1:5173
+
+# Springdoc OpenAPI (Swagger UI)
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
