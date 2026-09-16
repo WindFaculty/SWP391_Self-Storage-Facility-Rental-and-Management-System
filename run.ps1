@@ -16,6 +16,7 @@ $frontendDir = Join-Path $root 'src\frontend'
 $runBackend = -not $FrontendOnly
 $runFrontend = -not $BackendOnly
 
+
 Write-Host '=== Storage Management - Dev Mode ===' -ForegroundColor Cyan
 
 if ($runBackend) {
