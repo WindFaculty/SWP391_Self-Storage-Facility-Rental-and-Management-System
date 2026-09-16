@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SWP391 — Team Work Dashboard</title>
+<style>
+:root {
+  --bg:#0b1020; --surface:#11182d; --surface2:#17213a; --text:#edf2ff;
+  --muted:#9eabc7; --line:#26314f; --accent:#7aa2ff; --ok:#6ee7b7;
+  --warn:#f8d57e; --shadow:0 16px 40px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#080d19,#0b1020 22%,#0b1020);color:var(--text)}
+a{color:inherit}
+button,select,input{font:inherit}
+.container{width:min(1220px,calc(100% - 32px));margin:auto}
+.hero{padding:56px 0 28px;border-bottom:1px solid var(--line)}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--accent);font-weight:800}
+h1{font-size:clamp(32px,5vw,58px);line-height:1.05;margin:10px 0 14px}
+h2{font-size:30px;margin:3px 0 3px} h3{margin:0 0 14px;font-size:18px}
+p{color:var(--muted)}
+.hero-grid{display:grid;grid-template-columns:1.5fr .8fr;gap:28px;align-items:end}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);padding:16px;border-radius:14px}
+.stat b{display:block;font-size:24px} .stat span{color:var(--muted);font-size:13px}
+.sticky{position:sticky;top:0;z-index:10;background:rgba(11,16,32,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.toolbar{display:flex;align-items:center;gap:12px;padding:12px 0;overflow:auto}
+.toolbar .brand{font-weight:800;margin-right:auto;white-space:nowrap}
+select,.ghost{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.ghost{cursor:pointer}
+section.block{padding:34px 0}
+.section-title{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:18px}
+.section-title p{margin:0}
+.member-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.member-card{display:flex;gap:12px;align-items:center;text-align:left;background:var(--surface);color:var(--text);border:1px solid var(--line);padding:15px;border-radius:14px;cursor:pointer;transition:.18s}
+.member-card:hover,.member-card.active{transform:translateY(-2px);border-color:var(--accent);background:var(--surface2)}
+.member-card strong,.member-card span{display:block} .member-card span{font-size:12px;color:var(--muted);margin-top:3px}
+.member-icon{min-width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#1f2d50;color:#b9ccff;font-weight:800;font-size:12px}
+.notice{background:linear-gradient(135deg,#162342,#11182d);border:1px solid #314879;padding:18px;border-radius:16px}
+.grid{display:grid;gap:14px} .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.panel.highlight{border-color:#38558e}
+.panel ul{margin:0;padding-left:20px} .panel li{margin:6px 0;color:#dce5fb}
+.person-section{display:none;padding:28px 0 8px} .person-section.active{display:block}
+.person-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.person-head p{margin:0}
+.copy-btn{background:#23365f;color:#eaf1ff;border:1px solid #38558e;padding:9px 12px;border-radius:10px;cursor:pointer}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;font-weight:700}
+.label.gap{margin-top:18px}
+code{display:inline-block;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#0a1122;color:#aecdff;overflow-wrap:anywhere}
+.pill-wrap{display:flex;flex-wrap:wrap;gap:8px} .pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#1a2745;color:#c9d8ff;border:1px solid #2d426f;font-size:13px;margin:2px 4px 2px 0}
+.phase-list{display:grid;gap:10px} .phase-row{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)} .phase-row:first-child{border-top:0}
+.phase-name{font-weight:800;color:#bcd0ff}
+.checklist{display:grid;gap:8px} .checklist label{display:flex;gap:9px;align-items:flex-start;color:#dce5fb} .checklist input{margin-top:5px}
+.integration{border-color:#4a4d2c;background:linear-gradient(135deg,#191b22,#161a2d)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;min-width:780px;background:var(--surface)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{position:sticky;top:0;background:#151f38;color:#cbd9ff} tr:last-child td{border-bottom:0}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:center;text-align:center}
+.flow .node{background:var(--surface);border:1px solid var(--line);padding:12px;border-radius:12px} .arrow{color:var(--accent);font-weight:900}
+.shared-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.small{font-size:13px;color:var(--muted)}
+.footer{padding:30px 0 50px;color:var(--muted);border-top:1px solid var(--line);margin-top:34px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#163427;color:#8cf0c7;border:1px solid #245c45;font-size:12px;font-weight:700}
+.hidden-by-filter{display:none!important}
+@media (max-width:980px){
+ .hero-grid,.grid.two{grid-template-columns:1fr} .member-grid{grid-template-columns:repeat(2,1fr)} .shared-list{grid-template-columns:1fr 1fr}
+}
+@media (max-width:620px){
+ .member-grid,.shared-list{grid-template-columns:1fr} .toolbar .brand{display:none} .phase-row{grid-template-columns:1fr} .hero{padding-top:34px}
+}
+@media print{
+ body{background:#fff;color:#111} .sticky,.member-grid,.copy-btn{display:none!important} .person-section{display:block!important;break-before:page} .panel{box-shadow:none;background:#fff;color:#111;border-color:#ccc} p,.small{color:#444} code{color:#111;background:#f4f4f4} .pill{color:#111;background:#f3f3f3;border-color:#ccc} table{background:#fff} th{background:#eee;color:#111}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">SWP391 · Self-Storage Facility Rental and Management System</div>
+      <h1>Team Work Dashboard</h1>
+      <p>Bản HTML tổ chức lại kế hoạch theo từng người để nhìn ngay: <b>làm gì</b>, <b>làm ở đâu</b>, <b>branch nào</b>, <b>phase nào</b>, <b>test gì</b> và <b>phối hợp với ai</b>.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>5</b><span>thành viên</span></div>
+      <div class="stat"><b>3 + 2</b><span>backend + frontend</span></div>
+      <div class="stat"><b>7</b><span>E2E flows</span></div>
+      <div class="stat"><b>5</b><span>phases chính</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="sticky">
+  <div class="container toolbar">
+    <div class="brand">SWP391 Dashboard</div>
+    <select id="memberSelect" onchange="selectMember(this.value)">
+      <option value="all">Chọn người cần xem</option>
+      <option value="thanh">Hồ Xuân Thanh</option><option value="tinh">Bùi Văn Tình</option><option value="thien">Lê Trí Thiện</option><option value="tuan">Bùi Tuấn Thanh</option><option value="khoa">Trần Xuân Khoa</option>
+    </select>
+    <button class="ghost" onclick="showAll()">Xem tất cả</button>
+    <button class="ghost" onclick="window.print()">In / PDF</button>
+  </div>
+</nav>
+
+<main class="container">
+  <section class="block">
+    <div class="section-title">
+      <div><div class="eyebrow">Bắt đầu ở đây</div><h2>Chọn đúng phần việc của bạn</h2></div>
+      <p>Click tên → dashboard chỉ hiển thị phần của người đó.</p>
+    </div>
+    <div class="member-grid">
+    <button class="member-card" data-member="thanh" onclick="selectMember('thanh')">
+      <div class="member-icon">BE1</div>
+      <div>
+        <strong>Hồ Xuân Thanh</strong>
+        <span>Account + Security + Facility</span>
+      </div>
+    </button>
+    
+    <button class="member-card" data-member="tinh" onclick="selectMember('tinh')">
+      <div class="member-icon">BE2</div>
+      <div>
+        <strong>Bùi Văn Tình</strong>
+        <span>Reservation + Rental Lifecycle</span>
+      </div>
+    </button>
+    
+    <button class="member-card" data-member="thien" onclick="selectMember('thien')">
+      <div class="member-icon">BE3</div>
+      <div>
+        <strong>Lê Trí Thiện</strong>
+        <span>Payment + Support + Management</span>
+      </div>
+    </button>
+    
+    <button class="member-card" data-member="tuan" onclick="selectMember('tuan')">
+      <div class="member-icon">FE1</div>
+      <div>
+        <strong>Bùi Tuấn Thanh</strong>
+        <span>Customer Application</span>
+      </div>
+    </button>
+    
+    <button class="member-card" data-member="khoa" onclick="selectMember('khoa')">
+      <div class="member-icon">FE2</div>
+      <div>
+        <strong>Trần Xuân Khoa</strong>
+        <span>Staff + Manager + Business + Admin</span>
+      </div>
+    </button>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="notice">
+      <strong>Foundation Freeze — cả 5 người phải chốt trước khi phát triển độc lập</strong>
+      <div class="pill-wrap" style="margin-top:12px">
+        <span class="pill">Architecture</span><span class="pill">ERD</span><span class="pill">Database schema</span><span class="pill">Entity names</span><span class="pill">Enum / Status</span><span class="pill">API paths</span><span class="pill">Request DTO</span><span class="pill">Response DTO</span><span class="pill">Error response</span><span class="pill">Role names</span><span class="pill">JWT format</span><span class="pill">Facility scope</span><span class="pill">Migration convention</span>
+      </div>
+      <p class="small">Nếu các contract này chưa khóa, từng module có thể chạy riêng nhưng khi merge sẽ phát sinh mismatch schema/API/enum.</p>
+    </div>
+  </section>
+
+  <section id="my-work">
+    
+    <section class="person-section" id="person-thanh" data-person="thanh">
+      <div class="person-head">
+        <div>
+          <div class="eyebrow">BE1 – Backend Developer</div>
+          <h2>Hồ Xuân Thanh</h2>
+          <p>Account + Security + Facility</p>
+        </div>
+        <button class="copy-btn" onclick="copyText('feature/thanh-account-facility')">Copy branch</button>
+      </div>
+
+      <div class="grid two">
+        <article class="panel highlight">
+          <h3>1. Làm ở đâu?</h3>
+          <div class="label">Branch</div>
+          <code>feature/thanh-account-facility</code>
+          <div class="label gap">Package / Feature folder sở hữu</div>
+          <div class="pill-wrap"><span class="pill">account/</span><span class="pill">facility/</span><span class="pill">security</span><span class="pill">Migration V100–V199</span></div>
+        </article>
+        <article class="panel">
+          <h3>2. Chịu trách nhiệm gì?</h3>
+          <ul class=""><li>Account, Authentication, JWT, Security, RBAC</li><li>Facility Scope</li><li>Facility, UnitType, StorageUnit</li><li>Admin User Management</li><li>Activity Log</li></ul>
+        </article>
+      </div>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>3. Cần implement</h3>
+          <ul class=""><li>UserRepository, UserService, AuthService, AuthController</li><li>JwtService, JwtAuthenticationFilter, ActivityLogService</li><li>FacilityRepository, UnitTypeRepository, StorageUnitRepository</li><li>FacilityService, UnitTypeService, StorageUnitService</li><li>FacilityAccessService.validateCurrentUserCanAccess(facilityId)</li></ul>
+        </article>
+        <article class="panel">
+          <h3>4. API / Page / Contract liên quan</h3>
+          <ul class="mono-list"><li>POST /api/v1/auth/register</li><li>POST /api/v1/auth/login</li><li>GET /api/v1/auth/me</li><li>GET/POST/PUT /api/v1/admin/users...</li><li>GET /api/v1/admin/activity-logs</li><li>GET /api/v1/facilities</li><li>GET /api/v1/facilities/{id}</li><li>GET /api/v1/facilities/{id}/unit-types</li><li>GET /api/v1/facilities/{id}/available-units</li><li>GET/POST/PUT /api/v1/business/facilities...</li><li>GET/POST/PUT /api/v1/manager/units...</li></ul>
+        </article>
+      </div>
+
+      <article class="panel">
+        <h3>5. Làm theo phase nào?</h3>
+        <div class="phase-list"><div class="phase-row"><div class="phase-name">Phase 1</div><div><span class="pill">Authentication</span><span class="pill">Security</span><span class="pill">User</span><span class="pill">Facility base</span></div></div><div class="phase-row"><div class="phase-name">Phase 2</div><div><span class="pill">StorageUnit</span><span class="pill">UnitType</span><span class="pill">Facility Scope</span></div></div><div class="phase-row"><div class="phase-name">Phase 3</div><div><span class="pill">Admin User Management</span><span class="pill">Activity Log</span></div></div><div class="phase-row"><div class="phase-name">Phase 4</div><div><span class="pill">Bug fixes</span><span class="pill">Integration support</span><span class="pill">Security validation</span></div></div><div class="phase-row"><div class="phase-name">Phase 5</div><div><span class="pill">Tham gia E2E Flow 2 và Flow 5</span></div></div></div>
+      </article>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>6. Test bắt buộc</h3>
+          <ul class=""><li>AuthServiceTest, UserServiceTest</li><li>FacilityServiceTest, UnitTypeServiceTest, StorageUnitServiceTest</li><li>Register → Login</li><li>Admin assign role / facility</li><li>Facility CRUD, StorageUnit CRUD</li><li>Customer cannot access admin API</li><li>Staff/Manager cannot access another facility</li></ul>
+        </article>
+        <article class="panel">
+          <h3>7. Definition of Done</h3>
+          <div class="checklist">
+            <label><input type="checkbox"> <span>Register/Login/JWT PASS</span></label><label><input type="checkbox"> <span>Role authorization + Facility scope PASS</span></label><label><input type="checkbox"> <span>Facility/UnitType/StorageUnit PASS</span></label><label><input type="checkbox"> <span>Admin User Management + Activity Log PASS</span></label><label><input type="checkbox"> <span>Swagger updated</span></label><label><input type="checkbox"> <span>Unit + Integration tests PASS</span></label><label><input type="checkbox"> <span>mvn clean verify PASS</span></label><label><input type="checkbox"> <span>PR reviewed + CI PASS</span></label>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel integration">
+        <h3>8. Phải phối hợp với ai?</h3>
+        <ul class=""><li>Flow 2: với Bùi Văn Tình + Trần Xuân Khoa</li><li>Flow 5: với Bùi Văn Tình + Trần Xuân Khoa</li></ul>
+      </article>
+    </section>
+    
+    <section class="person-section" id="person-tinh" data-person="tinh">
+      <div class="person-head">
+        <div>
+          <div class="eyebrow">BE2 – Backend Developer</div>
+          <h2>Bùi Văn Tình</h2>
+          <p>Reservation + Rental Lifecycle</p>
+        </div>
+        <button class="copy-btn" onclick="copyText('feature/tinh-rental')">Copy branch</button>
+      </div>
+
+      <div class="grid two">
+        <article class="panel highlight">
+          <h3>1. Làm ở đâu?</h3>
+          <div class="label">Branch</div>
+          <code>feature/tinh-rental</code>
+          <div class="label gap">Package / Feature folder sở hữu</div>
+          <div class="pill-wrap"><span class="pill">rental/</span><span class="pill">Migration V200–V299</span></div>
+        </article>
+        <article class="panel">
+          <h3>2. Chịu trách nhiệm gì?</h3>
+          <ul class=""><li>Reservation + Reservation Lifecycle</li><li>Storage Unit Assignment</li><li>Rental Contract</li><li>Check-in / Check-out / Handover</li><li>Renewal</li><li>Overdue Detection</li></ul>
+        </article>
+      </div>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>3. Cần implement</h3>
+          <ul class=""><li>ReservationRepository, ReservationService, ReservationController</li><li>RentalContractRepository, RentalContractService, ContractController</li><li>HandoverRecord workflow</li><li>DailyOverdueJob</li><li>Tích hợp ChargeFacade (mock trong unit test)</li><li>Concurrency protection khi assign StorageUnit</li></ul>
+        </article>
+        <article class="panel">
+          <h3>4. API / Page / Contract liên quan</h3>
+          <ul class="mono-list"><li>POST /api/v1/reservations</li><li>GET /api/v1/reservations/my</li><li>GET /api/v1/reservations/{id}</li><li>PUT /api/v1/reservations/{id}/cancel</li><li>GET /api/v1/manager/reservations</li><li>PUT /api/v1/manager/reservations/{id}/confirm</li><li>PUT /api/v1/manager/reservations/{id}/assign-unit</li><li>GET /api/v1/contracts/my</li><li>GET /api/v1/contracts/{id}</li><li>GET /api/v1/manager/contracts</li><li>POST /api/v1/contracts/{id}/renew</li></ul>
+        </article>
+      </div>
+
+      <article class="panel">
+        <h3>5. Làm theo phase nào?</h3>
+        <div class="phase-list"><div class="phase-row"><div class="phase-name">Phase 1</div><div><span class="pill">Reservation base</span></div></div><div class="phase-row"><div class="phase-name">Phase 2</div><div><span class="pill">Reservation Confirmation</span><span class="pill">Unit Assignment</span><span class="pill">Contract</span></div></div><div class="phase-row"><div class="phase-name">Phase 3</div><div><span class="pill">Check-in</span><span class="pill">Check-out</span><span class="pill">Handover</span></div></div><div class="phase-row"><div class="phase-name">Phase 4</div><div><span class="pill">Renewal</span><span class="pill">Overdue Detection</span></div></div><div class="phase-row"><div class="phase-name">Phase 5</div><div><span class="pill">Tham gia E2E Flow 1, 2, 5, 6</span></div></div></div>
+      </article>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>6. Test bắt buộc</h3>
+          <ul class=""><li>Cannot assign OCCUPIED / MAINTENANCE unit</li><li>Cannot assign wrong UnitType / wrong Facility</li><li>Cannot assign same unit twice</li><li>2 concurrent assignments → chỉ 1 thành công</li><li>Cannot check-in cancelled Reservation / without Unit</li><li>Cannot check-out ENDED Contract</li><li>Cannot renew ENDED Contract</li><li>Reservation → Confirm → Assign → Check-in → ACTIVE → Check-out</li></ul>
+        </article>
+        <article class="panel">
+          <h3>7. Definition of Done</h3>
+          <div class="checklist">
+            <label><input type="checkbox"> <span>Reservation + Confirmation + Unit Assignment PASS</span></label><label><input type="checkbox"> <span>Concurrency test PASS</span></label><label><input type="checkbox"> <span>Contract + Check-in/out + Handover PASS</span></label><label><input type="checkbox"> <span>Renewal + Overdue Detection PASS</span></label><label><input type="checkbox"> <span>Swagger updated</span></label><label><input type="checkbox"> <span>Unit + Integration tests PASS</span></label><label><input type="checkbox"> <span>mvn clean verify PASS</span></label><label><input type="checkbox"> <span>PR reviewed + CI PASS</span></label>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel integration">
+        <h3>8. Phải phối hợp với ai?</h3>
+        <ul class=""><li>ChargeFacade do Lê Trí Thiện cung cấp</li><li>Flow 1: với Bùi Tuấn Thanh + Lê Trí Thiện</li><li>Flow 2/5: với Hồ Xuân Thanh + Trần Xuân Khoa</li><li>Flow 6: với Lê Trí Thiện + Bùi Tuấn Thanh</li></ul>
+      </article>
+    </section>
+    
+    <section class="person-section" id="person-thien" data-person="thien">
+      <div class="person-head">
+        <div>
+          <div class="eyebrow">BE3 – Backend Developer</div>
+          <h2>Lê Trí Thiện</h2>
+          <p>Payment + Support + Management</p>
+        </div>
+        <button class="copy-btn" onclick="copyText('feature/thien-payment-support-management')">Copy branch</button>
+      </div>
+
+      <div class="grid two">
+        <article class="panel highlight">
+          <h3>1. Làm ở đâu?</h3>
+          <div class="label">Branch</div>
+          <code>feature/thien-payment-support-management</code>
+          <div class="label gap">Package / Feature folder sở hữu</div>
+          <div class="pill-wrap"><span class="pill">payment/</span><span class="pill">support/</span><span class="pill">management/</span><span class="pill">Migration V300–V399</span></div>
+        </article>
+        <article class="panel">
+          <h3>2. Chịu trách nhiệm gì?</h3>
+          <ul class=""><li>Charge + Payment</li><li>Deposit / Renewal Fee / Extra Fee / Overdue Fee</li><li>Support Ticket</li><li>Rental Policy + Fee Policy</li><li>Dashboard + Reporting + Export</li></ul>
+        </article>
+      </div>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>3. Cần implement</h3>
+          <ul class=""><li>ChargeRepository, ChargeService</li><li>PaymentRepository, PaymentService, PaymentController</li><li>ChargeFacade: deposit / renewal / overdue / extra</li><li>SupportTicket workflows</li><li>RentalPolicy + FeePolicy</li><li>Manager/Business dashboard aggregation</li><li>CSV export; XLSX nếu còn thời gian</li></ul>
+        </article>
+        <article class="panel">
+          <h3>4. API / Page / Contract liên quan</h3>
+          <ul class="mono-list"><li>GET /api/v1/payments/my</li><li>GET /api/v1/contracts/{contractId}/charges</li><li>POST /api/v1/charges/{chargeId}/payments</li><li>POST /api/v1/support-tickets</li><li>GET /api/v1/support-tickets/my</li><li>GET /api/v1/manager/support-tickets</li><li>PUT /api/v1/manager/support-tickets/{id}/assign</li><li>GET /api/v1/staff/support-tickets</li><li>PUT /api/v1/staff/support-tickets/{id}/start</li><li>PUT /api/v1/staff/support-tickets/{id}/resolve</li><li>GET/PUT /api/v1/business/rental-policy</li><li>GET/POST/PUT /api/v1/business/fee-policies...</li><li>GET /api/v1/manager/dashboard</li><li>GET /api/v1/business/dashboard</li></ul>
+        </article>
+      </div>
+
+      <article class="panel">
+        <h3>5. Làm theo phase nào?</h3>
+        <div class="phase-list"><div class="phase-row"><div class="phase-name">Phase 1</div><div><span class="pill">Charge</span><span class="pill">Payment base</span><span class="pill">RentalPolicy</span></div></div><div class="phase-row"><div class="phase-name">Phase 2</div><div><span class="pill">Deposit</span><span class="pill">Payment</span><span class="pill">Charge lifecycle</span></div></div><div class="phase-row"><div class="phase-name">Phase 3</div><div><span class="pill">Support</span><span class="pill">Extra Fees</span></div></div><div class="phase-row"><div class="phase-name">Phase 4</div><div><span class="pill">Renewal Fee</span><span class="pill">Overdue Fee</span><span class="pill">Dashboard</span><span class="pill">Reporting</span><span class="pill">Export</span></div></div><div class="phase-row"><div class="phase-name">Phase 5</div><div><span class="pill">Tham gia E2E Flow 1, 3, 4, 6, 7</span></div></div></div>
+      </article>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>6. Test bắt buộc</h3>
+          <ul class=""><li>Cannot overpay / cannot pay another customer&#x27;s Charge</li><li>Cannot pay CANCELLED Charge</li><li>Payment correctly updates Charge</li><li>Customer cannot read another Ticket</li><li>Manager cannot assign Staff from another Facility</li><li>Resolved Ticket requires resolution</li><li>Deposit + Overdue fee calculation</li><li>Revenue aggregation + Occupancy calculation + Facility scope</li></ul>
+        </article>
+        <article class="panel">
+          <h3>7. Definition of Done</h3>
+          <div class="checklist">
+            <label><input type="checkbox"> <span>Charge + Payment PASS</span></label><label><input type="checkbox"> <span>Deposit/Renewal/Overdue/Extra Fee PASS</span></label><label><input type="checkbox"> <span>Support PASS</span></label><label><input type="checkbox"> <span>Rental Policy + Fee Policy PASS</span></label><label><input type="checkbox"> <span>Dashboard + Report + Export PASS</span></label><label><input type="checkbox"> <span>Swagger updated</span></label><label><input type="checkbox"> <span>Unit + Integration tests PASS</span></label><label><input type="checkbox"> <span>mvn clean verify PASS</span></label><label><input type="checkbox"> <span>PR reviewed + CI PASS</span></label>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel integration">
+        <h3>8. Phải phối hợp với ai?</h3>
+        <ul class=""><li>Cung cấp ChargeFacade cho Bùi Văn Tình</li><li>Flow 1: với Bùi Tuấn Thanh + Bùi Văn Tình</li><li>Flow 3: với Bùi Tuấn Thanh</li><li>Flow 4: với Trần Xuân Khoa</li><li>Flow 6: với Bùi Văn Tình + Bùi Tuấn Thanh</li><li>Flow 7: với Bùi Tuấn Thanh + Trần Xuân Khoa</li></ul>
+      </article>
+    </section>
+    
+    <section class="person-section" id="person-tuan" data-person="tuan">
+      <div class="person-head">
+        <div>
+          <div class="eyebrow">FE1 – Frontend Developer</div>
+          <h2>Bùi Tuấn Thanh</h2>
+          <p>Customer Application</p>
+        </div>
+        <button class="copy-btn" onclick="copyText('feature/tuan-customer-frontend')">Copy branch</button>
+      </div>
+
+      <div class="grid two">
+        <article class="panel highlight">
+          <h3>1. Làm ở đâu?</h3>
+          <div class="label">Branch</div>
+          <code>feature/tuan-customer-frontend</code>
+          <div class="label gap">Package / Feature folder sở hữu</div>
+          <div class="pill-wrap"><span class="pill">features/auth/</span><span class="pill">features/facility/</span><span class="pill">features/reservation/</span><span class="pill">features/customer-rental/</span><span class="pill">features/customer-payment/</span><span class="pill">features/customer-support/</span></div>
+        </article>
+        <article class="panel">
+          <h3>2. Chịu trách nhiệm gì?</h3>
+          <ul class=""><li>Authentication UI + Customer Layout</li><li>Facility Browsing</li><li>Reservation + My Reservations</li><li>My Storage + Contracts + Renewal</li><li>Charges + Payment</li><li>Customer Support</li></ul>
+        </article>
+      </div>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>3. Cần implement</h3>
+          <ul class=""><li>LoginPage, RegisterPage, ProfilePage</li><li>FacilityListPage, FacilityDetailPage, UnitTypeList, AvailableUnits</li><li>CreateReservationPage, MyReservationsPage, ReservationDetailPage</li><li>MyStoragePage, MyContractsPage, ContractDetailPage</li><li>MyChargesPage, PaymentPage, PaymentHistoryPage</li><li>CreateSupportTicketPage, MySupportTicketsPage, SupportTicketDetailPage</li><li>API layer: authApi.js, facilityApi.js, reservationApi.js, customerContractApi.js, paymentApi.js, customerSupportApi.js</li></ul>
+        </article>
+        <article class="panel">
+          <h3>4. API / Page / Contract liên quan</h3>
+          <ul class="mono-list"><li>Frontend không gọi Axios trực tiếp trong page nếu có thể tránh</li><li>Dùng API Contract + Mock Data khi Backend chưa hoàn thành</li><li>Sau khi BE merge: thay mock bằng Real API, không rewrite UI</li></ul>
+        </article>
+      </div>
+
+      <article class="panel">
+        <h3>5. Làm theo phase nào?</h3>
+        <div class="phase-list"><div class="phase-row"><div class="phase-name">Phase 1</div><div><span class="pill">Auth UI</span><span class="pill">Customer Layout</span><span class="pill">Facility UI</span></div></div><div class="phase-row"><div class="phase-name">Phase 2</div><div><span class="pill">Reservation UI</span><span class="pill">My Reservations</span></div></div><div class="phase-row"><div class="phase-name">Phase 3</div><div><span class="pill">My Contracts</span><span class="pill">Payment</span></div></div><div class="phase-row"><div class="phase-name">Phase 4</div><div><span class="pill">Renewal UI</span><span class="pill">Support UI</span></div></div><div class="phase-row"><div class="phase-name">Phase 5</div><div><span class="pill">Tham gia E2E Flow 1, 3, 6, 7</span></div></div></div>
+      </article>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>6. Test bắt buộc</h3>
+          <ul class=""><li>Register / Login</li><li>Facility browsing</li><li>Create / Cancel Reservation</li><li>View Contract / Renew</li><li>View Charges / Payment</li><li>Create Support Ticket</li><li>Loading / Error / Empty State</li><li>Role Protection</li></ul>
+        </article>
+        <article class="panel">
+          <h3>7. Definition of Done</h3>
+          <div class="checklist">
+            <label><input type="checkbox"> <span>Authentication UI PASS</span></label><label><input type="checkbox"> <span>Facility Browsing + Reservation PASS</span></label><label><input type="checkbox"> <span>My Storage + Contract + Renewal PASS</span></label><label><input type="checkbox"> <span>Payment + Support PASS</span></label><label><input type="checkbox"> <span>Loading/Error/Empty states</span></label><label><input type="checkbox"> <span>Role Protection</span></label><label><input type="checkbox"> <span>npm run build PASS</span></label><label><input type="checkbox"> <span>PR reviewed + CI PASS</span></label>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel integration">
+        <h3>8. Phải phối hợp với ai?</h3>
+        <ul class=""><li>Flow 1: với Bùi Văn Tình + Lê Trí Thiện</li><li>Flow 3: với Lê Trí Thiện</li><li>Flow 6: với Bùi Văn Tình + Lê Trí Thiện</li><li>Flow 7: với Lê Trí Thiện + Trần Xuân Khoa</li></ul>
+      </article>
+    </section>
+    
+    <section class="person-section" id="person-khoa" data-person="khoa">
+      <div class="person-head">
+        <div>
+          <div class="eyebrow">FE2 – Frontend Developer</div>
+          <h2>Trần Xuân Khoa</h2>
+          <p>Staff + Manager + Business + Admin</p>
+        </div>
+        <button class="copy-btn" onclick="copyText('feature/khoa-management-frontend')">Copy branch</button>
+      </div>
+
+      <div class="grid two">
+        <article class="panel highlight">
+          <h3>1. Làm ở đâu?</h3>
+          <div class="label">Branch</div>
+          <code>feature/khoa-management-frontend</code>
+          <div class="label gap">Package / Feature folder sở hữu</div>
+          <div class="pill-wrap"><span class="pill">features/staff/</span><span class="pill">features/facility-manager/</span><span class="pill">features/business-manager/</span><span class="pill">features/admin/</span></div>
+        </article>
+        <article class="panel">
+          <h3>2. Chịu trách nhiệm gì?</h3>
+          <ul class=""><li>Facility Staff UI</li><li>Facility Manager UI</li><li>Business Operations Manager UI</li><li>System Administrator UI</li><li>Check-in / Check-out</li><li>Unit + Reservation + Staff + Support Management</li><li>Pricing + Policies + Dashboard + Reports</li><li>User Management + Activity Logs</li></ul>
+        </article>
+      </div>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>3. Cần implement</h3>
+          <ul class=""><li>/staff/today dashboard + check-in/out forms</li><li>/manager/dashboard + Unit Management + Reservation Management + Contract Management</li><li>FacilityStaffPage + Manager Support</li><li>/business/dashboard, /business/facilities, /business/pricing, /business/policies, /business/fees, /business/reports</li><li>/admin/users + /admin/activity-logs</li><li>Shared: DataTable, DashboardCard, StatusBadge, FilterBar, ConfirmModal, Pagination</li></ul>
+        </article>
+        <article class="panel">
+          <h3>4. API / Page / Contract liên quan</h3>
+          <ul class="mono-list"><li>Staff UI: Today&#x27;s Check-ins / Check-outs / Assigned Support Tickets</li><li>Manager UI: Unit CRUD, confirm reservation, assign StorageUnit, support assignment</li><li>Business UI: Facility, pricing, rental policy, fee policy, reports</li><li>Admin UI: users, role/facility assignment, activation, activity logs</li><li>Component generic dùng chung → components/common/ qua PR riêng</li></ul>
+        </article>
+      </div>
+
+      <article class="panel">
+        <h3>5. Làm theo phase nào?</h3>
+        <div class="phase-list"><div class="phase-row"><div class="phase-name">Phase 1</div><div><span class="pill">Back-office Layout</span><span class="pill">Role Routing</span><span class="pill">Management Dashboard Shell</span></div></div><div class="phase-row"><div class="phase-name">Phase 2</div><div><span class="pill">Unit Management</span><span class="pill">Reservation Management</span></div></div><div class="phase-row"><div class="phase-name">Phase 3</div><div><span class="pill">Staff Check-in/out</span><span class="pill">Manager Support</span></div></div><div class="phase-row"><div class="phase-name">Phase 4</div><div><span class="pill">Business Policy UI</span><span class="pill">Dashboard</span><span class="pill">Reports</span><span class="pill">Admin</span></div></div><div class="phase-row"><div class="phase-name">Phase 5</div><div><span class="pill">Tham gia E2E Flow 2, 4, 5, 7</span></div></div></div>
+      </article>
+
+      <div class="grid two">
+        <article class="panel">
+          <h3>6. Test bắt buộc</h3>
+          <ul class=""><li>Staff Today</li><li>Check-in / Check-out</li><li>Resolve Support Ticket</li><li>Unit CRUD + Assign Unit</li><li>Reservation Management</li><li>Facility Management</li><li>Rental Policy + Fee Policy</li><li>Dashboard + Reports</li><li>User Role Assignment</li><li>Role Guard</li></ul>
+        </article>
+        <article class="panel">
+          <h3>7. Definition of Done</h3>
+          <div class="checklist">
+            <label><input type="checkbox"> <span>Staff UI + Check-in/out + Support PASS</span></label><label><input type="checkbox"> <span>Facility Manager PASS</span></label><label><input type="checkbox"> <span>Business Manager PASS</span></label><label><input type="checkbox"> <span>Admin PASS</span></label><label><input type="checkbox"> <span>Dashboard + Report PASS</span></label><label><input type="checkbox"> <span>Loading/Error/Empty State</span></label><label><input type="checkbox"> <span>Role Guard PASS</span></label><label><input type="checkbox"> <span>npm run build PASS</span></label><label><input type="checkbox"> <span>PR reviewed + CI PASS</span></label>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel integration">
+        <h3>8. Phải phối hợp với ai?</h3>
+        <ul class=""><li>Flow 2: với Bùi Văn Tình + Hồ Xuân Thanh</li><li>Flow 4: với Lê Trí Thiện</li><li>Flow 5: với Hồ Xuân Thanh + Bùi Văn Tình</li><li>Flow 7: với Lê Trí Thiện + Bùi Tuấn Thanh</li></ul>
+      </article>
+    </section>
+    
+  </section>
+
+  <section class="block" id="shared">
+    <div class="section-title">
+      <div><div class="eyebrow">Shared rules</div><h2>Quy tắc chung của cả team</h2></div>
+    </div>
+    <div class="shared-list">
+      <article class="panel">
+        <h3>Git workflow</h3>
+        <ul class=""><li>Không code trực tiếp trên main</li><li>Feature branch → update main → resolve conflict → test → PR → review → CI PASS → merge</li><li>Sau mỗi merge: git fetch origin + git rebase origin/main</li><li>Không để branch lệch main quá lâu</li></ul>
+      </article>
+      <article class="panel">
+        <h3>Shared code</h3>
+        <ul class=""><li>common/ và config/ là shared ownership</li><li>ApiResponse.java</li><li>GlobalExceptionHandler.java</li><li>BaseEntity.java</li><li>SecurityConfig.java</li><li>application.yml</li><li>pom.xml</li><li>Muốn sửa shared file → PR nhỏ riêng</li></ul>
+      </article>
+      <article class="panel">
+        <h3>Main protection</h3>
+        <ul class=""><li>No direct push to main</li><li>Pull Request required</li><li>CI required</li><li>Minimum 1 reviewer</li><li>Không git push --force main</li></ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="section-title">
+      <div><div class="eyebrow">Merge strategy</div><h2>Thứ tự merge ưu tiên</h2></div>
+    </div>
+    <div class="flow">
+      <div class="node">BE1<br><b>Account + Facility</b></div>
+      <div class="arrow">→</div>
+      <div class="node">BE2<br><b>Rental</b></div>
+      <div class="arrow">→</div>
+      <div class="node">BE3<br><b>Payment + Support + Management</b></div>
+    </div>
+    <p class="small">FE1 và FE2 có thể merge độc lập khi build PASS. Không cần chờ toàn bộ backend hoàn thành.</p>
+  </section>
+
+  <section class="block">
+    <div class="section-title">
+      <div><div class="eyebrow">Integration</div><h2>7 luồng E2E phải chạy ở Phase 5</h2></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flow</th><th>Luồng nghiệp vụ</th><th>Owner tích hợp</th></tr></thead>
+        <tbody><tr><td><strong>Flow 1</strong></td><td>Register → Login → View Facility → Choose Unit Type → Reservation → Deposit → Manager Confirm</td><td>Bùi Tuấn Thanh + Bùi Văn Tình + Lê Trí Thiện</td></tr><tr><td><strong>Flow 2</strong></td><td>Manager Assign Unit → Unit RESERVED → Staff Check-in → Contract ACTIVE → Unit OCCUPIED</td><td>Bùi Văn Tình + Trần Xuân Khoa + Hồ Xuân Thanh</td></tr><tr><td><strong>Flow 3</strong></td><td>Customer View Rental → View Charges → Payment → Support Request</td><td>Bùi Tuấn Thanh + Lê Trí Thiện</td></tr><tr><td><strong>Flow 4</strong></td><td>Business Manager → Set Policy → Set Fees → View Revenue → Export Report</td><td>Lê Trí Thiện + Trần Xuân Khoa</td></tr><tr><td><strong>Flow 5</strong></td><td>Facility Manager → Manage Units → Assign Units → Assign Staff → Monitor Facility</td><td>Hồ Xuân Thanh + Bùi Văn Tình + Trần Xuân Khoa</td></tr><tr><td><strong>Flow 6</strong></td><td>ACTIVE Contract → Renew → RENEWAL Charge → Payment → Extend Contract; Expiry → OVERDUE → OVERDUE Charge</td><td>Bùi Văn Tình + Lê Trí Thiện + Bùi Tuấn Thanh</td></tr><tr><td><strong>Flow 7</strong></td><td>Customer Create Ticket → Manager Assign Staff → Staff Start → Staff Resolve</td><td>Lê Trí Thiện + Bùi Tuấn Thanh + Trần Xuân Khoa</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="section-title">
+      <div><div class="eyebrow">Ownership Matrix</div><h2>Ai là Owner, ai là Consumer?</h2></div>
+      <p><span class="badge">● Owner</span> &nbsp; ○ Consumer / Integration</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Hồ Xuân Thanh</th><th>Bùi Văn Tình</th><th>Lê Trí Thiện</th><th>Bùi Tuấn Thanh</th><th>Trần Xuân Khoa</th></tr>
+        </thead>
+        <tbody><tr><td>Authentication</td><td>●</td><td></td><td></td><td>●</td><td>●</td></tr><tr><td>User Management</td><td>●</td><td></td><td></td><td></td><td>●</td></tr><tr><td>Facility</td><td>●</td><td></td><td></td><td>●</td><td>●</td></tr><tr><td>UnitType</td><td>●</td><td></td><td></td><td>●</td><td>●</td></tr><tr><td>StorageUnit</td><td>●</td><td>○</td><td></td><td>●</td><td>●</td></tr><tr><td>Reservation</td><td></td><td>●</td><td>○</td><td>●</td><td>●</td></tr><tr><td>Contract</td><td></td><td>●</td><td>○</td><td>●</td><td>●</td></tr><tr><td>Check-in/out</td><td></td><td>●</td><td></td><td></td><td>●</td></tr><tr><td>Renewal</td><td></td><td>●</td><td>●</td><td>●</td><td></td></tr><tr><td>Overdue</td><td></td><td>●</td><td>●</td><td>●</td><td>●</td></tr><tr><td>Charge</td><td></td><td>○</td><td>●</td><td>●</td><td>●</td></tr><tr><td>Payment</td><td></td><td></td><td>●</td><td>●</td><td></td></tr><tr><td>Support</td><td></td><td></td><td>●</td><td>●</td><td>●</td></tr><tr><td>Rental Policy</td><td></td><td>○</td><td>●</td><td></td><td>●</td></tr><tr><td>Fee Policy</td><td></td><td></td><td>●</td><td></td><td>●</td></tr><tr><td>Reporting</td><td></td><td></td><td>●</td><td></td><td>●</td></tr><tr><td>Activity Log</td><td>●</td><td>○</td><td>○</td><td></td><td>●</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="section-title">
+      <div><div class="eyebrow">CI gate</div><h2>Điều kiện trước khi merge</h2></div>
+    </div>
+    <div class="grid two">
+      <article class="panel">
+        <h3>Backend</h3>
+        <code>mvn clean verify</code>
+        <ul class=""><li>Compile PASS</li><li>Unit Tests PASS</li><li>Integration Tests PASS</li><li>Flyway Migration PASS</li></ul>
+      </article>
+      <article class="panel">
+        <h3>Frontend</h3>
+        <code>npm ci</code><br><br><code>npm run build</code>
+        <ul class=""><li>Build PASS</li><li>Nếu có test: npm run test PASS</li><li>PR reviewed</li><li>CI PASS</li></ul>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <strong>Nguyên tắc cốt lõi:</strong> mỗi người sở hữu end-to-end feature của mình; tất cả cùng tuân theo API contract, database contract và architecture baseline chung để giảm conflict khi merge.
+  </div>
+</footer>
+
+<script>
+const names = {"thanh": "Hồ Xuân Thanh", "tinh": "Bùi Văn Tình", "thien": "Lê Trí Thiện", "tuan": "Bùi Tuấn Thanh", "khoa": "Trần Xuân Khoa"};
+
+function selectMember(id) {
+  document.getElementById('memberSelect').value = id;
+  document.querySelectorAll('.person-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.member-card').forEach(c => c.classList.remove('active'));
+  if (id === 'all') {
+    showAll();
+    return;
+  }
+  const target = document.querySelector('#person-' + id);
+  if (target) target.classList.add('active');
+  const card = document.querySelector('.member-card[data-member="' + id + '"]');
+  if (card) card.classList.add('active');
+  document.getElementById('my-work').scrollIntoView({behavior:'smooth', block:'start'});
+  localStorage.setItem('swp391-member', id);
+}
+
+function showAll() {
+  document.getElementById('memberSelect').value = 'all';
+  document.querySelectorAll('.person-section').forEach(s => s.classList.add('active'));
+  document.querySelectorAll('.member-card').forEach(c => c.classList.remove('active'));
+  localStorage.removeItem('swp391-member');
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const old = document.activeElement.innerText;
+    document.activeElement.innerText = 'Đã copy';
+    setTimeout(() => document.activeElement.innerText = old, 900);
+  });
+}
+
+const saved = localStorage.getItem('swp391-member');
+if (saved && names[saved]) selectMember(saved);
+else showAll();
+</script>
+</body>
+</html>

@@ -43,6 +43,7 @@ export const InternalLayout = ({ children, title = 'Hệ Thống Nội Bộ' }) 
       case 'BUSINESS_OPERATIONS_MANAGER':
         return [
           { label: 'KPI & Doanh Thu', path: '/business-manager', icon: DollarSign },
+          { label: 'Thiết Lập Cơ Sở Kho', path: '/business-manager/facilities', icon: Building2 },
           { label: 'Chính Sách Giá', path: '/business-manager/pricing', icon: Layers },
           { label: 'Hợp Đồng Thuê Kho', path: '/business-manager/rentals', icon: FileText },
           { label: 'Báo Cáo Tỷ Lệ Lấp Đầy', path: '/business-manager/reports', icon: ClipboardList },
@@ -50,7 +51,7 @@ export const InternalLayout = ({ children, title = 'Hệ Thống Nội Bộ' }) 
       case 'FACILITY_MANAGER':
         return [
           { label: 'Trạng Thái Cơ Sở', path: '/facility-manager', icon: Building2 },
-          { label: 'Quản Lý Đơn Vị Kho', path: '/facility-manager/units', icon: Grid },
+          { label: 'Cơ Sở, Kho & Nhân Sự', path: '/facility-manager/facilities', icon: Grid },
           { label: 'Phân Bổ Nhân Viên', path: '/facility-manager/staff', icon: Users },
           { label: 'Bảo Trì & Vệ Sinh', path: '/facility-manager/maintenance', icon: Activity },
         ];

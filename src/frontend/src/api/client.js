@@ -94,6 +94,14 @@ class ApiClient {
     });
   }
 
+  patch(endpoint, body, options = {}) {
+    return this.request(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  }
+
   delete(endpoint, options = {}) {
     return this.request(endpoint, { ...options, method: 'DELETE' });
   }
@@ -106,4 +114,23 @@ export const authApi = {
   register: (userData) => apiClient.post('/auth/register', userData),
   getMe: () => apiClient.get('/auth/me'),
   refreshToken: (refreshToken) => apiClient.post('/auth/refresh', { refreshToken }),
+};
+
+export const facilityApi = {
+  list: () => apiClient.get('/facilities'),
+  get: (id) => apiClient.get(`/facilities/${id}`),
+  create: (payload) => apiClient.post('/facilities', payload),
+  update: (id, payload) => apiClient.put(`/facilities/${id}`, payload),
+  listFloors: (facilityId) => apiClient.get(`/facilities/${facilityId}/floors`),
+  createFloor: (facilityId, payload) => apiClient.post(`/facilities/${facilityId}/floors`, payload),
+  listZones: (floorId) => apiClient.get(`/floors/${floorId}/zones`),
+  createZone: (floorId, payload) => apiClient.post(`/floors/${floorId}/zones`, payload),
+  listUnitTypes: () => apiClient.get('/unit-types'),
+  createUnitType: (payload) => apiClient.post('/unit-types', payload),
+  listUnits: (facilityId, params = {}) => apiClient.get(`/facilities/${facilityId}/units?${new URLSearchParams(params)}`),
+  createUnit: (facilityId, payload) => apiClient.post(`/facilities/${facilityId}/units`, payload),
+  updateUnitStatus: (id, payload) => apiClient.patch(`/units/${id}/status`, payload),
+  listStaff: (facilityId) => apiClient.get(`/facilities/${facilityId}/staff`),
+  assignStaff: (facilityId, payload) => apiClient.post(`/facilities/${facilityId}/staff`, payload),
+  removeStaff: (facilityId, userId) => apiClient.delete(`/facilities/${facilityId}/staff/${userId}`),
 };

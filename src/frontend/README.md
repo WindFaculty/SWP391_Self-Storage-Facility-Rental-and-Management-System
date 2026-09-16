@@ -1,16 +1,28 @@
-# React + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React SPA dùng Vite và Tailwind CSS cho năm vai trò của hệ thống.
 
-Currently, two official plugins are available:
+## Cấu trúc
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```text
+src/
+├── api/          # API clients
+├── components/   # component dùng chung
+├── context/      # authentication state
+├── features/     # auth, facility, reservation, rental, payment, support, staff, management, admin
+├── layouts/
+├── routes/
+└── store/
+```
 
-## React Compiler
+Khung feature trống được giữ bằng `.gitkeep`; khi phát triển, đặt page, hook và API-specific UI trong đúng feature.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Chạy
 
-## Expanding the Oxlint configuration
+```bash
+npm install
+npm run dev
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Frontend gọi backend qua `/api/v1`.

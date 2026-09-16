@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { StatusBadge } from '../common/StatusBadge';
 import {
   Box,
+  Building2,
   Key,
   CreditCard,
   LifeBuoy,
@@ -23,6 +24,7 @@ export const CustomerLayout = ({ children }) => {
   };
 
   const navItems = [
+    { label: 'Tìm Cơ Sở Kho', path: '/facilities', icon: Building2 },
     { label: 'Kho Của Tôi', path: '/customer', icon: Box },
     { label: 'Đặt Giữ Chỗ', path: '/customer/reservation', icon: Key },
     { label: 'Thanh Toán', path: '/customer/billing', icon: CreditCard },

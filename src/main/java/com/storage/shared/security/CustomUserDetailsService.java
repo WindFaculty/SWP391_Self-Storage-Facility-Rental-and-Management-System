@@ -1,7 +1,7 @@
 package com.storage.shared.security;
 
-import com.storage.identity.domain.entity.User;
-import com.storage.identity.repository.UserRepository;
+import com.storage.account.entity.User;
+import com.storage.account.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

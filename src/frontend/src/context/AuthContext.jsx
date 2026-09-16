@@ -4,10 +4,11 @@ import { authApi, apiClient } from '../api/client';
 const AuthContext = createContext(null);
 
 export const getDefaultRouteForRole = (roles = []) => {
+  roles = Array.isArray(roles) ? roles : [roles];
   if (!roles || roles.length === 0) return '/login';
-  if (roles.includes('SYSTEM_ADMIN')) return '/admin';
-  if (roles.includes('BUSINESS_OPERATIONS_MANAGER')) return '/business-manager';
-  if (roles.includes('FACILITY_MANAGER')) return '/facility-manager';
+  if (roles.includes('ADMIN')) return '/admin/users';
+  if (roles.includes('BUSINESS_MANAGER')) return '/business/dashboard';
+  if (roles.includes('FACILITY_MANAGER')) return '/manager/dashboard';
   if (roles.includes('FACILITY_STAFF')) return '/staff';
   if (roles.includes('CUSTOMER')) return '/customer';
   return '/customer';
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       return {
         user: userData,
-        defaultRoute: getDefaultRouteForRole(userData.roles),
+        defaultRoute: getDefaultRouteForRole(userData.role),
       };
     }
     throw new Error('Đăng nhập không thành công');
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       setUser(createdUser);
       return {
         user: createdUser,
-        defaultRoute: getDefaultRouteForRole(createdUser.roles),
+        defaultRoute: getDefaultRouteForRole(createdUser.role),
       };
     }
     throw new Error('Đăng ký không thành công');
@@ -89,13 +90,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const hasRole = (role) => {
-    if (!user || !user.roles) return false;
-    return user.roles.includes(role) || user.roles.includes('SYSTEM_ADMIN');
+    if (!user) return false;
+    return user.role === role || user.role === 'ADMIN';
   };
 
   const hasPermission = (permission) => {
     if (!user || !user.permissions) return false;
-    return user.permissions.includes(permission) || user.roles.includes('SYSTEM_ADMIN');
+    return user.permissions.includes(permission) || user.role === 'ADMIN';
   };
 
   return (

@@ -8,9 +8,9 @@ spring:
     name: storage-management
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=StorageDB;encrypt=true;trustServerCertificate=true
-    username: sa
-    password: YourStrongPassword123!
+    url: ${DB_URL:jdbc:sqlserver://localhost:1433;databaseName=StorageDB;encrypt=true;trustServerCertificate=true}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
@@ -23,6 +23,9 @@ spring:
         dialect: org.hibernate.dialect.SQLServerDialect
     open-in-view: false
 
+  flyway:
+    locations: classpath:db/migration
+
   mvc:
     problemdetails:
       enabled: true
@@ -30,7 +33,7 @@ spring:
 # Security & JWT Configurations
 app:
   jwt:
-    secret: 9a6f8b2c4e1d3f5a7b9c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a3b5c7d9e1f3a
+    secret: ${JWT_SECRET:change-this-local-development-secret-to-a-secure-value}
     expiration-ms: 86400000 # 24 hours
     refresh-expiration-ms: 604800000 # 7 days
 

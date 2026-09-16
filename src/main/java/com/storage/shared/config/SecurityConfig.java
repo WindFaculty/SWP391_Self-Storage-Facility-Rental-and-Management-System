@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -60,11 +61,12 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        .requestMatchers("/admin/**").hasRole("SYSTEM_ADMIN")
-                        .requestMatchers("/business/**").hasAnyRole("SYSTEM_ADMIN", "BUSINESS_OPERATIONS_MANAGER")
-                        .requestMatchers("/facility-manager/**").hasAnyRole("SYSTEM_ADMIN", "FACILITY_MANAGER")
-                        .requestMatchers("/staff/**").hasAnyRole("SYSTEM_ADMIN", "FACILITY_STAFF", "FACILITY_MANAGER")
-                        .requestMatchers("/customer/**").hasAnyRole("SYSTEM_ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/facilities", "/facilities/*", "/facilities/*/unit-types", "/facilities/*/available-units").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/business/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER")
+                        .requestMatchers("/manager/**").hasAnyRole("ADMIN", "FACILITY_MANAGER")
+                        .requestMatchers("/staff/**").hasAnyRole("ADMIN", "FACILITY_STAFF", "FACILITY_MANAGER")
+                        .requestMatchers("/customer/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions

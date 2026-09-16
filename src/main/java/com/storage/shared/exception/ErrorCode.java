@@ -3,6 +3,15 @@ package com.storage.shared.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+    FACILITY_CODE_EXISTS("FACILITY_CODE_EXISTS", "Mã cơ sở kho đã tồn tại", HttpStatus.CONFLICT),
+    UNIT_TYPE_CODE_EXISTS("UNIT_TYPE_CODE_EXISTS", "Mã loại kho đã tồn tại", HttpStatus.CONFLICT),
+    STORAGE_UNIT_CODE_EXISTS("STORAGE_UNIT_CODE_EXISTS", "Mã đơn vị kho đã tồn tại trong cơ sở", HttpStatus.CONFLICT),
+    INVALID_UNIT_STATUS_TRANSITION("INVALID_UNIT_STATUS_TRANSITION", "Chuyển trạng thái kho không hợp lệ", HttpStatus.BAD_REQUEST),
+    FACILITY_NOT_FOUND("FACILITY_NOT_FOUND", "Không tìm thấy cơ sở kho", HttpStatus.NOT_FOUND),
+    FLOOR_NOT_FOUND("FLOOR_NOT_FOUND", "Không tìm thấy tầng kho", HttpStatus.NOT_FOUND),
+    ZONE_NOT_FOUND("ZONE_NOT_FOUND", "Không tìm thấy khu vực kho", HttpStatus.NOT_FOUND),
+    UNIT_TYPE_NOT_FOUND("UNIT_TYPE_NOT_FOUND", "Không tìm thấy loại kho", HttpStatus.NOT_FOUND),
+    STORAGE_UNIT_NOT_FOUND("STORAGE_UNIT_NOT_FOUND", "Không tìm thấy đơn vị kho", HttpStatus.NOT_FOUND),
     // 400 Bad Request
     BAD_REQUEST("BAD_REQUEST", "Yêu cầu không hợp lệ", HttpStatus.BAD_REQUEST),
     VALIDATION_ERROR("VALIDATION_ERROR", "Dữ liệu đầu vào không hợp lệ", HttpStatus.BAD_REQUEST),

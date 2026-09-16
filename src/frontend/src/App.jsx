@@ -10,8 +10,13 @@ import { InternalLayout } from './components/layouts/InternalLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { CustomerDashboard } from './pages/customer/CustomerDashboard';
+import { FacilityListPage } from './pages/customer/FacilityListPage';
+import { FacilityDetailPage } from './pages/customer/FacilityDetailPage';
+import { UnitTypeListPage } from './pages/customer/UnitTypeListPage';
+import { UnitTypeDetailPage } from './pages/customer/UnitTypeDetailPage';
 import { StaffDashboard } from './pages/staff/StaffDashboard';
 import { FacilityDashboard } from './pages/facility/FacilityDashboard';
+import { FacilityManagementPage } from './pages/facility/FacilityManagementPage';
 import { BusinessDashboard } from './pages/business/BusinessDashboard';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { ForbiddenPage } from './pages/common/ForbiddenPage';
@@ -29,7 +34,7 @@ const RootRedirect = () => {
   }
 
   if (isAuthenticated && user) {
-    const target = getDefaultRouteForRole(user.roles);
+    const target = getDefaultRouteForRole(user.role);
     return <Navigate to={target} replace />;
   }
 
@@ -46,6 +51,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
+          <Route path="/facilities" element={<FacilityListPage />} />
+          <Route path="/facilities/:id" element={<FacilityDetailPage />} />
+          <Route path="/unit-types" element={<UnitTypeListPage />} />
+          <Route path="/unit-types/:id" element={<UnitTypeDetailPage />} />
 
           {/* Customer Portal (Role: CUSTOMER) */}
           <Route
@@ -78,7 +87,7 @@ function App() {
 
           {/* 2. Facility Manager Portal */}
           <Route
-            path="/facility-manager"
+            path="/manager/dashboard"
             element={
               <ProtectedRoute>
                 <RoleGuard allowedRoles={['FACILITY_MANAGER']}>
@@ -89,18 +98,30 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/facility-manager/facilities"
+            element={
+              <ProtectedRoute><RoleGuard allowedRoles={['FACILITY_MANAGER']}><InternalLayout title="Quản lý cơ sở, kho và nhân sự"><FacilityManagementPage /></InternalLayout></RoleGuard></ProtectedRoute>
+            }
+          />
 
           {/* 3. Business Operations Manager Portal */}
           <Route
-            path="/business-manager"
+            path="/business/dashboard"
             element={
               <ProtectedRoute>
-                <RoleGuard allowedRoles={['BUSINESS_OPERATIONS_MANAGER']}>
+                <RoleGuard allowedRoles={['BUSINESS_MANAGER']}>
                   <InternalLayout title="Cổng Quản Lý Kinh Doanh & Doanh Thu (Biz Operations)">
                     <BusinessDashboard />
                   </InternalLayout>
                 </RoleGuard>
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/business/facilities"
+            element={
+              <ProtectedRoute><RoleGuard allowedRoles={['BUSINESS_MANAGER']}><InternalLayout title="Thiết lập cơ sở kho"><FacilityManagementPage /></InternalLayout></RoleGuard></ProtectedRoute>
             }
           />
 
@@ -109,12 +130,18 @@ function App() {
             path="/admin"
             element={
               <ProtectedRoute>
-                <RoleGuard allowedRoles={['SYSTEM_ADMIN']}>
+                <RoleGuard allowedRoles={['ADMIN']}>
                   <InternalLayout title="Cổng Quản Trị Hệ Thống (System Admin)">
                     <AdminDashboard />
                   </InternalLayout>
                 </RoleGuard>
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/facilities"
+            element={
+              <ProtectedRoute><RoleGuard allowedRoles={['ADMIN']}><InternalLayout title="Quản trị cơ sở kho"><FacilityManagementPage /></InternalLayout></RoleGuard></ProtectedRoute>
             }
           />
 

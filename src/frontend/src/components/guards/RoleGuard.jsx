@@ -18,9 +18,7 @@ export const RoleGuard = ({ allowedRoles = [], children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  const hasAccess = user.roles?.some(
-    (role) => allowedRoles.includes(role) || role === 'SYSTEM_ADMIN'
-  );
+  const hasAccess = allowedRoles.includes(user.role) || user.role === 'ADMIN';
 
   if (!hasAccess) {
     return <Navigate to="/forbidden" replace />;
