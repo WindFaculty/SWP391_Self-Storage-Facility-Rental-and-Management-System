@@ -88,7 +88,10 @@ export const LoginPage = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
+            <Input            cd "d:\SWP\thanhbt\SWP391_Self-Storage-Facility-Rental-and-Management-System"
+            git add src/frontend/src/pages/auth/LoginPage.jsx
+            git commit -m "feat: update login page"
+            git status
               label="Email Đăng Nhập"
               type="email"
               icon={Mail}
