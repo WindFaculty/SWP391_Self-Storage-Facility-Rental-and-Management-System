@@ -2,7 +2,7 @@
 
 Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lưu trữ.
 
-**Trạng thái:** backend buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile local/test/staging; BE1-02: Flyway baseline MySQL 13 bảng + seed demo local, test bằng Testcontainers). Chưa có API/nghiệp vụ. Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
+**Trạng thái:** backend buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile; BE1-02: Flyway baseline MySQL + seed demo local; BE1-03: auth email/password, JWT access/refresh, logout thu hồi token theo ADR-0001 đề xuất). API hiện có duy nhất `/api/v1/auth/*`. Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
 
 ## Kiến trúc mục tiêu
 
@@ -21,7 +21,21 @@ mvnw.cmd clean verify     # Windows
 mvnw.cmd spring-boot:run  # chạy app
 ```
 
-Profile mặc định là `local`; đổi bằng biến môi trường `SPRING_PROFILES_ACTIVE` (ví dụ `staging`). Profile `local` mặc định kết nối MySQL ở `jdbc:mysql://localhost:3306/storage_local` (root/root), override bằng `DB_URL`/`DB_USERNAME`/`DB_PASSWORD`; Flyway tự tạo bảng từ DB rỗng và nạp seed demo.
+Profile mặc định là `local`; đổi bằng biến môi trường `SPRING_PROFILES_ACTIVE` (ví dụ `staging`). Profile `local` mặc định kết nối MySQL ở `jdbc:mysql://localhost:3306/storage_local` (root/root), override bằng `DB_URL`/`DB_USERNAME`/`DB_PASSWORD`; Flyway tự tạo bảng từ DB rỗng và nạp seed demo. Staging bắt buộc có `JWT_SECRET`; local/test dùng default chỉ để dev.
+
+## API hiện có (BE1-03)
+
+Base path `/api/v1`; response theo `ApiResponse` (`success`/`data` hoặc `error.code`).
+
+| Method | Path | Mô tả |
+|---|---|---|
+| POST | `/auth/register` | Đăng ký customer, trả cặp token |
+| POST | `/auth/login` | Đăng nhập email/password |
+| POST | `/auth/refresh` | Xoay vòng refresh token (token cũ bị thu hồi) |
+| POST | `/auth/logout` | Thu hồi refresh token (idempotent) |
+| GET | `/auth/me` | Thông tin user hiện tại (Bearer access token) |
+
+Access token TTL 30 phút, refresh TTL 7 ngày, cấu hình qua `app.jwt.*`; xem `docs/architecture/adr-0001-authentication-token-strategy.md`.
 
 ## Cây thư mục
 
