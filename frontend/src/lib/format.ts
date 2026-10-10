@@ -5,6 +5,19 @@ const currencyFormatter = new Intl.NumberFormat('vi-VN', {
 
 const numberFormatter = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 });
 
+const dateTimeFormatter = new Intl.DateTimeFormat('vi-VN', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+export const formatDateTime = (isoDateTime: string): string => {
+  const date = new Date(isoDateTime);
+  return Number.isNaN(date.getTime()) ? isoDateTime : dateTimeFormatter.format(date);
+};
+
 export const formatCurrency = (value: number): string => currencyFormatter.format(value);
 
 export const formatPriceRange = (min: number, max: number): string =>

@@ -7,6 +7,7 @@ import { cn } from '../lib/cn';
 const NAV_LINKS = [
   { to: '/', label: 'Trang chủ', end: true },
   { to: '/facilities', label: 'Tìm kho & Cơ sở', end: false },
+  { to: '/my-rentals', label: 'Kho của tôi', end: false },
 ];
 
 export const PublicLayout = () => {
