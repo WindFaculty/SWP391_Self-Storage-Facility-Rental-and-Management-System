@@ -2,7 +2,7 @@
 
 Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lưu trữ.
 
-**Trạng thái:** backend buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile; BE1-02: Flyway baseline MySQL + seed demo local; BE1-03: auth email/password, JWT access/refresh, logout thu hồi token theo ADR-0001 đề xuất). API hiện có duy nhất `/api/v1/auth/*`. Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
+**Trạng thái:** backend buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile; BE1-02: Flyway baseline MySQL + seed demo local; BE1-03: auth email/password, JWT access/refresh, logout thu hồi token theo ADR-0001 đề xuất; BE1-04: RBAC theo prefix route, facility scope và ownership guard). API hiện có duy nhất `/api/v1/auth/*`. Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
 
 ## Kiến trúc mục tiêu
 
@@ -36,6 +36,21 @@ Base path `/api/v1`; response theo `ApiResponse` (`success`/`data` hoặc `error
 | GET | `/auth/me` | Thông tin user hiện tại (Bearer access token) |
 
 Access token TTL 30 phút, refresh TTL 7 ngày, cấu hình qua `app.jwt.*`; xem `docs/architecture/adr-0001-authentication-token-strategy.md`.
+
+## RBAC & scope (BE1-04)
+
+Prefix route theo role (ma trận chờ chốt D13):
+
+| Prefix | Role được phép |
+|---|---|
+| `/admin/**` | ADMIN |
+| `/business/**` | ADMIN, BUSINESS_MANAGER |
+| `/manager/**` | ADMIN, FACILITY_MANAGER |
+| `/staff/**` | ADMIN, FACILITY_MANAGER, FACILITY_STAFF |
+| `/customer/**` | ADMIN, CUSTOMER |
+
+- Facility scope: `FacilityAccessService` (bean `@facilityAccess`) — ADMIN/BUSINESS_MANAGER toàn hệ thống; FACILITY_STAFF/MANAGER chỉ cơ sở được gán (D07: 1 cơ sở/người trong MVP).
+- Ownership: `OwnershipService` (bean `@ownership`) — chặn truy cập tài nguyên của khách khác; dùng trong `@PreAuthorize`.
 
 ## Cây thư mục
 

@@ -13,6 +13,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,13 @@ public class GlobalExceptionHandler {
         ApiError error = new ApiError(ErrorCode.INVALID_CREDENTIALS.getCode(),
                 ErrorCode.INVALID_CREDENTIALS.getDefaultMessage(), null);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(error));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
+        ApiError error = new ApiError(ErrorCode.NOT_FOUND.getCode(),
+                ErrorCode.NOT_FOUND.getDefaultMessage(), null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(error));
     }
 
     @ExceptionHandler(AuthenticationException.class)
