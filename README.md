@@ -2,7 +2,7 @@
 
 Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lưu trữ.
 
-**Trạng thái:** đã dọn source cũ và dựng cây thư mục mới ở local. Chưa có mã ứng dụng, file Java, manifest Maven/npm hoặc cấu hình chạy/deploy mới. Các thư mục trống được giữ trong Git bằng `.gitkeep`. Dự án chưa thể build hoặc chạy.
+**Trạng thái:** backend đã có khung Maven/Spring Boot buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile local/test/staging), chưa có nghiệp vụ/API/DB. Frontend và phần còn lại vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
 
 ## Kiến trúc mục tiêu
 
@@ -10,6 +10,18 @@ Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lư
 - Frontend: React + Vite, tổ chức theo feature và dùng nguồn thiết kế Stitch được bảo toàn.
 - Database mục tiêu: MySQL/InnoDB. Thư mục `sql/` hiện giữ schema PostgreSQL và ERD tham chiếu nguyên bản; không chạy trực tiếp script đó trên MySQL.
 - Deployment tương lai: frontend trên Cloudflare Pages; backend/MySQL trên EC2. Chưa cấu hình hay tạo tài nguyên cloud.
+
+## Chạy backend
+
+Yêu cầu JDK 25. Dùng Maven Wrapper trong `backend/` (không cần cài Maven sẵn):
+
+```text
+mvnw.cmd clean verify     # Windows
+./mvnw clean verify       # Bash/macOS
+mvnw.cmd spring-boot:run  # chạy app
+```
+
+Profile mặc định là `local`; đổi bằng biến môi trường `SPRING_PROFILES_ACTIVE` (ví dụ `staging`).
 
 ## Cây thư mục
 
@@ -82,4 +94,4 @@ Source Java/JSX, migration runtime cũ, manifests, Docker/Compose/run scripts v�
 
 ## Phạm vi hiện tại
 
-Chỉ scaffold thư mục + placeholder + README/.gitignore. Chưa viết backend/frontend mới, chưa sửa SQL, chưa chuyển đổi Stitch, chưa cài dependency, chưa migration/seed database và chưa deploy. Giai đoạn tiếp theo cần yêu cầu riêng: domain/schema → backend → frontend → integration → deployment.
+Backend: khung Spring Boot tối thiểu đã build/test/chạy được (BE1-01), chưa có API/domain/DB. Frontend: vẫn scaffold thư mục, chưa có manifest/dependency. Chưa sửa SQL, chưa chuyển Stitch vào frontend, chưa cấu hình MySQL/migration/seed và chưa deploy. Giai đoạn tiếp theo cần yêu cầu riêng: domain/schema → backend → frontend → integration → deployment.
