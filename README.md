@@ -2,7 +2,7 @@
 
 Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lưu trữ.
 
-**Trạng thái:** backend buildable (BE1-01..BE1-06: nền Java 25 + Spring Boot 4.1.1 + Maven Wrapper, Flyway baseline MySQL + seed local, auth JWT, RBAC/facility scope/ownership, CRUD cơ sở/loại kho/đơn vị kho + catalog công khai, OpenAPI/Swagger + CI GitHub Actions theo ADR-0001 đề xuất). Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
+**Trạng thái:** backend buildable — BE1-01..BE1-07: Java 25/Spring Boot 4.1.1 + Maven Wrapper, Flyway MySQL + seed local, auth JWT (ADR-0001 đề xuất), RBAC/facility scope/ownership, CRUD cơ sở/loại kho/kho + catalog công khai, OpenAPI/Swagger + CI, admin user management + audit log + Docker/backup baseline. Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
 
 ## Kiến trúc mục tiêu
 
@@ -38,6 +38,9 @@ Base path `/api/v1`; response theo `ApiResponse` (`success`/`data` hoặc `error
 | POST/PUT | `/business/facilities`, `/business/unit-types` | BUSINESS_MANAGER/ADMIN tạo & cập nhật cơ sở, tạo loại kho |
 | GET/POST | `/manager/facilities/{id}/units` | Danh sách (phân trang)/tạo đơn vị kho — scope cơ sở được gán |
 | PUT | `/manager/units/{id}/status` | Đổi trạng thái kho theo transition hợp lệ — scope cơ sở |
+| GET/POST | `/admin/users` | Danh sách (lọc role/status/facility) / tạo tài khoản nội bộ (staff,manager phải gán cơ sở) |
+| PUT | `/admin/users/{id}/status`, `/admin/users/{id}/facility` | Kích hoạt/vô hiệu hóa tài khoản, gán cơ sở |
+| GET | `/admin/audit-logs` | Activity log (lọc userId/action, phân trang) |
 
 Access token TTL 30 phút, refresh TTL 7 ngày, cấu hình qua `app.jwt.*`; xem `docs/architecture/adr-0001-authentication-token-strategy.md`. Swagger UI công khai tại `/api/v1/swagger-ui.html` (spec `/api/v1/v3/api-docs`). CI `.github/workflows/ci.yml` chạy `mvnw verify` (JDK 25, Docker cho Testcontainers) mỗi push/PR.
 
@@ -55,6 +58,12 @@ Prefix route theo role (ma trận chờ chốt D13):
 
 - Facility scope: `FacilityAccessService` (bean `@facilityAccess`) — ADMIN/BUSINESS_MANAGER toàn hệ thống; FACILITY_STAFF/MANAGER chỉ cơ sở được gán (D07: 1 cơ sở/người trong MVP).
 - Ownership: `OwnershipService` (bean `@ownership`) — chặn truy cập tài nguyên của khách khác; dùng trong `@PreAuthorize`.
+
+## Vận hành (infra)
+
+- `backend/Dockerfile` + `infra/docker/docker-compose.yml`: MySQL 8.4 + backend (profile `local`) cho môi trường dev; secrets qua biến môi trường (xem `.env.example`), không commit `.env`.
+- `infra/ec2/backup-mysql.sh`: mysqldump qua `docker exec` + retention (mặc định 7 ngày); lệnh restore nằm trong header script (diễn tập W9).
+- EC2/HTTPS/reverse proxy: chưa cấu hình (W8) — chờ chốt D14/D18.
 
 ## Cây thư mục
 

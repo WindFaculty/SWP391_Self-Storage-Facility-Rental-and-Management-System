@@ -32,6 +32,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.HexFormat;
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -41,17 +42,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwt;
     private final AuthenticationManager authenticationManager;
+    private final ActivityLogService audit;
 
     public AuthService(UserRepository users,
                        RefreshTokenRepository refreshTokens,
                        PasswordEncoder passwordEncoder,
                        JwtTokenProvider jwt,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager,
+                       ActivityLogService audit) {
         this.users = users;
         this.refreshTokens = refreshTokens;
         this.passwordEncoder = passwordEncoder;
         this.jwt = jwt;
         this.authenticationManager = authenticationManager;
+        this.audit = audit;
     }
 
     @Transactional
@@ -68,6 +72,8 @@ public class AuthService {
         user.setRole(UserRole.CUSTOMER);
         user.setStatus(UserStatus.ACTIVE);
         users.save(user);
+        audit.record(user.getId(), "USER_REGISTERED", "USER", user.getId(),
+                Map.<String, Object>of("email", email));
         return issueTokens(user);
     }
 
@@ -79,10 +85,15 @@ public class AuthService {
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
             User user = users.findById(principal.getId())
                     .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+            audit.record(user.getId(), "LOGIN_SUCCESS", "USER", user.getId(), null);
             return issueTokens(user);
         } catch (BadCredentialsException ex) {
+            audit.recordStandalone(null, "LOGIN_FAILED", null, null,
+                    Map.<String, Object>of("email", normalizeEmail(request.email())));
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         } catch (DisabledException ex) {
+            audit.recordStandalone(null, "LOGIN_FAILED", null, null,
+                    Map.<String, Object>of("email", normalizeEmail(request.email()), "reason", "DISABLED"));
             throw new BusinessException(ErrorCode.USER_INACTIVE);
         }
     }
