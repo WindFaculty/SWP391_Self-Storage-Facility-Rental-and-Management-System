@@ -30,15 +30,15 @@ class StorageApplicationTests {
                 SELECT COUNT(*) FROM information_schema.tables
                 WHERE table_schema = DATABASE() AND table_name <> 'flyway_schema_history'
                 """, Integer.class);
-        assertThat(tables).isEqualTo(15);
+        assertThat(tables).isEqualTo(14);
     }
 
     @Test
     void singleSuccessfulPaymentPerInvoiceIsEnforcedByUniqueIndex() {
         Integer uniqueIndexColumns = jdbc.queryForObject("""
                 SELECT COUNT(*) FROM information_schema.statistics
-                WHERE table_schema = DATABASE() AND table_name = 'payments'
-                  AND index_name = 'uq_payments_one_success' AND non_unique = 0
+                WHERE table_schema = DATABASE() AND table_name = 'payment_attempts'
+                  AND index_name = 'uq_payment_attempts_one_success' AND non_unique = 0
                 """, Integer.class);
         assertThat(uniqueIndexColumns).isPositive();
     }
