@@ -3,3 +3,13 @@ spring:
     name: storage-backend
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    locations: classpath:db/migration/mysql

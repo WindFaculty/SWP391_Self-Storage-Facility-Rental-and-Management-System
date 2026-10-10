@@ -2,7 +2,7 @@
 
 Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lưu trữ.
 
-**Trạng thái:** backend đã có khung Maven/Spring Boot buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile local/test/staging), chưa có nghiệp vụ/API/DB. Frontend và phần còn lại vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
+**Trạng thái:** backend buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile local/test/staging; BE1-02: Flyway baseline MySQL 13 bảng + seed demo local, test bằng Testcontainers). Chưa có API/nghiệp vụ. Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
 
 ## Kiến trúc mục tiêu
 
@@ -21,7 +21,7 @@ mvnw.cmd clean verify     # Windows
 mvnw.cmd spring-boot:run  # chạy app
 ```
 
-Profile mặc định là `local`; đổi bằng biến môi trường `SPRING_PROFILES_ACTIVE` (ví dụ `staging`).
+Profile mặc định là `local`; đổi bằng biến môi trường `SPRING_PROFILES_ACTIVE` (ví dụ `staging`). Profile `local` mặc định kết nối MySQL ở `jdbc:mysql://localhost:3306/storage_local` (root/root), override bằng `DB_URL`/`DB_USERNAME`/`DB_PASSWORD`; Flyway tự tạo bảng từ DB rỗng và nạp seed demo.
 
 ## Cây thư mục
 
@@ -81,7 +81,13 @@ Mỗi module backend `account/facility/rental/payment/support/management` có `c
 
 Mỗi feature frontend có `pages/`, `components/`, `api/`, `hooks/`. API dùng chung nằm trong `src/api/`; layout/tokens/UI primitives dùng chung, nhưng permission và nghiệp vụ do backend xác thực.
 
-Migration MySQL sau này có một nguồn executable chuẩn ở `backend/src/main/resources/db/migration/mysql/`. Hiện thư mục chỉ có placeholder. Domain/model, quy ước ngày và policy phải được đối chiếu trước khi viết migration.
+## Migration MySQL (Flyway)
+
+- Nguồn executable duy nhất ở `backend/src/main/resources/db/migration/mysql/`; file `V{NNN}__{snake_case}.sql`, forward-only, không sửa migration đã merge — mọi thay đổi schema bằng migration mới.
+- Flyway chạy lúc khởi động (`spring.flyway.locations`); Hibernate chỉ `ddl-auto=validate`, không dùng `update/create`.
+- Instant lưu UTC dạng `DATETIME(6)` (mặc định `UTC_TIMESTAMP(6)`); tiền dùng `DECIMAL`; InnoDB/utf8mb4; tên ràng buộc `fk_/ck_/uq_/ix_`.
+- Không chuyển các đặc tính PostgreSQL-only sang MySQL (TIMESTAMPTZ, JSONB, INET, partial index, btree_gist EXCLUDE); chống trùng lịch thuê enforce bằng transaction + `SELECT ... FOR UPDATE` (§7.1 kế hoạch).
+- Seed demo chỉ ở `backend/src/main/resources/db/seed/local/` (repeatable, chỉ profile `local`, `INSERT IGNORE`, không chứa giá trị policy nghiệp vụ). Staging/production không nạp location này.
 
 ## Những phần được bảo toàn
 
@@ -94,4 +100,4 @@ Source Java/JSX, migration runtime cũ, manifests, Docker/Compose/run scripts v�
 
 ## Phạm vi hiện tại
 
-Backend: khung Spring Boot tối thiểu đã build/test/chạy được (BE1-01), chưa có API/domain/DB. Frontend: vẫn scaffold thư mục, chưa có manifest/dependency. Chưa sửa SQL, chưa chuyển Stitch vào frontend, chưa cấu hình MySQL/migration/seed và chưa deploy. Giai đoạn tiếp theo cần yêu cầu riêng: domain/schema → backend → frontend → integration → deployment.
+Backend: khung Spring Boot (BE1-01) + baseline MySQL/Flyway/seed local có test Testcontainers (BE1-02); chưa có entity/API nghiệp vụ. Frontend: vẫn scaffold thư mục. SQL PostgreSQL tham chiếu trong `sql/` giữ nguyên. Chưa chuyển Stitch vào frontend và chưa deploy. Tiếp theo: entity/repository + auth (BE1-03).
