@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/storage_local?createDatabaseIfNotExist=true&connectionTimeZone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  flyway:
+    locations: classpath:db/migration/mysql,classpath:db/seed/local
+logging:
+  level:
+    com.storage: DEBUG
+
+vnpay:
+  tmn-code: ${VNPAY_TMN_CODE:local-dev-tmn-code}
+  hash-secret: ${VNPAY_HASH_SECRET:local-dev-hash-secret-change-me}
+  pay-url: ${VNPAY_PAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+  return-url: ${VNPAY_RETURN_URL:http://localhost:8080/api/v1/payments/vnpay/return}
