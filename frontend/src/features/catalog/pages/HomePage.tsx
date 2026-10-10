@@ -75,7 +75,7 @@ export const HomePage = () => {
   return (
     <div className="flex flex-col">
       <section className="border-b border-border-hairline">
-        <div className="mx-auto w-full max-w-[1200px] px-4 py-14 sm:px-6 lg:px-10 lg:py-20">
+        <div className="page-container px-4 py-14 sm:px-6 lg:px-10 lg:py-20">
           <p className="text-label uppercase tracking-[0.2em] text-primary">
             Không gian lưu trữ linh hoạt
           </p>
@@ -117,7 +117,7 @@ export const HomePage = () => {
       </section>
 
       <section className="bg-surface py-14 lg:py-20">
-        <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-10">
+        <div className="page-container px-4 sm:px-6 lg:px-10">
           <div className="flex flex-col gap-3">
             <span className="text-badge uppercase tracking-[0.2em] text-text-muted">
               Quy chuẩn không gian
@@ -153,7 +153,7 @@ export const HomePage = () => {
       </section>
 
       <section className="border-t border-border-hairline py-14 lg:py-20">
-        <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-10">
+        <div className="page-container px-4 sm:px-6 lg:px-10">
           <div className="flex flex-col gap-3">
             <span className="text-badge uppercase tracking-[0.2em] text-text-muted">
               Quy trình đơn giản
@@ -178,7 +178,7 @@ export const HomePage = () => {
       </section>
 
       <section className="border-t border-border-hairline bg-surface py-14 lg:py-20">
-        <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-10">
+        <div className="page-container px-4 sm:px-6 lg:px-10">
           <h2 className="font-serif text-[28px] leading-tight text-text-main sm:text-[34px]">
             Trải nghiệm không gian lưu trữ văn minh.
           </h2>

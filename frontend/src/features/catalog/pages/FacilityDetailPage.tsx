@@ -39,7 +39,7 @@ export const FacilityDetailPage = () => {
 
   if (facilityQuery.isPending) {
     return (
-      <div className="mx-auto w-full max-w-[1200px] px-4 py-16 sm:px-6 lg:px-10">
+      <div className="page-container px-4 py-16 sm:px-6 lg:px-10">
         <LoadingSpinner text="Đang tải thông tin cơ sở…" />
       </div>
     );
@@ -47,7 +47,7 @@ export const FacilityDetailPage = () => {
 
   if (notFound) {
     return (
-      <div className="mx-auto w-full max-w-[1200px] px-4 py-16 sm:px-6 lg:px-10">
+      <div className="page-container px-4 py-16 sm:px-6 lg:px-10">
         <EmptyState
           title="Không tìm thấy cơ sở"
           description="Cơ sở có thể đã ngừng hoạt động hoặc đường dẫn không đúng."
@@ -59,7 +59,7 @@ export const FacilityDetailPage = () => {
 
   if (facilityQuery.isError || !facility) {
     return (
-      <div className="mx-auto w-full max-w-[1200px] px-4 py-16 sm:px-6 lg:px-10">
+      <div className="page-container px-4 py-16 sm:px-6 lg:px-10">
         <ErrorState
           title="Không tải được thông tin cơ sở"
           onRetry={() => facilityQuery.refetch()}
@@ -69,7 +69,7 @@ export const FacilityDetailPage = () => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-4 py-10 sm:px-6 lg:px-10">
+    <div className="page-container px-4 py-10 sm:px-6 lg:px-10">
       <Link
         to={backLink}
         className="inline-flex items-center gap-2 text-label text-text-muted transition-colors hover:text-primary"

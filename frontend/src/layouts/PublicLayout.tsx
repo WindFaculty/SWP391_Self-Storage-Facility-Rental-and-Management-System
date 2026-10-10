@@ -27,7 +27,7 @@ export const PublicLayout = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background text-text-main">
       <header className="sticky top-0 z-40 border-b border-border-hairline bg-surface/95 backdrop-blur">
-        <div className="mx-auto flex h-[72px] w-full max-w-[1200px] items-center justify-between gap-6 px-4 sm:px-6 lg:px-10">
+        <div className="page-container flex h-[72px] items-center justify-between gap-6 px-4 sm:px-6 lg:px-10">
           <Link to="/" className="flex items-center gap-2.5">
             <span className="flex size-8 items-center justify-center rounded-md bg-primary text-white">
               <Boxes className="size-4" aria-hidden="true" />
@@ -125,7 +125,7 @@ export const PublicLayout = () => {
       </main>
 
       <footer className="border-t border-border-hairline bg-surface">
-        <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-4 py-6 text-badge text-text-muted sm:px-6 lg:px-10">
+        <div className="page-container flex items-center justify-between px-4 py-6 text-badge text-text-muted sm:px-6 lg:px-10">
           <span>© 2026 Khoảng Thở — Hệ thống cho thuê kho tự lưu trữ (SWP391)</span>
         </div>
       </footer>

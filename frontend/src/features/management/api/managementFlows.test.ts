@@ -1,85 +1,36 @@
-import { describe, expect, it } from 'vitest'
-import { facilityStore, logStore } from '../../facility/api/opsStore'
-import {
-  createFacility,
-  getReportSummary,
-  setFacilityStatus,
-  updateBusinessPolicy,
-  updateFeeType,
-} from './managementApi'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { createFacility, getReportSummary, setFacilityStatus, updateBusinessPolicy } from './managementApi'
+import { updateUser } from '../../admin/api/adminApi'
 
-const VALID_POLICY = {
-  depositPercent: 100,
-  renewalNoticeDays: 7,
-  returnNoticeDays: 3,
-  overdueGraceDays: 3,
-  overdueFeePerDay: 20_000,
-  cancellationFee: 200_000,
-  maxDiscountPercent: 10,
+afterEach(() => vi.unstubAllGlobals())
+const respond = (data: unknown, status = 200) => {
+  const fetchStub = vi.fn().mockImplementation(() => Promise.resolve(new Response(JSON.stringify({ data, message: 'Backend rejected request' }), { status })))
+  vi.stubGlobal('fetch', fetchStub)
+  return fetchStub
 }
 
-describe('business policy updates', () => {
-  it('rejects invalid policy values', async () => {
-    await expect(updateBusinessPolicy({ ...VALID_POLICY, depositPercent: 250 }, 'Tester')).rejects.toThrow(
-      'Phần trăm cọc',
-    )
+describe('management HTTP integration', () => {
+  it('does not generate revenue when the server returns an empty report', async () => {
+    const report = { totalRevenue: 0, occupancyRate: 0, activeRentals: 0, overdueRentals: 0, revenuePoints: [], rows: [] }
+    const fetchStub = respond(report)
+    expect(await getReportSummary({ period: 'year', facilityId: null })).toEqual(report)
+    expect(fetchStub.mock.calls[0][0]).toBe('/api/v1/management/reports?period=year')
   })
-
-  it('saves a valid policy and appends an activity log', async () => {
-    const before = logStore.length
-    const updated = await updateBusinessPolicy({ ...VALID_POLICY, overdueGraceDays: 5 }, 'Lê Phương Mai')
-
-    expect(updated.overdueGraceDays).toBe(5)
-    expect(updated.updatedBy).toBe('Lê Phương Mai')
-    expect(updated.updatedAt).toBeTruthy()
-    expect(logStore).toHaveLength(before + 1)
-    expect(logStore[logStore.length - 1].action).toBe('POLICY_UPDATED')
+  it('creates and changes facility status using server endpoints', async () => {
+    const fetchStub = respond(null)
+    await createFacility({ code: 'TEST', name: 'Test', address: 'Test' })
+    await setFacilityStatus(7, 'INACTIVE')
+    expect(fetchStub.mock.calls.map(call => call[0])).toEqual(['/api/v1/management/facilities', '/api/v1/management/facilities/7/status'])
+    expect(fetchStub.mock.calls[1][1].method).toBe('PATCH')
   })
-
-  it('updates a fee type and logs the change', async () => {
-    const before = logStore.length
-    const updated = await updateFeeType(1, { name: 'Phôi khóa bổ sung', defaultAmount: 180_000, active: true }, 'Tester')
-    expect(updated.defaultAmount).toBe(180_000)
-    expect(logStore).toHaveLength(before + 1)
-    expect(logStore[logStore.length - 1].action).toBe('FEE_UPDATED')
+  it('sends policy values without a fabricated audit actor or IP', async () => {
+    const policy = { depositPercent: 50, renewalNoticeDays: 7, returnNoticeDays: 3, overdueGraceDays: 3, overdueFeePerDay: 0, cancellationFee: 0, maxDiscountPercent: 10 }
+    const fetchStub = respond(policy)
+    await updateBusinessPolicy(policy)
+    expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual(policy)
   })
-})
-
-describe('facility management', () => {
-  it('rejects duplicate facility codes', async () => {
-    await expect(
-      createFacility({ code: 'CS-HN-CG01', name: 'Trùng mã', address: 'X' }, 'Tester'),
-    ).rejects.toThrow('đã tồn tại')
-  })
-
-  it('creates a facility and can deactivate it without deleting', async () => {
-    const before = facilityStore.length
-    await createFacility({ code: 'cs-dn-hc99', name: 'Cơ sở Hải Châu', address: '12 Bạch Đằng' }, 'Tester')
-
-    expect(facilityStore).toHaveLength(before + 1)
-    const created = facilityStore[facilityStore.length - 1]
-    expect(created.code).toBe('CS-DN-HC99')
-    expect(created.status).toBe('ACTIVE')
-
-    await setFacilityStatus(created.id, 'INACTIVE', 'Tester')
-    expect(facilityStore.find((facility) => facility.id === created.id)?.status).toBe('INACTIVE')
-    expect(facilityStore).toHaveLength(before + 1)
-  })
-})
-
-describe('report summary', () => {
-  it('aggregates revenue and operations for the year period', async () => {
-    const summary = await getReportSummary({ period: 'year', facilityId: null })
-
-    expect(summary.rows.length).toBeGreaterThanOrEqual(4)
-    expect(summary.totalRevenue).toBeGreaterThan(0)
-    expect(summary.occupancyRate).toBeGreaterThan(0)
-    expect(summary.revenuePoints.length).toBeGreaterThan(0)
-  })
-
-  it('scopes the report to a single facility', async () => {
-    const summary = await getReportSummary({ period: 'halfYear', facilityId: 1 })
-    expect(summary.rows).toHaveLength(1)
-    expect(summary.rows[0].facilityId).toBe(1)
+  it('propagates backend protection of the last administrator', async () => {
+    respond(null, 409)
+    await expect(updateUser(1, { fullName: 'Test', email: 'test@example.invalid', phone: '', role: 'CUSTOMER', facilityId: null })).rejects.toThrow('Backend rejected request')
   })
 })

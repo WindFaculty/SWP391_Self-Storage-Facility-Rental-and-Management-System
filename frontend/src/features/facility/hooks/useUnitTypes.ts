@@ -11,7 +11,7 @@ export function useUnitTypes() {
       if (!cancelled) {
         setUnitTypes(types)
       }
-    })
+    }).catch(() => { /* Data remains empty when the backend is unavailable. */ })
     return () => {
       cancelled = true
     }

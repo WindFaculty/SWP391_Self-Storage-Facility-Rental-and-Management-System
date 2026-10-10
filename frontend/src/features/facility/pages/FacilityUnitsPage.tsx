@@ -78,6 +78,7 @@ export function FacilityUnitsPage() {
   const handleSubmit = async (input: StorageUnitInput) => {
     if (modal?.mode === 'edit') {
       const updated = await updateUnit(modal.unit.id, input)
+      setSelectedUnit(updated)
       setNotice(`Đã lưu thay đổi kho ${updated.unitCode}.`)
     } else {
       const created = await createUnit(input)

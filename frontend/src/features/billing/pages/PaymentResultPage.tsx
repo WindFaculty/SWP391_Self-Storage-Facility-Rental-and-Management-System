@@ -18,7 +18,7 @@ export const PaymentResultPage = () => {
 
   if (!reference) {
     return (
-      <section className="mx-auto w-full max-w-[640px] px-4 py-16 sm:px-6 lg:px-10">
+      <section className="page-container px-4 py-16 sm:px-6 lg:px-10">
         <EmptyState
           title="Không tìm thấy giao dịch"
           description="Đường dẫn kết quả thanh toán thiếu mã tham chiếu giao dịch."
@@ -32,7 +32,7 @@ export const PaymentResultPage = () => {
   const statusDisplay = attempt ? PAYMENT_ATTEMPT_STATUS_DISPLAY[attempt.status] : null;
 
   return (
-    <section className="mx-auto w-full max-w-[640px] px-4 py-16 sm:px-6 lg:px-10">
+    <section className="page-container px-4 py-16 sm:px-6 lg:px-10">
       <h1 className="text-page-title text-text-main">Kết quả thanh toán</h1>
       <p className="mt-2 text-table text-text-muted">
         Mã giao dịch: <strong className="text-text-main">{reference}</strong>

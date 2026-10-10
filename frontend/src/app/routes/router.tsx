@@ -21,7 +21,7 @@ function RequireRole({ roles, children }: { roles: UserRole[]; children: ReactNo
       <EmptyState
         icon="lock"
         title="Bạn không có quyền truy cập màn hình này."
-        description="Chuyển vai trò demo ở thanh bên trái để xem màn hình tương ứng."
+        description="Tài khoản hiện tại không có quyền sử dụng màn hình này."
       />
     )
   }
@@ -29,7 +29,7 @@ function RequireRole({ roles, children }: { roles: UserRole[]; children: ReactNo
 }
 
 const HOME_BY_ROLE: Record<UserRole, string> = {
-  CUSTOMER: '/facility/dashboard',
+  CUSTOMER: '/',
   FACILITY_STAFF: '/staff/operations',
   FACILITY_MANAGER: '/facility/dashboard',
   BUSINESS_MANAGER: '/operations/reports',

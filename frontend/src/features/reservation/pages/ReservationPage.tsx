@@ -153,7 +153,7 @@ export const ReservationPage = () => {
     const { rental, invoice } = holdResult;
     const rentalStatus = RENTAL_STATUS_DISPLAY[rental.status];
     return (
-      <section className="mx-auto w-full max-w-[720px] px-4 py-16 sm:px-6 lg:px-10">
+      <section className="page-container px-4 py-16 sm:px-6 lg:px-10">
         <div className="flex flex-col items-center gap-3 text-center">
           <CheckCircle2 className="size-10 text-success" aria-hidden="true" />
           <h1 className="text-page-title text-text-main">Đã giữ chỗ thành công</h1>
@@ -222,7 +222,7 @@ export const ReservationPage = () => {
   }
 
   return (
-    <section className="mx-auto w-full max-w-[900px] px-4 py-10 sm:px-6 lg:px-10">
+    <section className="page-container px-4 py-10 sm:px-6 lg:px-10">
       <h1 className="text-page-title text-text-main">Đặt kho</h1>
       <p className="mt-2 text-body text-text-muted">
         Hoàn tất 3 bước để giữ chỗ. Hệ thống kiểm tra lại tồn kho và gán kho cụ thể khi bạn xác

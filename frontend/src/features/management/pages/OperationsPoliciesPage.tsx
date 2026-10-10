@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSession } from '../../../app/providers/SessionProvider'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Modal } from '../../../components/ui/Modal'
@@ -63,7 +62,6 @@ function formatPolicyValue(key: keyof PolicyInput, value: number): string {
 }
 
 export function OperationsPoliciesPage() {
-  const { user } = useSession()
   const { policy, fees, loading, error, reload } = usePolicyData()
   const { unitTypes } = useUnitTypes()
   const [tab, setTab] = useState<TabId>('policy')
@@ -109,7 +107,7 @@ export function OperationsPoliciesPage() {
     setBusy(true)
     setActionError(null)
     try {
-      await updateBusinessPolicy(input, user.fullName)
+      await updateBusinessPolicy(input)
       setShowPreview(false)
       setNotice('Đã lưu chính sách kinh doanh và ghi nhật ký hoạt động.')
       await reload()
@@ -374,7 +372,7 @@ export function OperationsPoliciesPage() {
           fee={editingFee}
           onClose={() => setEditingFee(null)}
           onSubmit={async (input) => {
-            await updateFeeType(editingFee.id, input, user.fullName)
+            await updateFeeType(editingFee.id, input)
             setEditingFee(null)
             setNotice(`Đã cập nhật phụ phí ${editingFee.code}.`)
             await reload()

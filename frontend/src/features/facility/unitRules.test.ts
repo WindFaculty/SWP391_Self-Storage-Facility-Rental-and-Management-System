@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MOCK_UNIT_TYPES } from './api/mockData'
+const TEST_UNIT_TYPES = [{ id: 2, name: 'Test unit type', sizeM2: 5, minMonthlyPrice: 1_200_000, maxMonthlyPrice: 1_800_000 }]
 import { filterUnits, isStatusTransitionAllowed, requiresStatusReason, validateUnitInput } from './unitRules'
 import type { StorageUnit, StorageUnitInput, UnitFilters } from './types'
 
@@ -81,16 +81,16 @@ describe('validateUnitInput', () => {
   }
 
   it('accepts a valid input', () => {
-    expect(validateUnitInput(base, MOCK_UNIT_TYPES, [], null)).toEqual({})
+    expect(validateUnitInput(base, TEST_UNIT_TYPES, [], null)).toEqual({})
   })
 
   it('rejects a duplicate unit code within the same facility', () => {
-    const errors = validateUnitInput(base, MOCK_UNIT_TYPES, [makeUnit({ unitCode: '#24' })], null)
+    const errors = validateUnitInput(base, TEST_UNIT_TYPES, [makeUnit({ unitCode: '#24' })], null)
     expect(errors.unitCode).toBeTruthy()
   })
 
   it('rejects a price outside the unit type bounds', () => {
-    const errors = validateUnitInput({ ...base, monthlyPrice: 5_000_000 }, MOCK_UNIT_TYPES, [], null)
+    const errors = validateUnitInput({ ...base, monthlyPrice: 5_000_000 }, TEST_UNIT_TYPES, [], null)
     expect(errors.monthlyPrice).toBeTruthy()
   })
 })

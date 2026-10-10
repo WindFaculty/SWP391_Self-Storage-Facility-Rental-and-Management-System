@@ -1,75 +1,44 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { apiClient } from '../../../api/client'
 import { listUnits } from './facilityUnitsApi'
-import { rentalStore, taskStore, ticketStore } from './opsStore'
-import { completeHandover, completeReturn, completeUnitInspection, startTask } from './rentalOpsApi'
+import { completeHandover, completeReturn, completeUnitInspection } from './rentalOpsApi'
 import { assignTicket } from './supportTicketsApi'
 
-const ALL_UNIT_FILTERS = { search: '', unitTypeId: null, status: null, priceBand: null }
+afterEach(() => { apiClient.clearTokens(); vi.unstubAllGlobals() })
+const response = (data: unknown) => {
+  const fetchStub = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data }), { status: 200 }))
+  vi.stubGlobal('fetch', fetchStub)
+  return fetchStub
+}
 
-describe('support ticket assignment', () => {
-  it('assigns a ticket, creates a SUPPORT task and moves the ticket to IN_PROGRESS', async () => {
-    const before = taskStore.length
-    const result = await assignTicket({
-      facilityId: 1,
-      ticketId: 2,
-      staffId: 202,
-      scheduledAt: new Date().toISOString(),
-    })
-
-    expect(result.ticket.status).toBe('IN_PROGRESS')
-    expect(result.ticket.assignedStaffName).toBe('Trần Thị Mai')
-    expect(result.task.taskType).toBe('SUPPORT')
-    expect(result.task.ticketId).toBe(2)
-    expect(taskStore).toHaveLength(before + 1)
-
-    const storedTicket = ticketStore.find((ticket) => ticket.id === 2)
-    expect(storedTicket?.status).toBe('IN_PROGRESS')
+describe('operations HTTP integration', () => {
+  it('sends filters and bearer token without synthesizing units', async () => {
+    const fetchStub = response({ items: [], summary: { total: 0, byStatus: {} } })
+    apiClient.setToken('test-token')
+    const result = await listUnits({ facilityId: 7, search: 'A & B', unitTypeId: null, status: null, priceBand: null })
+    expect(result.items).toEqual([])
+    expect(fetchStub.mock.calls[0][0]).toBe('/api/v1/ops/units?facilityId=7&search=A+%26+B')
+    expect(fetchStub.mock.calls[0][1].headers.get('Authorization')).toBe('Bearer test-token')
   })
-
-  it('rejects assigning a ticket twice while a support task is open', async () => {
-    await expect(
-      assignTicket({
-        facilityId: 1,
-        ticketId: 2,
-        staffId: 201,
-        scheduledAt: new Date().toISOString(),
-      }),
-    ).rejects.toThrow('đang mở')
+  it.each([
+    ['handover', () => completeHandover(7, { accessMethod: 'KEY', handoverCondition: 'Test condition' }), { accessMethod: 'KEY', handoverCondition: 'Test condition' }],
+    ['return', () => completeReturn(7, { condition: 'Test return' }), { condition: 'Test return' }],
+    ['inspection', () => completeUnitInspection(7, { result: 'PASS', notes: 'Test inspection' }), { result: 'PASS', notes: 'Test inspection' }],
+  ] as const)('delegates %s atomically to the backend', async (action, run, body) => {
+    const fetchStub = response({ task: { id: 7 }, rental: { id: 9 } })
+    await run()
+    expect(fetchStub).toHaveBeenCalledTimes(1)
+    expect(fetchStub.mock.calls[0][0]).toBe('/api/v1/ops/tasks/7/' + action)
+    expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual(body)
   })
-})
-
-describe('return and inspection flows', () => {
-  it('completes return: rental -> RETURNED and unit -> INSPECTION', async () => {
-    const result = await completeReturn(3, { condition: 'Kho sạch, đã thu hồi thẻ truy cập.' })
-
-    expect(result.task.status).toBe('DONE')
-    expect(result.rental.status).toBe('RETURNED')
-    expect(result.rental.returnedAt).toBeTruthy()
-
-    const storedRental = rentalStore.find((rental) => rental.id === 8)
-    expect(storedRental?.status).toBe('RETURNED')
-
-    const units = await listUnits({ facilityId: 1, ...ALL_UNIT_FILTERS })
-    const unit = units.items.find((item) => item.id === result.rental.unitId)
-    expect(unit?.status).toBe('INSPECTION')
+  it('claims a ticket using the supplied authenticated staff ID', async () => {
+    const fetchStub = response({ ticket: { id: 3 }, task: { id: 4 } })
+    await assignTicket({ ticketId: 3, facilityId: 7, staffId: 215, scheduledAt: '2026-10-10T08:00:00Z' })
+    expect(fetchStub.mock.calls[0][0]).toBe('/api/v1/ops/tickets/3/assign')
+    expect(JSON.parse(fetchStub.mock.calls[0][1].body).staffId).toBe(215)
   })
-
-  it('blocks handover when the rental is not fully paid', async () => {
-    await startTask(2)
-    await expect(
-      completeHandover(2, { accessMethod: 'ACCESS_CARD', handoverCondition: 'Bàn giao thử.' }),
-    ).rejects.toThrow('Chưa thu đủ')
-  })
-
-  it('records a passed unit inspection: unit -> AVAILABLE', async () => {
-    await startTask(5)
-    const result = await completeUnitInspection(5, { result: 'PASS', notes: 'Kho đạt yêu cầu.' })
-
-    expect(result.task.status).toBe('DONE')
-    expect(result.task.notes).toContain('Đạt kiểm tra')
-
-    const units = await listUnits({ facilityId: 1, ...ALL_UNIT_FILTERS })
-    const unit = units.items.find((item) => item.id === result.rental.unitId)
-    expect(unit?.status).toBe('AVAILABLE')
+  it('propagates server rejection instead of locally reporting success', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: 'Payment required' }), { status: 409 })))
+    await expect(completeHandover(7, { accessMethod: 'KEY', handoverCondition: 'Test' })).rejects.toThrow('Payment required')
   })
 })

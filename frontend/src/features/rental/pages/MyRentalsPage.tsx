@@ -53,7 +53,7 @@ export const MyRentalsPage = () => {
   const visibleRentals = rentals.filter((rental) => matchesTab(rental, tab));
 
   return (
-    <section className="mx-auto w-full max-w-[900px] px-4 py-10 sm:px-6 lg:px-10">
+    <section className="page-container px-4 py-10 sm:px-6 lg:px-10">
       <h1 className="text-page-title text-text-main">Kho của tôi</h1>
       <p className="mt-2 text-body text-text-muted">
         Theo dõi đơn giữ chỗ, thanh toán, gia hạn và trả kho.

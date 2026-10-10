@@ -77,7 +77,7 @@ export function AdminSecurityPage() {
     setBusy(true)
     setActionError(null)
     try {
-      await setUserStatus(toggleTarget.id, nextStatus, sessionUser.id, sessionUser.fullName)
+      await setUserStatus(toggleTarget.id, nextStatus)
       setNotice(
         nextStatus === 'DISABLED'
           ? `Đã vô hiệu hóa tài khoản ${toggleTarget.email}.`
@@ -430,7 +430,6 @@ export function AdminSecurityPage() {
         <UserFormModal
           user={formUser === 'create' ? undefined : formUser}
           facilities={facilities}
-          actorName={sessionUser.fullName}
           onClose={() => setFormUser(null)}
           onSaved={async (message) => {
             setFormUser(null)
@@ -477,12 +476,11 @@ export function AdminSecurityPage() {
 interface UserFormModalProps {
   user?: AdminUser
   facilities: Array<{ id: number; name: string }>
-  actorName: string
   onClose: () => void
   onSaved: (message: string) => Promise<void>
 }
 
-function UserFormModal({ user, facilities, actorName, onClose, onSaved }: UserFormModalProps) {
+function UserFormModal({ user, facilities, onClose, onSaved }: UserFormModalProps) {
   const [fullName, setFullName] = useState(user?.fullName ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
   const [phone, setPhone] = useState(user?.phone ?? '')
@@ -511,10 +509,10 @@ function UserFormModal({ user, facilities, actorName, onClose, onSaved }: UserFo
     setSubmitting(true)
     try {
       if (user) {
-        await updateUser(user.id, input, actorName)
+        await updateUser(user.id, input)
         await onSaved(`Đã cập nhật tài khoản ${input.email}.`)
       } else {
-        const created = await createUser(input, actorName)
+        const created = await createUser(input)
         await onSaved(`Đã tạo tài khoản #${created.id} (${created.email}).`)
       }
     } catch (error) {

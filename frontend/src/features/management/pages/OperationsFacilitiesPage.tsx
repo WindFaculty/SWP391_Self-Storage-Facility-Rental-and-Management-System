@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useSession } from '../../../app/providers/SessionProvider'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Modal } from '../../../components/ui/Modal'
@@ -22,7 +22,7 @@ const INPUT_CLASS =
   'mt-space-xs w-full h-11 rounded-lg border border-border-hairline bg-surface px-space-md text-body-default text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring'
 
 export function OperationsFacilitiesPage() {
-  const { user } = useSession()
+  const queryClient = useQueryClient()
   const { overviews, loading, error, reload } = useFacilityOverviews()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL')
@@ -63,13 +63,14 @@ export function OperationsFacilitiesPage() {
 
   const handleFormSubmit = async (input: FacilityInput) => {
     if (form?.mode === 'edit') {
-      await updateFacility(form.facility.id, input, user.fullName)
+      await updateFacility(form.facility.id, input)
       setNotice(`Đã cập nhật cơ sở ${input.code.toUpperCase()}.`)
     } else {
-      await createFacility(input, user.fullName)
+      await createFacility(input)
       setNotice(`Đã tạo cơ sở ${input.code.toUpperCase()}.`)
     }
     setForm(null)
+    await queryClient.invalidateQueries({ queryKey: ['workspace-facilities'] })
     await reload()
   }
 
@@ -81,13 +82,14 @@ export function OperationsFacilitiesPage() {
     setBusy(true)
     setActionError(null)
     try {
-      await setFacilityStatus(confirmTarget.id, nextStatus, user.fullName)
+      await setFacilityStatus(confirmTarget.id, nextStatus)
       setNotice(
         nextStatus === 'INACTIVE'
           ? `Đã tạm dừng nhận khách mới tại ${confirmTarget.name}.`
           : `Đã kích hoạt lại ${confirmTarget.name}.`,
       )
       setConfirmTarget(null)
+      await queryClient.invalidateQueries({ queryKey: ['workspace-facilities'] })
       await reload()
     } catch (toggleError) {
       setActionError(toggleError instanceof Error ? toggleError.message : 'Không đổi được trạng thái.')

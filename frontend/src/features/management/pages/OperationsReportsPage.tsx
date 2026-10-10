@@ -201,7 +201,7 @@ export function OperationsReportsPage() {
           <div className="mt-space-lg grid grid-cols-2 xl:grid-cols-4 gap-space-md">
             <div
               className="bg-surface rounded-xl border border-border-hairline p-space-xl"
-              title="Tổng các khoản thanh toán thành công (mô phỏng) trong khoảng thời gian đã chọn."
+              title="Tổng các khoản thanh toán thành công trong khoảng thời gian đã chọn."
             >
               <p className="text-label-help text-text-muted">Doanh thu thực thu</p>
               <p className="mt-1 text-kpi-metric text-text-main tabular-nums">

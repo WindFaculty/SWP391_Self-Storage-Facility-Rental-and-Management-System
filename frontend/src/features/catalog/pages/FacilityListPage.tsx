@@ -94,7 +94,7 @@ export const FacilityListPage = () => {
   return (
     <div className="flex flex-col">
       <section className="border-b border-border-hairline bg-surface">
-        <div className="mx-auto w-full max-w-[1200px] px-4 py-10 sm:px-6 lg:px-10">
+        <div className="page-container px-4 py-10 sm:px-6 lg:px-10">
           <h1 className="font-serif text-[32px] leading-tight text-text-main sm:text-[38px]">
             Tìm không gian phù hợp.
           </h1>
@@ -124,7 +124,7 @@ export const FacilityListPage = () => {
       </section>
 
       <section className="sticky top-[72px] z-30 border-b border-border-hairline bg-background/95 py-4 backdrop-blur">
-        <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-10">
+        <div className="page-container px-4 sm:px-6 lg:px-10">
           <CatalogFilters
             facilities={activeFacilities}
             unitTypes={unitTypesQuery.data ?? []}
@@ -136,7 +136,7 @@ export const FacilityListPage = () => {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1200px] px-4 py-10 sm:px-6 lg:px-10">
+      <section className="page-container px-4 py-10 sm:px-6 lg:px-10">
         {availabilityQuery.isError ? (
           <div className="mb-6 flex items-center justify-between gap-4 rounded-md border border-warning-bg bg-warning-bg/60 px-4 py-3">
             <p className="text-table text-warning">

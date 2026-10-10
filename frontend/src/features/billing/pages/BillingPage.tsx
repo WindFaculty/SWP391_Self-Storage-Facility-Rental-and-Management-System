@@ -75,7 +75,7 @@ export const BillingPage = () => {
   };
 
   return (
-    <section className="mx-auto w-full max-w-[900px] px-4 py-10 sm:px-6 lg:px-10">
+    <section className="page-container px-4 py-10 sm:px-6 lg:px-10">
       <h1 className="text-page-title text-text-main">Thanh toán</h1>
       <p className="mt-2 text-body text-text-muted">
         Theo dõi hóa đơn tiền cọc, tiền thuê, gia hạn và phụ phí.

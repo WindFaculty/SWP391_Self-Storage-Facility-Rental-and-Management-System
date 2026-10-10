@@ -25,8 +25,8 @@ describe('merged app routes', () => {
     expect(await screen.findByRole('heading', { name: /Thêm chỗ cho cuộc sống/ })).toBeTruthy();
   });
 
-  it('serves the facility workspace dashboard at /facility/dashboard', async () => {
+  it('requires login before opening the facility workspace', async () => {
     renderAt('/facility/dashboard');
-    expect(await screen.findByRole('heading', { name: /Tổng quan cơ sở/ })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: /Chào mừng bạn quay lại/ })).toBeTruthy();
   });
 });

@@ -99,7 +99,7 @@ export function useStaffMembers(facilityId: number) {
       if (!cancelled) {
         setStaff(members)
       }
-    })
+    }).catch(() => { /* Data remains empty when the backend is unavailable. */ })
     return () => {
       cancelled = true
     }

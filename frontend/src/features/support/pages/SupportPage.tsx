@@ -88,7 +88,7 @@ export const SupportPage = () => {
   };
 
   return (
-    <section className="mx-auto w-full max-w-[900px] px-4 py-10 sm:px-6 lg:px-10">
+    <section className="page-container px-4 py-10 sm:px-6 lg:px-10">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-page-title text-text-main">Hỗ trợ</h1>

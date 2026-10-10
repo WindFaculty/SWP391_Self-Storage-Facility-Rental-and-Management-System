@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { DEMO_ROLES, ROLE_LABELS, useSession } from '../app/providers/SessionProvider'
+import { ROLE_LABELS, useSession } from '../app/providers/SessionProvider'
+import { useAuth } from '../features/auth/useAuth'
 import type { UserRole } from '../features/facility/types'
 
 interface MenuItem {
@@ -88,7 +89,8 @@ function initials(fullName: string): string {
 }
 
 export function WorkspaceSidebar() {
-  const { user, role, setRole } = useSession()
+  const { user } = useSession()
+  const { logout } = useAuth()
 
   const groups = MENU_GROUPS.map((group) => ({
     ...group,
@@ -156,23 +158,7 @@ export function WorkspaceSidebar() {
             <span className="text-[10px] text-text-muted leading-tight">{ROLE_LABELS[user.role]}</span>
           </div>
         </div>
-        <div>
-          <label htmlFor="demo-role" className="text-[10px] text-text-muted">
-            Vai trò (demo — thay bằng đăng nhập)
-          </label>
-          <select
-            id="demo-role"
-            value={role}
-            onChange={(event) => setRole(event.target.value as UserRole)}
-            className="mt-0.5 w-full h-8 rounded-md border border-border-hairline bg-surface-muted px-2 text-[11.5px] text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring"
-          >
-            {DEMO_ROLES.map((demoRole) => (
-              <option key={demoRole} value={demoRole}>
-                {ROLE_LABELS[demoRole]}
-              </option>
-            ))}
-          </select>
-        </div>
+        <button type="button" onClick={logout} className="w-full rounded-md px-3 py-2 text-left text-label-help text-text-muted hover:bg-surface-muted">Đăng xuất</button>
       </div>
     </aside>
   )

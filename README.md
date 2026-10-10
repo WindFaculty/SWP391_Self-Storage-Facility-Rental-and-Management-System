@@ -1,5 +1,7 @@
 # SWP391 — Self-Storage Facility Rental & Management System
 
+> Cập nhật: đã bỏ toàn bộ dữ liệu/store mock của frontend và phiên đổi vai trò demo. Workspace yêu cầu đăng nhập thật. Backend chưa merge; các API vận hành mới là adapter với endpoint dự kiến, cần đối chiếu sau merge. Xem [chuẩn bị tích hợp backend](docs/api/backend-integration-pending.md).
+
 Đồ án xây dựng hệ thống cho thuê và quản lý kho tự lưu trữ, phục vụ khách hàng, nhân viên cơ sở, quản lý cơ sở, quản lý kinh doanh và quản trị viên.
 
 ## Trạng thái hiện tại
