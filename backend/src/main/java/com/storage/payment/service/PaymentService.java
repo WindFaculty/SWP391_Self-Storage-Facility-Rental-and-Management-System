@@ -72,4 +72,9 @@ public class PaymentService {
     public List<PaymentAttempt> paymentHistory(Long rentalId) {
         return paymentAttemptRepository.findByRentalId(rentalId);
     }
+
+    @Transactional(readOnly = true)
+    public List<PaymentAttempt> attemptsOfInvoice(Long invoiceId) {
+        return paymentAttemptRepository.findByInvoiceIdOrderByCreatedAtDesc(invoiceId);
+    }
 }

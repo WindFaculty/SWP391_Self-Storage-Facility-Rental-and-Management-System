@@ -4,6 +4,8 @@ import com.storage.payment.entity.BusinessPolicy;
 import com.storage.payment.entity.Invoice;
 import com.storage.payment.repository.BusinessPolicyRepository;
 import com.storage.payment.repository.InvoiceRepository;
+import com.storage.shared.exception.ErrorCode;
+import com.storage.shared.exception.NotFoundException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -38,6 +40,12 @@ public class InvoiceService {
                     + policy.getMaxDiscountPercent() + "%");
         }
         return invoiceRepository.save(invoice);
+    }
+
+    @Transactional(readOnly = true)
+    public Invoice get(Long invoiceId) {
+        return invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.INVOICE_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

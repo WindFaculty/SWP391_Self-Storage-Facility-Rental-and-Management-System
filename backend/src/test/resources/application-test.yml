@@ -1,3 +1,9 @@
 logging:
   level:
     root: WARN
+
+vnpay:
+  tmn-code: TESTTMNCODE
+  hash-secret: test-hash-secret
+  pay-url: http://localhost:9999/pay
+  return-url: http://localhost:9999/return

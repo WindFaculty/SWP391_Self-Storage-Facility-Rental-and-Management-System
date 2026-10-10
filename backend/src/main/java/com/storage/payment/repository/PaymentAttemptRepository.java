@@ -15,6 +15,8 @@ public interface PaymentAttemptRepository extends JpaRepository<PaymentAttempt, 
 
     boolean existsByProviderReference(String providerReference);
 
+    List<PaymentAttempt> findByInvoiceIdOrderByCreatedAtDesc(Long invoiceId);
+
     @Query("select a from PaymentAttempt a, Invoice i "
             + "where a.invoiceId = i.id and i.rentalId = :rentalId "
             + "order by a.createdAt desc, a.id desc")

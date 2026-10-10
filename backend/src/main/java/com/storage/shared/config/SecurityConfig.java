@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/payments/vnpay/ipn", "/payments/vnpay/return").permitAll()
                         .requestMatchers(HttpMethod.GET, "/facilities", "/facilities/*",
                                 "/facilities/*/unit-types", "/facilities/*/available-units")
                         .permitAll()

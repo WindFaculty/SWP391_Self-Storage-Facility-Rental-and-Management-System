@@ -18,6 +18,8 @@ public enum ErrorCode {
     FACILITY_NOT_FOUND("FACILITY_NOT_FOUND", "Không tìm thấy cơ sở kho", HttpStatus.NOT_FOUND),
     UNIT_TYPE_NOT_FOUND("UNIT_TYPE_NOT_FOUND", "Không tìm thấy loại kho", HttpStatus.NOT_FOUND),
     STORAGE_UNIT_NOT_FOUND("STORAGE_UNIT_NOT_FOUND", "Không tìm thấy đơn vị kho", HttpStatus.NOT_FOUND),
+    INVOICE_NOT_FOUND("INVOICE_NOT_FOUND", "Không tìm thấy hóa đơn", HttpStatus.NOT_FOUND),
+    RENTAL_NOT_FOUND("RENTAL_NOT_FOUND", "Không tìm thấy hợp đồng thuê", HttpStatus.NOT_FOUND),
 
     INVALID_UNIT_STATUS_TRANSITION("INVALID_UNIT_STATUS_TRANSITION", "Chuyển trạng thái kho không hợp lệ", HttpStatus.BAD_REQUEST),
 
