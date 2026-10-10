@@ -1,6 +1,8 @@
 package com.storage.payment.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,6 +10,8 @@ import com.storage.payment.config.VnPayProperties;
 import com.storage.payment.entity.PaymentAttempt;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -64,6 +68,49 @@ class VnPayServiceTest {
     void rejectsIncompleteConfiguration() {
         assertThrows(IllegalStateException.class,
                 () -> new VnPayService(new VnPayProperties("", "secret", PAY_URL, RETURN_URL)));
+    }
+
+    @Test
+    void verifiesIpnChecksumAndRejectsTamperedParams() {
+        Map<String, String> params = new HashMap<>();
+        params.put("vnp_Amount", "9000");
+        params.put("vnp_BankCode", "NCB");
+        params.put("vnp_Command", "pay");
+        params.put("vnp_CreateDate", "20261010100000");
+        params.put("vnp_CurrCode", "VND");
+        params.put("vnp_ExpireDate", "20261010101500");
+        params.put("vnp_IpAddr", "127.0.0.1");
+        params.put("vnp_Locale", "vn");
+        params.put("vnp_OrderInfo", "Thanh toan hoa don 1");
+        params.put("vnp_OrderType", "other");
+        params.put("vnp_PayDate", "20261010100500");
+        params.put("vnp_ResponseCode", "00");
+        params.put("vnp_ReturnUrl", RETURN_URL);
+        params.put("vnp_TmnCode", "DEMOV210");
+        params.put("vnp_TransactionNo", "14226112");
+        params.put("vnp_TransactionStatus", "00");
+        params.put("vnp_TxnRef", "12345678");
+        params.put("vnp_Version", "2.1.0");
+        // Independently computed with .NET HMAC-SHA512 over the sorted, URL-encoded query string.
+        params.put("vnp_SecureHash",
+                "f98ef00d55325d47e73ec6db132665f03bf09b329aeb223af196d9691f51c85c65789ade58da6a941555b828c75d3477af49ae3a5374cdb85dd14f980e65878c");
+
+        assertTrue(vnPayService.verifyChecksum(params));
+
+        params.put("vnp_Amount", "8900");
+        assertFalse(vnPayService.verifyChecksum(params));
+    }
+
+    @Test
+    void rejectsMissingChecksum() {
+        assertFalse(vnPayService.verifyChecksum(Map.of("vnp_TxnRef", "12345678")));
+    }
+
+    @Test
+    void parsesPayDateInGmt7() {
+        assertEquals(Instant.parse("2026-10-10T03:05:00Z"),
+                vnPayService.parsePayDate("20261010100500"));
+        assertNull(vnPayService.parsePayDate(""));
     }
 
     private static PaymentAttempt attempt(BigDecimal amount) {

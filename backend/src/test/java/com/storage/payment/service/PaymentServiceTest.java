@@ -105,6 +105,23 @@ class PaymentServiceTest {
     }
 
     @Test
+    void gatewaySuccessAfterInvoiceCancelledRecordsAttemptOnly() {
+        Invoice invoice = pendingRentInvoice();
+        invoice.markCancelled();
+        PaymentAttempt attempt = PaymentAttempt.pending(
+                1L, new BigDecimal("90.00"), "VNPAY", "VNPAY-2");
+        when(paymentAttemptRepository.findByProviderReference("VNPAY-2"))
+                .thenReturn(Optional.of(attempt));
+        when(invoiceRepository.findById(1L)).thenReturn(Optional.of(invoice));
+
+        paymentService.handleGatewayResult("VNPAY-2", true,
+                Instant.parse("2026-10-10T10:00:00Z"));
+
+        assertEquals(PaymentAttempt.Status.SUCCESS, attempt.getStatus());
+        assertEquals(Invoice.Status.CANCELLED, invoice.getStatus());
+    }
+
+    @Test
     void gatewayFailureMarksAttemptFailed() {
         PaymentAttempt attempt = PaymentAttempt.pending(
                 1L, new BigDecimal("90.00"), "VNPAY", "VNPAY-1");

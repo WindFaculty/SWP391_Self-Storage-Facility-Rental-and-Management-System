@@ -103,6 +103,14 @@ public class Invoice {
         return true;
     }
 
+    public boolean markCancelled() {
+        if (status != Status.PENDING) {
+            return false;
+        }
+        status = Status.CANCELLED;
+        return true;
+    }
+
     public Long getId() {
         return id;
     }

@@ -6,9 +6,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.crypto.Mac;
@@ -40,7 +43,6 @@ public class VnPayService {
         this.properties = properties;
     }
 
-    // ponytail: sandbox URL builder; checksum verification for return/IPN callbacks is BE3-03.
     public String createPaymentUrl(PaymentAttempt attempt, String clientIp, Instant createdAt,
                                    Instant expiresAt) {
         if (attempt == null || attempt.getStatus() != PaymentAttempt.Status.PENDING) {
@@ -84,6 +86,39 @@ public class VnPayService {
 
         String secureHash = hmacSha512(properties.hashSecret(), hashData.toString());
         return properties.payUrl() + "?" + query + "vnp_SecureHash=" + secureHash;
+    }
+
+    public boolean verifyChecksum(Map<String, String> params) {
+        String received = params.get("vnp_SecureHash");
+        if (!StringUtils.hasText(received)) {
+            return false;
+        }
+        Map<String, String> fields = new TreeMap<>(params);
+        fields.remove("vnp_SecureHash");
+        fields.remove("vnp_SecureHashType");
+
+        StringBuilder hashData = new StringBuilder();
+        for (Map.Entry<String, String> param : fields.entrySet()) {
+            if (!StringUtils.hasText(param.getValue())) {
+                continue;
+            }
+            if (!hashData.isEmpty()) {
+                hashData.append('&');
+            }
+            hashData.append(param.getKey()).append('=')
+                    .append(URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8));
+        }
+
+        String expected = hmacSha512(properties.hashSecret(), hashData.toString());
+        return MessageDigest.isEqual(expected.getBytes(StandardCharsets.US_ASCII),
+                received.toLowerCase(Locale.ROOT).getBytes(StandardCharsets.US_ASCII));
+    }
+
+    public Instant parsePayDate(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return LocalDateTime.parse(value, VNPAY_DATE).atZone(VNPAY_ZONE).toInstant();
     }
 
     private static String hmacSha512(String secret, String data) {
