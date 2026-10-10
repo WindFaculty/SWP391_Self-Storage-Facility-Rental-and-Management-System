@@ -9,13 +9,13 @@ Dự án đang ở giai đoạn chuẩn bị kiến trúc và tài liệu thiế
 | Thành phần | Trạng thái |
 | --- | --- |
 | `backend/` | Khung thư mục Java; chưa có mã ứng dụng hoặc manifest build |
-| `frontend/` | Khung thư mục theo feature; chưa có mã ứng dụng hoặc `package.json` |
+| `frontend/` | Vite + React + TypeScript theo feature; có tokens, UI kit cơ bản, typed API client và auth UI (W2) |
 | `sql/` | Schema PostgreSQL và các sơ đồ ERD tham chiếu |
 | `stitch_self_storage_editorial_homepage_system/` | Bản mẫu giao diện React + Vite riêng tại máy local |
 | `docs/` | Thư mục dành cho tài liệu kiến trúc, API và vận hành |
 | `infra/` | Khung thư mục dành cho Docker, EC2 và Cloudflare |
 
-Các thư mục khung được giữ bằng `.gitkeep`. Backend và frontend chính chưa thể build hoặc chạy; chưa có API, migration MySQL, cấu hình kết nối database hay cấu hình triển khai.
+Các thư mục khung được giữ bằng `.gitkeep`. Frontend đã build và chạy được ở mức khung (routing, auth UI, design tokens, UI kit cơ bản); backend chưa có mã ứng dụng, chưa có API, migration MySQL hay cấu hình kết nối database.
 
 ## Phạm vi nghiệp vụ dự kiến
 
@@ -96,7 +96,17 @@ Migration MySQL khi triển khai sẽ nằm tại `backend/src/main/resources/db
 
 `src/features/` gồm `auth`, `catalog`, `reservation`, `rental`, `billing`, `support`, `staff`, `facility`, `management` và `admin`. Mỗi feature có `pages/`, `components/`, `api/`, `hooks/`.
 
-`src/app/` có `routes/` và `providers/`; component dùng chung nằm trong `src/components/ui/` và `src/components/domain/`. Các thư mục test gồm `unit/`, `integration/`, `e2e/`, chưa có test hoặc công cụ chạy test.
+`src/app/` có `routes/` và `providers/`; component dùng chung nằm trong `src/components/ui/` và `src/components/domain/`. Token thiết kế nằm tại `src/styles/tokens.css`; API client typed tại `src/api/client.ts`. Test hiện có Vitest (`npm test`) cạnh mã nguồn (`*.test.ts`); các thư mục `tests/unit`, `tests/integration`, `tests/e2e` dành cho test mở rộng sau này.
+
+Chạy frontend (cần Node.js 20.19+):
+
+```powershell
+cd frontend
+npm ci
+npm run dev
+```
+
+Kiểm tra chất lượng: `npm run lint` (oxlint), `npm run typecheck` (tsc), `npm test` (Vitest), `npm run build` (typecheck + Vite build). Vite dev proxy `/api/v1` tới `http://localhost:8088`; đặt `VITE_API_BASE_URL` khi trỏ tới môi trường khác.
 
 ## Xem bản mẫu giao diện Stitch
 

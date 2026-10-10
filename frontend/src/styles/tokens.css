@@ -1,0 +1,76 @@
+@theme {
+  --color-background: #f6f7f2;
+  --color-surface: #fffefa;
+  --color-surface-muted: #eef1e9;
+  --color-forest-900: #173c2d;
+  --color-forest-700: #24553e;
+  --color-forest-tint: #e2eee4;
+  --color-sage-500: #78907a;
+  --color-text-main: #202a24;
+  --color-text-muted: #5e6b61;
+  --color-border-hairline: #d9e1d7;
+  --color-border-strong: #b9c8b9;
+  --color-focus-ring: #3a795a;
+
+  --color-primary: #24553e;
+  --color-primary-hover: #173c2d;
+
+  --color-success: #24553e;
+  --color-success-bg: #e2eee4;
+  --color-warning: #80551e;
+  --color-warning-bg: #fff1d9;
+  --color-danger: #943b31;
+  --color-danger-bg: #fce8e5;
+  --color-info: #315c71;
+  --color-info-bg: #e8f1f6;
+  --color-neutral-strong: #526158;
+  --color-neutral-bg: #ebefeb;
+
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-serif: "Noto Serif", Georgia, serif;
+
+  --text-hero: 48px;
+  --text-hero--line-height: 58px;
+  --text-hero--letter-spacing: -0.01em;
+  --text-hero--font-weight: 600;
+  --text-page-title: 30px;
+  --text-page-title--line-height: 40px;
+  --text-page-title--letter-spacing: -0.02em;
+  --text-page-title--font-weight: 600;
+  --text-section-title: 22px;
+  --text-section-title--line-height: 30px;
+  --text-section-title--letter-spacing: -0.01em;
+  --text-section-title--font-weight: 600;
+  --text-subsection: 17px;
+  --text-subsection--line-height: 26px;
+  --text-subsection--font-weight: 600;
+  --text-body: 15px;
+  --text-body--line-height: 24px;
+  --text-body--font-weight: 400;
+  --text-body-medium: 15px;
+  --text-body-medium--line-height: 24px;
+  --text-body-medium--font-weight: 500;
+  --text-table: 14px;
+  --text-table--line-height: 22px;
+  --text-table--font-weight: 400;
+  --text-label: 13px;
+  --text-label--line-height: 20px;
+  --text-label--font-weight: 500;
+  --text-badge: 12px;
+  --text-badge--line-height: 16px;
+  --text-badge--font-weight: 500;
+  --text-kpi: 30px;
+  --text-kpi--line-height: 36px;
+  --text-kpi--letter-spacing: -0.02em;
+  --text-kpi--font-weight: 600;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  --shadow-raised: 0 10px 30px rgb(23 60 45 / 8%);
+  --shadow-popover: 0 18px 48px rgb(23 60 45 / 12%);
+
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
