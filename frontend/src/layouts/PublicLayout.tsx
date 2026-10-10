@@ -1,7 +1,13 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Boxes, LogOut } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useAuth } from '../features/auth/useAuth';
+import { cn } from '../lib/cn';
+
+const NAV_LINKS = [
+  { to: '/', label: 'Trang chủ', end: true },
+  { to: '/facilities', label: 'Tìm kho & Cơ sở', end: false },
+];
 
 export const PublicLayout = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -29,6 +35,26 @@ export const PublicLayout = () => {
               </span>
             </span>
           </Link>
+
+          <nav className="hidden items-center gap-1 md:flex">
+            {NAV_LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  cn(
+                    'rounded-md px-3 py-1.5 text-label transition-colors',
+                    isActive
+                      ? 'bg-forest-tint font-semibold text-primary'
+                      : 'text-text-muted hover:bg-surface-muted hover:text-text-main',
+                  )
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
 
           <div className="flex items-center gap-3">
             {isAuthenticated && user ? (

@@ -9,13 +9,13 @@ Dự án đang ở giai đoạn chuẩn bị kiến trúc và tài liệu thiế
 | Thành phần | Trạng thái |
 | --- | --- |
 | `backend/` | Khung thư mục Java; chưa có mã ứng dụng hoặc manifest build |
-| `frontend/` | Vite + React + TypeScript theo feature; có tokens, UI kit cơ bản, typed API client và auth UI (W2) |
+| `frontend/` | Vite + React + TypeScript theo feature; tokens, UI kit, typed API client, auth UI và catalog kho (FE1-02/03) |
 | `sql/` | Schema PostgreSQL và các sơ đồ ERD tham chiếu |
 | `stitch_self_storage_editorial_homepage_system/` | Bản mẫu giao diện React + Vite riêng tại máy local |
 | `docs/` | Thư mục dành cho tài liệu kiến trúc, API và vận hành |
 | `infra/` | Khung thư mục dành cho Docker, EC2 và Cloudflare |
 
-Các thư mục khung được giữ bằng `.gitkeep`. Frontend đã build và chạy được ở mức khung (routing, auth UI, design tokens, UI kit cơ bản); backend chưa có mã ứng dụng, chưa có API, migration MySQL hay cấu hình kết nối database.
+Các thư mục khung được giữ bằng `.gitkeep`. Frontend đã build và chạy được ở mức khung (routing, auth UI, catalog kho theo ngày, design tokens, UI kit cơ bản); backend chưa có mã ứng dụng, chưa có API, migration MySQL hay cấu hình kết nối database.
 
 ## Phạm vi nghiệp vụ dự kiến
 
