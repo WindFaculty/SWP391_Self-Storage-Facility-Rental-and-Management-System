@@ -4,6 +4,7 @@ export type RentalStatus =
   | 'PENDING_PAYMENT'
   | 'RESERVED'
   | 'ACTIVE'
+  | 'RETURN_REQUESTED'
   | 'OVERDUE'
   | 'RETURNED'
   | 'CANCELLED';
@@ -36,4 +37,22 @@ export interface HoldRequest {
 export interface HoldResponse {
   rental: Rental;
   invoice?: InvoiceSummary | null;
+}
+
+export interface RenewalRequest {
+  additionalMonths: number;
+}
+
+export interface RenewalResponse {
+  rental: Rental;
+  invoice?: InvoiceSummary | null;
+}
+
+export interface ReturnRequestPayload {
+  requestedDate?: string;
+  note?: string;
+}
+
+export interface ReturnResponse {
+  rental: Rental;
 }

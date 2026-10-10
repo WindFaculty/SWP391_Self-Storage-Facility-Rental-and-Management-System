@@ -3,12 +3,14 @@ import { ProtectedRoute } from '../../components/guards/ProtectedRoute';
 import { PublicLayout } from '../../layouts/PublicLayout';
 import { AuthPage } from '../../features/auth/pages/AuthPage';
 import { ForbiddenPage } from '../../features/auth/pages/ForbiddenPage';
+import { BillingPage } from '../../features/billing/pages/BillingPage';
 import { PaymentResultPage } from '../../features/billing/pages/PaymentResultPage';
 import { FacilityDetailPage } from '../../features/catalog/pages/FacilityDetailPage';
 import { FacilityListPage } from '../../features/catalog/pages/FacilityListPage';
 import { HomePage } from '../../features/catalog/pages/HomePage';
 import { MyRentalsPage } from '../../features/rental/pages/MyRentalsPage';
 import { ReservationPage } from '../../features/reservation/pages/ReservationPage';
+import { SupportPage } from '../../features/support/pages/SupportPage';
 import { NotFoundPage } from './NotFoundPage';
 
 export const AppRoutes = () => (
@@ -24,6 +26,22 @@ export const AppRoutes = () => (
         element={
           <ProtectedRoute>
             <MyRentalsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/billing"
+        element={
+          <ProtectedRoute>
+            <BillingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/support"
+        element={
+          <ProtectedRoute>
+            <SupportPage />
           </ProtectedRoute>
         }
       />

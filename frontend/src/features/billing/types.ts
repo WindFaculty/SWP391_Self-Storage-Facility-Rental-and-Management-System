@@ -1,5 +1,7 @@
 export type InvoiceStatus = 'PENDING' | 'PAID' | 'CANCELLED' | 'EXPIRED';
 
+export type InvoiceType = 'DEPOSIT' | 'RENT' | 'RENEWAL' | 'EXTRA' | 'OVERDUE';
+
 export interface InvoiceSummary {
   id: string;
   status: InvoiceStatus;
@@ -7,6 +9,12 @@ export interface InvoiceSummary {
   depositAmount?: number | null;
   totalAmount: number;
   dueAt?: string | null;
+}
+
+export interface Invoice extends InvoiceSummary {
+  rentalId: string;
+  type: InvoiceType;
+  issuedAt?: string | null;
 }
 
 export type PaymentAttemptStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'RECONCILING';

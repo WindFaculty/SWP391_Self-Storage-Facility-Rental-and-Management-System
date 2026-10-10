@@ -9,7 +9,7 @@ Dự án đang ở giai đoạn chuẩn bị kiến trúc và tài liệu thiế
 | Thành phần | Trạng thái |
 | --- | --- |
 | `backend/` | Khung thư mục Java; chưa có mã ứng dụng hoặc manifest build |
-| `frontend/` | Vite + React + TypeScript theo feature; tokens, UI kit, typed API client, auth, catalog, đặt chỗ + kết quả VNPay (FE1-02→04) |
+| `frontend/` | Vite + React + TypeScript theo feature; tokens, UI kit, typed API client; FE1 customer app đủ luồng cơ bản (FE1-02→05) |
 | `sql/` | Schema PostgreSQL và các sơ đồ ERD tham chiếu |
 | `stitch_self_storage_editorial_homepage_system/` | Bản mẫu giao diện React + Vite riêng tại máy local |
 | `docs/` | Thư mục dành cho tài liệu kiến trúc, API và vận hành |

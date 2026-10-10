@@ -8,6 +8,8 @@ const NAV_LINKS = [
   { to: '/', label: 'Trang chủ', end: true },
   { to: '/facilities', label: 'Tìm kho & Cơ sở', end: false },
   { to: '/my-rentals', label: 'Kho của tôi', end: false },
+  { to: '/billing', label: 'Thanh toán', end: false },
+  { to: '/support', label: 'Hỗ trợ', end: false },
 ];
 
 export const PublicLayout = () => {
