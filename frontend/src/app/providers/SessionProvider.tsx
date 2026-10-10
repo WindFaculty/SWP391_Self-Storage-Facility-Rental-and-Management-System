@@ -44,10 +44,18 @@ interface SessionValue {
 
 const SessionContext = createContext<SessionValue | null>(null)
 
-export function SessionProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>('FACILITY_MANAGER')
+export function SessionProvider({
+  children,
+  initialRole = 'FACILITY_MANAGER',
+}: {
+  children: ReactNode
+  initialRole?: UserRole
+}) {
+  const [role, setRole] = useState<UserRole>(initialRole)
   const [facilities, setFacilities] = useState<Facility[]>([])
-  const [activeFacilityId, setActiveFacilityId] = useState<number | null>(MOCK_USERS.FACILITY_MANAGER.facilityId)
+  const [activeFacilityId, setActiveFacilityId] = useState<number | null>(
+    MOCK_USERS[initialRole].facilityId,
+  )
 
   const user = MOCK_USERS[role]
 

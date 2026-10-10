@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { AdminSecurityPage } from '../../features/admin/pages/AdminSecurityPage'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -41,7 +41,7 @@ function HomeRedirect() {
   return <Navigate to={HOME_BY_ROLE[user.role]} replace />
 }
 
-export const router = createBrowserRouter([
+export const appRoutes: RouteObject[] = [
   {
     path: '/',
     element: <WorkspaceLayout />,
@@ -114,4 +114,6 @@ export const router = createBrowserRouter([
       { path: '*', element: <NotBuiltPage title="Không tìm thấy trang" /> },
     ],
   },
-])
+]
+
+export const router = createBrowserRouter(appRoutes)
