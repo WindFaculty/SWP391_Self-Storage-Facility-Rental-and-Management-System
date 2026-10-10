@@ -5,6 +5,8 @@ services:
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-storage_local}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_APP_USER:-storage}
+      MYSQL_PASSWORD: ${MYSQL_APP_PASSWORD:?set MYSQL_APP_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -19,9 +21,13 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: local
       DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-storage_local}?connectionTimeZone=UTC
-      DB_USERNAME: root
-      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_USERNAME: ${MYSQL_APP_USER:-storage}
+      DB_PASSWORD: ${MYSQL_APP_PASSWORD:?set MYSQL_APP_PASSWORD}
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      VNPAY_TMN_CODE: ${VNPAY_TMN_CODE:-local-dev-tmn-code}
+      VNPAY_HASH_SECRET: ${VNPAY_HASH_SECRET:-local-dev-hash-secret-change-me}
+      VNPAY_PAY_URL: ${VNPAY_PAY_URL:-https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+      VNPAY_RETURN_URL: ${VNPAY_RETURN_URL:-http://localhost:8080/api/v1/payments/vnpay/return}
     ports:
       - "8080:8080"
     depends_on:
