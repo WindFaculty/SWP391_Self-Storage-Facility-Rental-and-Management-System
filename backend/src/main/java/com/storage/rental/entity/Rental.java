@@ -14,6 +14,9 @@ public class Rental {
     private final BigDecimal pricePerMonth;
     private final Instant paymentExpiresAt;
     private RentalStatus status;
+    private Instant checkedInAt;
+    private AccessMethod accessMethod;
+    private String handoverCondition;
 
     private Rental(Long customerId, Long unitId, LocalDate startDate, LocalDate endDate,
                    BigDecimal pricePerMonth, Instant paymentExpiresAt) {
@@ -50,6 +53,15 @@ public class Rental {
         return startDate.isBefore(otherEnd) && otherStart.isBefore(endDate);
     }
 
+    public void checkIn(Instant at, AccessMethod accessMethod, String handoverCondition) {
+        Objects.requireNonNull(at, "at");
+        Objects.requireNonNull(accessMethod, "accessMethod");
+        transitionTo(RentalStatus.ACTIVE);
+        this.checkedInAt = at;
+        this.accessMethod = accessMethod;
+        this.handoverCondition = handoverCondition;
+    }
+
     public Long getCustomerId() {
         return customerId;
     }
@@ -76,5 +88,17 @@ public class Rental {
 
     public RentalStatus getStatus() {
         return status;
+    }
+
+    public Instant getCheckedInAt() {
+        return checkedInAt;
+    }
+
+    public AccessMethod getAccessMethod() {
+        return accessMethod;
+    }
+
+    public String getHandoverCondition() {
+        return handoverCondition;
     }
 }
