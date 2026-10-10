@@ -13,7 +13,8 @@ import type {
   UnitSummary,
   UnitType,
 } from '../types'
-import { MOCK_FACILITIES, MOCK_STORAGE_UNITS, MOCK_UNIT_TYPES } from './mockData'
+import { MOCK_STORAGE_UNITS, MOCK_UNIT_TYPES } from './mockData'
+import { facilityStore } from './opsStore'
 
 const LATENCY_MS = 150
 
@@ -33,7 +34,7 @@ export function setMockUnitStatus(unitId: number, status: UnitStatus): void {
 
 export async function listFacilities(): Promise<Facility[]> {
   await delay()
-  return MOCK_FACILITIES.map((facility) => ({ ...facility }))
+  return facilityStore.map((facility) => ({ ...facility }))
 }
 
 export async function listUnitTypes(): Promise<UnitType[]> {

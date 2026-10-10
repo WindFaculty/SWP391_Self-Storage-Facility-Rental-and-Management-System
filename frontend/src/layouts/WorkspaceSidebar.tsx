@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { useSession } from '../app/providers/SessionProvider'
+import { DEMO_ROLES, ROLE_LABELS, useSession } from '../app/providers/SessionProvider'
 import type { UserRole } from '../features/facility/types'
 
 interface MenuItem {
@@ -78,14 +78,6 @@ const MENU_GROUPS: MenuGroup[] = [
   },
 ]
 
-const ROLE_LABELS: Record<UserRole, string> = {
-  CUSTOMER: 'Khách hàng',
-  FACILITY_STAFF: 'Nhân viên cơ sở',
-  FACILITY_MANAGER: 'Quản lý cơ sở',
-  BUSINESS_MANAGER: 'Quản lý kinh doanh',
-  ADMIN: 'Quản trị hệ thống',
-}
-
 function initials(fullName: string): string {
   return fullName
     .trim()
@@ -96,7 +88,7 @@ function initials(fullName: string): string {
 }
 
 export function WorkspaceSidebar() {
-  const { user } = useSession()
+  const { user, role, setRole } = useSession()
 
   const groups = MENU_GROUPS.map((group) => ({
     ...group,
@@ -154,7 +146,7 @@ export function WorkspaceSidebar() {
         </div>
       </div>
 
-      <div className="p-3 border-t border-border-hairline bg-surface">
+      <div className="p-3 border-t border-border-hairline bg-surface space-y-2">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary text-[12px] font-bold">
             {initials(user.fullName)}
@@ -163,6 +155,23 @@ export function WorkspaceSidebar() {
             <span className="text-[12px] font-semibold text-text-main leading-tight">{user.fullName}</span>
             <span className="text-[10px] text-text-muted leading-tight">{ROLE_LABELS[user.role]}</span>
           </div>
+        </div>
+        <div>
+          <label htmlFor="demo-role" className="text-[10px] text-text-muted">
+            Vai trò (demo — thay bằng đăng nhập)
+          </label>
+          <select
+            id="demo-role"
+            value={role}
+            onChange={(event) => setRole(event.target.value as UserRole)}
+            className="mt-0.5 w-full h-8 rounded-md border border-border-hairline bg-surface-muted px-2 text-[11.5px] text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring"
+          >
+            {DEMO_ROLES.map((demoRole) => (
+              <option key={demoRole} value={demoRole}>
+                {ROLE_LABELS[demoRole]}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </aside>

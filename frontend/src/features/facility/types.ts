@@ -179,3 +179,14 @@ export interface TicketFilters {
   status: TicketStatus | null
   search: string
 }
+
+export interface ActivityLog {
+  id: number
+  actorName: string
+  action: string
+  entityType: string | null
+  entityId: number | null
+  detail: string
+  ipAddress: string
+  createdAt: string
+}

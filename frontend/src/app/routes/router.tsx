@@ -1,8 +1,13 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { AdminSecurityPage } from '../../features/admin/pages/AdminSecurityPage'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { FacilityDashboardPage } from '../../features/facility/pages/FacilityDashboardPage'
 import { FacilityRentalsPage } from '../../features/facility/pages/FacilityRentalsPage'
 import { FacilityUnitsPage } from '../../features/facility/pages/FacilityUnitsPage'
+import { OperationsFacilitiesPage } from '../../features/management/pages/OperationsFacilitiesPage'
+import { OperationsPoliciesPage } from '../../features/management/pages/OperationsPoliciesPage'
+import { OperationsReportsPage } from '../../features/management/pages/OperationsReportsPage'
 import { StaffOperationsPage } from '../../features/staff/pages/StaffOperationsPage'
 import type { UserRole } from '../../features/facility/types'
 import { WorkspaceLayout } from '../../layouts/WorkspaceLayout'
@@ -16,11 +21,24 @@ function RequireRole({ roles, children }: { roles: UserRole[]; children: ReactNo
       <EmptyState
         icon="lock"
         title="Bạn không có quyền truy cập màn hình này."
-        description="Liên hệ quản trị hệ thống nếu bạn cần được cấp quyền."
+        description="Chuyển vai trò demo ở thanh bên trái để xem màn hình tương ứng."
       />
     )
   }
   return <>{children}</>
+}
+
+const HOME_BY_ROLE: Record<UserRole, string> = {
+  CUSTOMER: '/facility/dashboard',
+  FACILITY_STAFF: '/staff/operations',
+  FACILITY_MANAGER: '/facility/dashboard',
+  BUSINESS_MANAGER: '/operations/reports',
+  ADMIN: '/admin/security',
+}
+
+function HomeRedirect() {
+  const { user } = useSession()
+  return <Navigate to={HOME_BY_ROLE[user.role]} replace />
 }
 
 export const router = createBrowserRouter([
@@ -28,7 +46,15 @@ export const router = createBrowserRouter([
     path: '/',
     element: <WorkspaceLayout />,
     children: [
-      { index: true, element: <Navigate to="/facility/units" replace /> },
+      { index: true, element: <HomeRedirect /> },
+      {
+        path: 'facility/dashboard',
+        element: (
+          <RequireRole roles={['FACILITY_MANAGER']}>
+            <FacilityDashboardPage />
+          </RequireRole>
+        ),
+      },
       {
         path: 'facility/units',
         element: (
@@ -37,7 +63,6 @@ export const router = createBrowserRouter([
           </RequireRole>
         ),
       },
-      { path: 'facility/dashboard', element: <NotBuiltPage title="Tổng quan cơ sở" /> },
       {
         path: 'facility/rentals',
         element: (
@@ -54,10 +79,38 @@ export const router = createBrowserRouter([
           </RequireRole>
         ),
       },
-      { path: 'operations/facilities', element: <NotBuiltPage title="Mạng lưới cơ sở" /> },
-      { path: 'operations/policies', element: <NotBuiltPage title="Chính sách & Bảng phí" /> },
-      { path: 'operations/reports', element: <NotBuiltPage title="Báo cáo toàn mạng" /> },
-      { path: 'admin/security', element: <NotBuiltPage title="Quản trị & Bảo mật" /> },
+      {
+        path: 'operations/facilities',
+        element: (
+          <RequireRole roles={['BUSINESS_MANAGER']}>
+            <OperationsFacilitiesPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'operations/policies',
+        element: (
+          <RequireRole roles={['BUSINESS_MANAGER']}>
+            <OperationsPoliciesPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'operations/reports',
+        element: (
+          <RequireRole roles={['BUSINESS_MANAGER']}>
+            <OperationsReportsPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'admin/security',
+        element: (
+          <RequireRole roles={['ADMIN']}>
+            <AdminSecurityPage />
+          </RequireRole>
+        ),
+      },
       { path: '*', element: <NotBuiltPage title="Không tìm thấy trang" /> },
     ],
   },

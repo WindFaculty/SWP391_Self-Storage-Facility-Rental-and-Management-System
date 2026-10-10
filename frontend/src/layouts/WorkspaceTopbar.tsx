@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useSession } from '../app/providers/SessionProvider'
+import { ROLE_LABELS, useSession } from '../app/providers/SessionProvider'
 
 const PAGE_META: Record<string, { title: string; category: string }> = {
   '/facility/dashboard': { title: 'Tổng quan cơ sở', category: 'Cơ sở vận hành' },
@@ -97,7 +97,7 @@ export function WorkspaceTopbar() {
       <div className="flex items-center gap-2.5">
         <div className="hidden md:flex flex-col text-right">
           <span className="text-[12.5px] font-semibold text-text-main leading-tight">{user.fullName}</span>
-          <span className="text-[10.5px] text-text-muted leading-tight">Quản lý cơ sở</span>
+          <span className="text-[10.5px] text-text-muted leading-tight">{ROLE_LABELS[user.role]}</span>
         </div>
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary text-[12px] font-bold">
           {user.fullName.split(/\s+/).slice(-1)[0]?.charAt(0).toUpperCase()}

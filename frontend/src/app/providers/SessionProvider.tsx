@@ -9,26 +9,47 @@ export interface SessionUser {
   facilityId: number | null
 }
 
+export const ROLE_LABELS: Record<UserRole, string> = {
+  CUSTOMER: 'Khách hàng',
+  FACILITY_STAFF: 'Nhân viên cơ sở',
+  FACILITY_MANAGER: 'Quản lý cơ sở',
+  BUSINESS_MANAGER: 'Quản lý kinh doanh',
+  ADMIN: 'Quản trị hệ thống',
+}
+
+const MOCK_USERS: Record<UserRole, SessionUser> = {
+  CUSTOMER: { id: 840, fullName: 'Nguyễn Minh Quân', role: 'CUSTOMER', facilityId: null },
+  FACILITY_STAFF: { id: 215, fullName: 'Vũ Thu Thảo', role: 'FACILITY_STAFF', facilityId: 1 },
+  FACILITY_MANAGER: { id: 108, fullName: 'Lê Hoàng Nam', role: 'FACILITY_MANAGER', facilityId: 1 },
+  BUSINESS_MANAGER: { id: 42, fullName: 'Lê Phương Mai', role: 'BUSINESS_MANAGER', facilityId: null },
+  ADMIN: { id: 1, fullName: 'Trần Hoàng Nam', role: 'ADMIN', facilityId: null },
+}
+
+export const DEMO_ROLES: UserRole[] = [
+  'FACILITY_STAFF',
+  'FACILITY_MANAGER',
+  'BUSINESS_MANAGER',
+  'ADMIN',
+]
+
 interface SessionValue {
   user: SessionUser
+  role: UserRole
+  setRole: (role: UserRole) => void
   facilities: Facility[]
   facilitiesInScope: Facility[]
   activeFacilityId: number | null
   setActiveFacilityId: (facilityId: number) => void
 }
 
-const MOCK_USER: SessionUser = {
-  id: 108,
-  fullName: 'Lê Hoàng Nam',
-  role: 'FACILITY_MANAGER',
-  facilityId: 1,
-}
-
 const SessionContext = createContext<SessionValue | null>(null)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
+  const [role, setRole] = useState<UserRole>('FACILITY_MANAGER')
   const [facilities, setFacilities] = useState<Facility[]>([])
-  const [activeFacilityId, setActiveFacilityId] = useState<number | null>(MOCK_USER.facilityId)
+  const [activeFacilityId, setActiveFacilityId] = useState<number | null>(MOCK_USERS.FACILITY_MANAGER.facilityId)
+
+  const user = MOCK_USERS[role]
 
   useEffect(() => {
     let cancelled = false
@@ -43,11 +64,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const facilitiesInScope = useMemo(() => {
-    if (MOCK_USER.role === 'FACILITY_MANAGER' || MOCK_USER.role === 'FACILITY_STAFF') {
-      return facilities.filter((facility) => facility.id === MOCK_USER.facilityId)
+    if (user.role === 'FACILITY_MANAGER' || user.role === 'FACILITY_STAFF') {
+      return facilities.filter((facility) => facility.id === user.facilityId)
     }
-    return facilities
-  }, [facilities])
+    return facilities.filter((facility) => facility.status === 'ACTIVE')
+  }, [facilities, user])
 
   useEffect(() => {
     if (
@@ -60,13 +81,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
-      user: MOCK_USER,
+      user,
+      role,
+      setRole,
       facilities,
       facilitiesInScope,
       activeFacilityId,
       setActiveFacilityId,
     }),
-    [facilities, facilitiesInScope, activeFacilityId],
+    [user, role, facilities, facilitiesInScope, activeFacilityId],
   )
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
