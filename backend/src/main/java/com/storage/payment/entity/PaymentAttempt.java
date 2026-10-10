@@ -33,6 +33,9 @@ public class PaymentAttempt {
     @Column(name = "provider_reference", length = 120)
     private String providerReference;
 
+    @Column(name = "gateway_transaction_no", length = 120)
+    private String gatewayTransactionNo;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 12)
     private Status status;
@@ -58,12 +61,13 @@ public class PaymentAttempt {
         return attempt;
     }
 
-    public boolean succeed(Instant paidAt) {
+    public boolean succeed(Instant paidAt, String gatewayTransactionNo) {
         if (status != Status.PENDING) {
             return false;
         }
         status = Status.SUCCESS;
         this.paidAt = paidAt;
+        this.gatewayTransactionNo = gatewayTransactionNo;
         return true;
     }
 
@@ -93,6 +97,10 @@ public class PaymentAttempt {
 
     public String getProviderReference() {
         return providerReference;
+    }
+
+    public String getGatewayTransactionNo() {
+        return gatewayTransactionNo;
     }
 
     public Status getStatus() {

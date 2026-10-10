@@ -49,7 +49,8 @@ public class VnPayIpnService {
             // ponytail: success on an invoice that is no longer PENDING (late IPN) still records the
             // attempt; reconcile/refund queue arrives with BE3-05 and the querydr API in BE3-03.
             paymentService.handleGatewayResult(txnRef, succeeded,
-                    vnPayService.parsePayDate(params.get("vnp_PayDate")));
+                    vnPayService.parsePayDate(params.get("vnp_PayDate")),
+                    params.get("vnp_TransactionNo"));
             return rsp("00", "Confirm Success");
         } catch (Exception e) {
             return rsp("99", "Unknown error");

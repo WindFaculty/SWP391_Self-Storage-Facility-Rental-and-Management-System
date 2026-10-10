@@ -14,6 +14,7 @@ import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,13 +92,14 @@ class PaymentServiceTest {
         when(invoiceRepository.findById(1L)).thenReturn(Optional.of(invoice));
         Instant paidAt = Instant.parse("2026-10-10T10:00:00Z");
 
-        paymentService.handleGatewayResult("VNPAY-1", true, paidAt);
+        paymentService.handleGatewayResult("VNPAY-1", true, paidAt, "14226112");
 
         assertEquals(PaymentAttempt.Status.SUCCESS, attempt.getStatus());
         assertEquals(paidAt, attempt.getPaidAt());
+        assertEquals("14226112", attempt.getGatewayTransactionNo());
         assertEquals(Invoice.Status.PAID, invoice.getStatus());
 
-        paymentService.handleGatewayResult("VNPAY-1", true, paidAt);
+        paymentService.handleGatewayResult("VNPAY-1", true, paidAt, "14226112");
 
         assertEquals(PaymentAttempt.Status.SUCCESS, attempt.getStatus());
         assertEquals(Invoice.Status.PAID, invoice.getStatus());
@@ -115,10 +117,19 @@ class PaymentServiceTest {
         when(invoiceRepository.findById(1L)).thenReturn(Optional.of(invoice));
 
         paymentService.handleGatewayResult("VNPAY-2", true,
-                Instant.parse("2026-10-10T10:00:00Z"));
+                Instant.parse("2026-10-10T10:00:00Z"), "14226112");
 
         assertEquals(PaymentAttempt.Status.SUCCESS, attempt.getStatus());
         assertEquals(Invoice.Status.CANCELLED, invoice.getStatus());
+    }
+
+    @Test
+    void returnsPaymentHistoryForRental() {
+        PaymentAttempt attempt = PaymentAttempt.pending(
+                1L, new BigDecimal("90.00"), "VNPAY", "VNPAY-1");
+        when(paymentAttemptRepository.findByRentalId(1L)).thenReturn(List.of(attempt));
+
+        assertEquals(List.of(attempt), paymentService.paymentHistory(1L));
     }
 
     @Test
@@ -128,7 +139,7 @@ class PaymentServiceTest {
         when(paymentAttemptRepository.findByProviderReference("VNPAY-1"))
                 .thenReturn(Optional.of(attempt));
 
-        paymentService.handleGatewayResult("VNPAY-1", false, null);
+        paymentService.handleGatewayResult("VNPAY-1", false, null, null);
 
         assertEquals(PaymentAttempt.Status.FAILED, attempt.getStatus());
         assertEquals(null, attempt.getPaidAt());

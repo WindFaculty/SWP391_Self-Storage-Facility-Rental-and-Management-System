@@ -44,6 +44,7 @@ class VnPayIpnServiceTest {
         params.put("vnp_Amount", "9000");
         params.put("vnp_ResponseCode", "00");
         params.put("vnp_TransactionStatus", "00");
+        params.put("vnp_TransactionNo", "14226112");
         params.put("vnp_PayDate", "20261010100500");
         return params;
     }
@@ -88,7 +89,7 @@ class VnPayIpnServiceTest {
     @Test
     void duplicateCallbackReturns02() {
         PaymentAttempt attempt = pendingAttempt();
-        attempt.succeed(Instant.parse("2026-10-10T03:05:00Z"));
+        attempt.succeed(Instant.parse("2026-10-10T03:05:00Z"), "14226112");
         when(vnPayService.verifyChecksum(any())).thenReturn(true);
         when(paymentAttemptRepository.findByProviderReference("12345678"))
                 .thenReturn(Optional.of(attempt));
@@ -109,7 +110,7 @@ class VnPayIpnServiceTest {
         Map<String, String> response = ipnService.handleIpn(ipnParams());
 
         assertEquals("00", response.get("RspCode"));
-        verify(paymentService).handleGatewayResult("12345678", true, paidAt);
+        verify(paymentService).handleGatewayResult("12345678", true, paidAt, "14226112");
     }
 
     @Test
@@ -124,7 +125,7 @@ class VnPayIpnServiceTest {
         Map<String, String> response = ipnService.handleIpn(params);
 
         assertEquals("00", response.get("RspCode"));
-        verify(paymentService).handleGatewayResult("12345678", false, null);
+        verify(paymentService).handleGatewayResult("12345678", false, null, "14226112");
     }
 
     @Test

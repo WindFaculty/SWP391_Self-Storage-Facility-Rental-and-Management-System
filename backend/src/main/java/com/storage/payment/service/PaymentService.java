@@ -6,6 +6,7 @@ import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,7 @@ public class PaymentService {
     // ponytail: gateway checksum/IPN verification is BE3-02/BE3-03; this records an already-verified result.
     @Transactional
     public PaymentAttempt handleGatewayResult(String providerReference, boolean succeeded,
-                                              Instant paidAt) {
+                                              Instant paidAt, String gatewayTransactionNo) {
         PaymentAttempt attempt = paymentAttemptRepository.findByProviderReference(providerReference)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "unknown payment attempt: " + providerReference));
@@ -55,7 +56,7 @@ public class PaymentService {
             attempt.fail();
             return attempt;
         }
-        if (!attempt.succeed(paidAt)) {
+        if (!attempt.succeed(paidAt, gatewayTransactionNo)) {
             return attempt;
         }
         Invoice invoice = invoiceRepository.findById(attempt.getInvoiceId())
@@ -64,5 +65,10 @@ public class PaymentService {
         // ponytail: success arriving after the invoice left PENDING needs the reconcile/refund queue (BE3-03).
         invoice.markPaid();
         return attempt;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentAttempt> paymentHistory(Long rentalId) {
+        return paymentAttemptRepository.findByRentalId(rentalId);
     }
 }

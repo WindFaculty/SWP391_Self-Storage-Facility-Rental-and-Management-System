@@ -58,7 +58,7 @@ class VnPayServiceTest {
     @Test
     void rejectsNonPendingAttempt() {
         PaymentAttempt attempt = attempt(new BigDecimal("90.00"));
-        attempt.succeed(CREATED_AT);
+        attempt.succeed(CREATED_AT, "14226112");
 
         assertThrows(IllegalStateException.class,
                 () -> vnPayService.createPaymentUrl(attempt, "127.0.0.1", CREATED_AT, EXPIRES_AT));
