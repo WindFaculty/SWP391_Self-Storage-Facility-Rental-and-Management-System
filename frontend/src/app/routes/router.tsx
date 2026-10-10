@@ -1,7 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { FacilityRentalsPage } from '../../features/facility/pages/FacilityRentalsPage'
 import { FacilityUnitsPage } from '../../features/facility/pages/FacilityUnitsPage'
+import { StaffOperationsPage } from '../../features/staff/pages/StaffOperationsPage'
 import type { UserRole } from '../../features/facility/types'
 import { WorkspaceLayout } from '../../layouts/WorkspaceLayout'
 import { useSession } from '../providers/SessionProvider'
@@ -36,8 +38,22 @@ export const router = createBrowserRouter([
         ),
       },
       { path: 'facility/dashboard', element: <NotBuiltPage title="Tổng quan cơ sở" /> },
-      { path: 'facility/rentals', element: <NotBuiltPage title="Hợp đồng & Phân công" /> },
-      { path: 'staff/operations', element: <NotBuiltPage title="Công việc tại cơ sở" /> },
+      {
+        path: 'facility/rentals',
+        element: (
+          <RequireRole roles={['FACILITY_MANAGER']}>
+            <FacilityRentalsPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'staff/operations',
+        element: (
+          <RequireRole roles={['FACILITY_STAFF', 'FACILITY_MANAGER']}>
+            <StaffOperationsPage />
+          </RequireRole>
+        ),
+      },
       { path: 'operations/facilities', element: <NotBuiltPage title="Mạng lưới cơ sở" /> },
       { path: 'operations/policies', element: <NotBuiltPage title="Chính sách & Bảng phí" /> },
       { path: 'operations/reports', element: <NotBuiltPage title="Báo cáo toàn mạng" /> },
