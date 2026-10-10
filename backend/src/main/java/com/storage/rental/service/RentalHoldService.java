@@ -1,6 +1,6 @@
 package com.storage.rental.service;
 
-import com.storage.facility.entity.UnitStatus;
+import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.Rental;
 import com.storage.rental.entity.RentalRenewal;
 import com.storage.rental.entity.RentalStatus;
@@ -20,7 +20,7 @@ public class RentalHoldService {
     private final ConcurrentHashMap<Long, ReentrantLock> unitLocks = new ConcurrentHashMap<>();
 
     // ponytail: in-process lock only; swap for SELECT ... FOR UPDATE on storage_units when JPA/MySQL lands.
-    public Rental createHold(long unitId, UnitStatus unitStatus, long customerId,
+    public Rental createHold(long unitId, StorageUnitStatus unitStatus, long customerId,
                              LocalDate startDate, LocalDate endDate,
                              BigDecimal pricePerMonth, Instant paymentExpiresAt) {
         ReentrantLock lock = lockFor(unitId);
@@ -69,7 +69,7 @@ public class RentalHoldService {
         return expired;
     }
 
-    public LatePaymentOutcome resolveLatePayment(Rental rental, UnitStatus unitStatus, Instant now) {
+    public LatePaymentOutcome resolveLatePayment(Rental rental, StorageUnitStatus unitStatus, Instant now) {
         ReentrantLock lock = lockFor(rental.getUnitId());
         lock.lock();
         try {
@@ -100,7 +100,7 @@ public class RentalHoldService {
         return rentalsByUnit.getOrDefault(unitId, List.of());
     }
 
-    public RentalRenewal requestRenewal(Rental rental, UnitStatus unitStatus,
+    public RentalRenewal requestRenewal(Rental rental, StorageUnitStatus unitStatus,
                                         LocalDate requestedEndDate, Instant requestedAt) {
         ReentrantLock lock = lockFor(rental.getUnitId());
         lock.lock();
@@ -120,7 +120,7 @@ public class RentalHoldService {
         }
     }
 
-    public void applyRenewal(RentalRenewal renewal, UnitStatus unitStatus, Instant at) {
+    public void applyRenewal(RentalRenewal renewal, StorageUnitStatus unitStatus, Instant at) {
         Rental rental = renewal.getRental();
         ReentrantLock lock = lockFor(rental.getUnitId());
         lock.lock();

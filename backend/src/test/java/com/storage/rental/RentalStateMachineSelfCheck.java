@@ -1,6 +1,6 @@
 package com.storage.rental;
 
-import com.storage.facility.entity.UnitStatus;
+import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.Rental;
 import com.storage.rental.entity.RentalStatus;
 import com.storage.rental.entity.RenewalStatus;
@@ -118,23 +118,23 @@ public final class RentalStateMachineSelfCheck {
     }
 
     private static void unitStatusGuards() {
-        for (UnitStatus status : UnitStatus.values()) {
+        for (StorageUnitStatus status : StorageUnitStatus.values()) {
             try {
                 status.onReturned();
-                check(status == UnitStatus.OCCUPIED, "onReturned accepted for " + status);
+                check(status == StorageUnitStatus.OCCUPIED, "onReturned accepted for " + status);
             } catch (IllegalStateException e) {
-                check(status != UnitStatus.OCCUPIED, "onReturned rejected for " + status);
+                check(status != StorageUnitStatus.OCCUPIED, "onReturned rejected for " + status);
             }
             try {
                 status.onInspection(true);
-                check(status == UnitStatus.INSPECTION, "onInspection accepted for " + status);
+                check(status == StorageUnitStatus.INSPECTION, "onInspection accepted for " + status);
             } catch (IllegalStateException e) {
-                check(status != UnitStatus.INSPECTION, "onInspection rejected for " + status);
+                check(status != StorageUnitStatus.INSPECTION, "onInspection rejected for " + status);
             }
         }
-        check(UnitStatus.INSPECTION.blocksNewRental() && UnitStatus.MAINTENANCE.blocksNewRental(),
+        check(StorageUnitStatus.INSPECTION.blocksNewRental() && StorageUnitStatus.MAINTENANCE.blocksNewRental(),
                 "unready unit statuses block new rentals");
-        check(!UnitStatus.AVAILABLE.blocksNewRental() && !UnitStatus.OCCUPIED.blocksNewRental(),
+        check(!StorageUnitStatus.AVAILABLE.blocksNewRental() && !StorageUnitStatus.OCCUPIED.blocksNewRental(),
                 "ready unit statuses allow new rentals");
     }
 

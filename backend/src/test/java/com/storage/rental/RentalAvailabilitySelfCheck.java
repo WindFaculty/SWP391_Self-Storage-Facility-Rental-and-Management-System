@@ -1,6 +1,6 @@
 package com.storage.rental;
 
-import com.storage.facility.entity.UnitStatus;
+import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.Rental;
 import com.storage.rental.entity.RentalStatus;
 import com.storage.rental.service.RentalAvailability;
@@ -20,37 +20,37 @@ public final class RentalAvailabilitySelfCheck {
     }
 
     public static void main(String[] args) {
-        check(available(UnitStatus.AVAILABLE, List.of()), "free available unit is bookable");
-        check(available(UnitStatus.OCCUPIED, List.of()), "occupied unit can be prebooked");
-        check(!available(UnitStatus.MAINTENANCE, List.of()), "maintenance blocks every rental");
-        check(!available(UnitStatus.INSPECTION, List.of()), "inspection blocks every rental");
+        check(available(StorageUnitStatus.AVAILABLE, List.of()), "free available unit is bookable");
+        check(available(StorageUnitStatus.OCCUPIED, List.of()), "occupied unit can be prebooked");
+        check(!available(StorageUnitStatus.MAINTENANCE, List.of()), "maintenance blocks every rental");
+        check(!available(StorageUnitStatus.INSPECTION, List.of()), "inspection blocks every rental");
 
         for (RentalStatus blocking : List.of(RentalStatus.PENDING_PAYMENT, RentalStatus.RESERVED,
                 RentalStatus.ACTIVE, RentalStatus.OVERDUE)) {
             Rental existing = rental(START, END, blocking);
-            check(!RentalAvailability.isAvailable(UnitStatus.AVAILABLE, List.of(existing),
+            check(!RentalAvailability.isAvailable(StorageUnitStatus.AVAILABLE, List.of(existing),
                     LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 5)),
                     blocking + " overlap blocks the unit");
         }
 
         for (RentalStatus released : List.of(RentalStatus.CANCELLED, RentalStatus.EXPIRED, RentalStatus.RETURNED)) {
             Rental existing = rental(START, END, released);
-            check(available(UnitStatus.AVAILABLE, List.of(existing)), released + " does not block");
+            check(available(StorageUnitStatus.AVAILABLE, List.of(existing)), released + " does not block");
         }
 
         Rental before = rental(LocalDate.of(2026, 9, 10), START, RentalStatus.RESERVED);
-        check(available(UnitStatus.AVAILABLE, List.of(before)), "adjacent range before is free");
+        check(available(StorageUnitStatus.AVAILABLE, List.of(before)), "adjacent range before is free");
         Rental reserved = rental(START, END, RentalStatus.RESERVED);
-        check(RentalAvailability.isAvailable(UnitStatus.AVAILABLE, List.of(reserved),
+        check(RentalAvailability.isAvailable(StorageUnitStatus.AVAILABLE, List.of(reserved),
                 END, LocalDate.of(2026, 12, 10)), "back-to-back start on end_date is free");
-        check(!RentalAvailability.isAvailable(UnitStatus.AVAILABLE, List.of(reserved),
+        check(!RentalAvailability.isAvailable(StorageUnitStatus.AVAILABLE, List.of(reserved),
                 LocalDate.of(2026, 11, 9), LocalDate.of(2026, 11, 20)), "overlap before end_date blocks");
 
         expectFailure("invalid empty range rejected");
         System.out.println("RentalAvailabilitySelfCheck: all checks passed");
     }
 
-    private static boolean available(UnitStatus status, List<Rental> rentals) {
+    private static boolean available(StorageUnitStatus status, List<Rental> rentals) {
         return RentalAvailability.isAvailable(status, rentals, START, END);
     }
 
@@ -62,7 +62,7 @@ public final class RentalAvailabilitySelfCheck {
 
     private static void expectFailure(String label) {
         try {
-            RentalAvailability.isAvailable(UnitStatus.AVAILABLE, List.of(), END, START);
+            RentalAvailability.isAvailable(StorageUnitStatus.AVAILABLE, List.of(), END, START);
         } catch (IllegalArgumentException expected) {
             return;
         }

@@ -1,6 +1,6 @@
 package com.storage.rental;
 
-import com.storage.facility.entity.UnitStatus;
+import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.AccessMethod;
 import com.storage.rental.entity.Rental;
 import com.storage.rental.entity.RentalRenewal;
@@ -51,7 +51,7 @@ public final class RentalRaceSelfCheck {
             List<Callable<?>> tasks = new ArrayList<>();
             for (int thread = 0; thread < 4; thread++) {
                 long customerId = thread + 1;
-                tasks.add(() -> service.createHold(10L, UnitStatus.AVAILABLE, customerId, START, END, PRICE, EXPIRES));
+                tasks.add(() -> service.createHold(10L, StorageUnitStatus.AVAILABLE, customerId, START, END, PRICE, EXPIRES));
             }
             List<Outcome> outcomes = race(tasks);
             check(successes(outcomes) == 1, "round " + round + ": exactly one same-window hold wins");
@@ -64,7 +64,7 @@ public final class RentalRaceSelfCheck {
         List<Callable<?>> tasks = new ArrayList<>();
         for (int day = 0; day < 8; day++) {
             LocalDate windowStart = START.plusDays(day);
-            tasks.add(() -> service.createHold(10L, UnitStatus.AVAILABLE, 1L, windowStart, windowStart.plusDays(1),
+            tasks.add(() -> service.createHold(10L, StorageUnitStatus.AVAILABLE, 1L, windowStart, windowStart.plusDays(1),
                     PRICE, EXPIRES));
         }
         List<Outcome> outcomes = race(tasks);
@@ -77,7 +77,7 @@ public final class RentalRaceSelfCheck {
         List<Callable<?>> tasks = new ArrayList<>();
         for (int i = 0; i < 16; i++) {
             long unitId = 100 + i;
-            tasks.add(() -> service.createHold(unitId, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES));
+            tasks.add(() -> service.createHold(unitId, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES));
         }
         check(successes(race(tasks)) == 16, "holds on independent units all succeed");
     }
@@ -87,11 +87,11 @@ public final class RentalRaceSelfCheck {
             RentalHoldService service = new RentalHoldService();
             Rental rental = activeRental(service, 10L);
             Callable<?> renewTask = () -> {
-                RentalRenewal renewal = service.requestRenewal(rental, UnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
-                service.applyRenewal(renewal, UnitStatus.AVAILABLE, DECIDED_AT);
+                RentalRenewal renewal = service.requestRenewal(rental, StorageUnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
+                service.applyRenewal(renewal, StorageUnitStatus.AVAILABLE, DECIDED_AT);
                 return renewal;
             };
-            Callable<?> holdTask = () -> service.createHold(10L, UnitStatus.AVAILABLE, 9L, END, EXTENDED_END,
+            Callable<?> holdTask = () -> service.createHold(10L, StorageUnitStatus.AVAILABLE, 9L, END, EXTENDED_END,
                     PRICE, EXPIRES.plusSeconds(86400));
             List<Outcome> outcomes = race(List.of(renewTask, holdTask));
             check(successes(outcomes) == 1, "round " + round + ": renewal and hold cannot both win");
@@ -108,9 +108,9 @@ public final class RentalRaceSelfCheck {
     private static void expireVsHoldRace() throws InterruptedException {
         for (int round = 0; round < 20; round++) {
             RentalHoldService service = new RentalHoldService();
-            Rental hold = service.createHold(10L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+            Rental hold = service.createHold(10L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
             Callable<?> sweepTask = () -> service.expireHolds(EXPIRES);
-            Callable<?> holdTask = () -> service.createHold(10L, UnitStatus.AVAILABLE, 2L, START, END,
+            Callable<?> holdTask = () -> service.createHold(10L, StorageUnitStatus.AVAILABLE, 2L, START, END,
                     PRICE, EXPIRES.plusSeconds(60));
             List<Outcome> outcomes = race(List.of(sweepTask, holdTask));
             check(hold.getStatus() == RentalStatus.EXPIRED, "round " + round + ": expired hold is always swept");
@@ -126,19 +126,19 @@ public final class RentalRaceSelfCheck {
 
     private static void cancelVsExpireRace() throws InterruptedException {
         RentalHoldService cancelledFirst = new RentalHoldService();
-        Rental holdA = cancelledFirst.createHold(10L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+        Rental holdA = cancelledFirst.createHold(10L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
         cancelledFirst.cancel(holdA);
         check(holdA.getStatus() == RentalStatus.CANCELLED, "cancel wins: hold cancelled");
         check(cancelledFirst.expireHolds(EXPIRES.plusSeconds(60)) == 0, "cancel wins: sweep skips the hold");
 
         RentalHoldService sweptFirst = new RentalHoldService();
-        Rental holdB = sweptFirst.createHold(10L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+        Rental holdB = sweptFirst.createHold(10L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
         check(sweptFirst.expireHolds(EXPIRES) == 1, "sweep wins: hold expired");
         expectFailure(() -> sweptFirst.cancel(holdB), "sweep wins: cancel is rejected");
 
         for (int round = 0; round < 20; round++) {
             RentalHoldService service = new RentalHoldService();
-            Rental hold = service.createHold(10L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+            Rental hold = service.createHold(10L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
             Callable<?> cancelTask = () -> {
                 service.cancel(hold);
                 return hold;
@@ -162,11 +162,11 @@ public final class RentalRaceSelfCheck {
     private static void reviveVsHoldRace() throws InterruptedException {
         for (int round = 0; round < 20; round++) {
             RentalHoldService service = new RentalHoldService();
-            Rental hold = service.createHold(10L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+            Rental hold = service.createHold(10L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
             service.expireHolds(EXPIRES);
-            Callable<?> reviveTask = () -> service.resolveLatePayment(hold, UnitStatus.AVAILABLE,
+            Callable<?> reviveTask = () -> service.resolveLatePayment(hold, StorageUnitStatus.AVAILABLE,
                     EXPIRES.plusSeconds(60));
-            Callable<?> holdTask = () -> service.createHold(10L, UnitStatus.AVAILABLE, 2L, START, END,
+            Callable<?> holdTask = () -> service.createHold(10L, StorageUnitStatus.AVAILABLE, 2L, START, END,
                     PRICE, EXPIRES.plusSeconds(60));
             List<Outcome> outcomes = race(List.of(reviveTask, holdTask));
             if (outcomes.get(1).ok()) {
@@ -184,7 +184,7 @@ public final class RentalRaceSelfCheck {
     }
 
     private static Rental activeRental(RentalHoldService service, long unitId) {
-        Rental rental = service.createHold(unitId, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+        Rental rental = service.createHold(unitId, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
         rental.transitionTo(RentalStatus.RESERVED);
         rental.checkIn(CHECK_IN_AT, AccessMethod.KEY, "Unit ready");
         return rental;

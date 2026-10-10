@@ -1,6 +1,6 @@
 package com.storage.rental;
 
-import com.storage.facility.entity.UnitStatus;
+import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.AccessMethod;
 import com.storage.rental.entity.Rental;
 import com.storage.rental.entity.RentalRenewal;
@@ -42,40 +42,40 @@ public final class RentalLifecycleSelfCheck {
         RentalHoldService service = new RentalHoldService();
         Rental rental = active(service, 10L);
 
-        RentalRenewal renewal = service.requestRenewal(rental, UnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
+        RentalRenewal renewal = service.requestRenewal(rental, StorageUnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
         check(renewal.getStatus() == RenewalStatus.REQUESTED, "renewal starts requested");
         check(END.equals(renewal.getPreviousEndDate()), "previous end date snapshot");
         check(EXTENDED_END.equals(renewal.getRequestedEndDate()), "requested end date kept");
         check(END.equals(rental.getEndDate()), "request does not move the rental end");
 
-        service.applyRenewal(renewal, UnitStatus.AVAILABLE, DECIDED_AT.plusSeconds(1));
+        service.applyRenewal(renewal, StorageUnitStatus.AVAILABLE, DECIDED_AT.plusSeconds(1));
         check(EXTENDED_END.equals(rental.getEndDate()), "apply moves the rental end");
         check(renewal.getStatus() == RenewalStatus.APPLIED, "renewal applied");
         check(DECIDED_AT.plusSeconds(1).equals(renewal.getDecidedAt()), "decision time recorded");
-        expectFailure(() -> service.applyRenewal(renewal, UnitStatus.AVAILABLE, DECIDED_AT), "double apply rejected");
+        expectFailure(() -> service.applyRenewal(renewal, StorageUnitStatus.AVAILABLE, DECIDED_AT), "double apply rejected");
 
-        expectFailure(() -> service.requestRenewal(rental, UnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT),
+        expectFailure(() -> service.requestRenewal(rental, StorageUnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT),
                 "renewal must extend the current end");
 
-        Rental hold = service.createHold(11L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
-        expectFailure(() -> service.requestRenewal(hold, UnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT),
+        Rental hold = service.createHold(11L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+        expectFailure(() -> service.requestRenewal(hold, StorageUnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT),
                 "renewal requires an active rental");
     }
 
     private static void requestConflictFlow() {
         RentalHoldService service = new RentalHoldService();
         Rental rental = active(service, 20L);
-        service.createHold(20L, UnitStatus.AVAILABLE, 2L, END, EXTENDED_END, PRICE, EXPIRES.plusSeconds(86400));
-        expectConflict(() -> service.requestRenewal(rental, UnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT),
+        service.createHold(20L, StorageUnitStatus.AVAILABLE, 2L, END, EXTENDED_END, PRICE, EXPIRES.plusSeconds(86400));
+        expectConflict(() -> service.requestRenewal(rental, StorageUnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT),
                 "renewal conflicting with a hold is rejected");
     }
 
     private static void lateConflictFlow() {
         RentalHoldService service = new RentalHoldService();
         Rental rental = active(service, 30L);
-        RentalRenewal renewal = service.requestRenewal(rental, UnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
-        service.createHold(30L, UnitStatus.AVAILABLE, 3L, END, EXTENDED_END, PRICE, EXPIRES.plusSeconds(86400));
-        expectConflict(() -> service.applyRenewal(renewal, UnitStatus.AVAILABLE, DECIDED_AT.plusSeconds(1)),
+        RentalRenewal renewal = service.requestRenewal(rental, StorageUnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
+        service.createHold(30L, StorageUnitStatus.AVAILABLE, 3L, END, EXTENDED_END, PRICE, EXPIRES.plusSeconds(86400));
+        expectConflict(() -> service.applyRenewal(renewal, StorageUnitStatus.AVAILABLE, DECIDED_AT.plusSeconds(1)),
                 "apply re-checks the extension window");
         check(renewal.getStatus() == RenewalStatus.REQUESTED, "conflicted renewal stays requested");
         check(END.equals(rental.getEndDate()), "conflicted renewal does not move the end");
@@ -84,11 +84,11 @@ public final class RentalLifecycleSelfCheck {
     private static void rejectFlow() {
         RentalHoldService service = new RentalHoldService();
         Rental rental = active(service, 40L);
-        RentalRenewal renewal = service.requestRenewal(rental, UnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
+        RentalRenewal renewal = service.requestRenewal(rental, StorageUnitStatus.AVAILABLE, EXTENDED_END, DECIDED_AT);
         renewal.reject(DECIDED_AT.plusSeconds(1));
         check(renewal.getStatus() == RenewalStatus.REJECTED, "renewal can be rejected");
         check(DECIDED_AT.plusSeconds(1).equals(renewal.getDecidedAt()), "rejection time recorded");
-        expectFailure(() -> service.applyRenewal(renewal, UnitStatus.AVAILABLE, DECIDED_AT),
+        expectFailure(() -> service.applyRenewal(renewal, StorageUnitStatus.AVAILABLE, DECIDED_AT),
                 "rejected renewal cannot apply");
         expectFailure(() -> renewal.reject(DECIDED_AT), "double reject rejected");
     }
@@ -117,7 +117,7 @@ public final class RentalLifecycleSelfCheck {
         overdue.checkOut(Instant.parse("2026-11-12T10:00:00Z"), "Late return");
         check(overdue.getStatus() == RentalStatus.RETURNED, "overdue rental can check out");
 
-        Rental reserved = service.createHold(62L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+        Rental reserved = service.createHold(62L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
         reserved.transitionTo(RentalStatus.RESERVED);
         expectFailure(() -> reserved.checkOut(RETURN_AT, null), "reserved rental cannot check out");
 
@@ -126,16 +126,16 @@ public final class RentalLifecycleSelfCheck {
     }
 
     private static void inspectionFlow() {
-        check(UnitStatus.OCCUPIED.onReturned() == UnitStatus.INSPECTION, "return sends the unit to inspection");
-        check(UnitStatus.INSPECTION.onInspection(true) == UnitStatus.AVAILABLE, "passed inspection frees the unit");
-        check(UnitStatus.INSPECTION.onInspection(false) == UnitStatus.MAINTENANCE,
+        check(StorageUnitStatus.OCCUPIED.onReturned() == StorageUnitStatus.INSPECTION, "return sends the unit to inspection");
+        check(StorageUnitStatus.INSPECTION.onInspection(true) == StorageUnitStatus.AVAILABLE, "passed inspection frees the unit");
+        check(StorageUnitStatus.INSPECTION.onInspection(false) == StorageUnitStatus.MAINTENANCE,
                 "failed inspection sends to maintenance");
-        expectFailure(() -> UnitStatus.AVAILABLE.onReturned(), "return requires an occupied unit");
-        expectFailure(() -> UnitStatus.AVAILABLE.onInspection(true), "inspection requires INSPECTION status");
+        expectFailure(() -> StorageUnitStatus.AVAILABLE.onReturned(), "return requires an occupied unit");
+        expectFailure(() -> StorageUnitStatus.AVAILABLE.onInspection(true), "inspection requires INSPECTION status");
     }
 
     private static Rental active(RentalHoldService service, long unitId) {
-        Rental rental = service.createHold(unitId, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+        Rental rental = service.createHold(unitId, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
         rental.transitionTo(RentalStatus.RESERVED);
         rental.checkIn(CHECK_IN_AT, AccessMethod.KEY, "Unit ready");
         return rental;

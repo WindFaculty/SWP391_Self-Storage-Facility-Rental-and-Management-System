@@ -1,6 +1,6 @@
 package com.storage.rental;
 
-import com.storage.facility.entity.UnitStatus;
+import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.Rental;
 import com.storage.rental.entity.RentalStatus;
 import com.storage.rental.service.RentalHoldService;
@@ -29,29 +29,29 @@ public final class RentalHoldSelfCheck {
     public static void main(String[] args) throws InterruptedException {
         RentalHoldService service = new RentalHoldService();
 
-        Rental hold = service.createHold(10L, UnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
+        Rental hold = service.createHold(10L, StorageUnitStatus.AVAILABLE, 1L, START, END, PRICE, EXPIRES);
         check(hold.getStatus() == RentalStatus.PENDING_PAYMENT, "hold starts pending payment");
         check(hold.getPricePerMonth().equals(PRICE), "hold keeps price snapshot");
         check(service.rentalsOf(10L).equals(List.of(hold)), "hold is stored for its unit");
 
-        expectConflict(() -> service.createHold(10L, UnitStatus.AVAILABLE, 2L, START, END, PRICE, EXPIRES),
+        expectConflict(() -> service.createHold(10L, StorageUnitStatus.AVAILABLE, 2L, START, END, PRICE, EXPIRES),
                 "same unit and range is rejected");
         check(service.rentalsOf(10L).size() == 1, "rejected hold is not stored");
 
-        service.createHold(10L, UnitStatus.AVAILABLE, 2L, END, LocalDate.of(2026, 12, 10), PRICE, EXPIRES);
+        service.createHold(10L, StorageUnitStatus.AVAILABLE, 2L, END, LocalDate.of(2026, 12, 10), PRICE, EXPIRES);
         check(service.rentalsOf(10L).size() == 2, "adjacent range shares the unit");
 
-        service.createHold(11L, UnitStatus.AVAILABLE, 2L, START, END, PRICE, EXPIRES);
+        service.createHold(11L, StorageUnitStatus.AVAILABLE, 2L, START, END, PRICE, EXPIRES);
         check(service.rentalsOf(11L).size() == 1, "other unit holds independently");
 
-        expectConflict(() -> service.createHold(12L, UnitStatus.MAINTENANCE, 1L, START, END, PRICE, EXPIRES),
+        expectConflict(() -> service.createHold(12L, StorageUnitStatus.MAINTENANCE, 1L, START, END, PRICE, EXPIRES),
                 "maintenance unit rejects holds");
-        expectConflict(() -> service.createHold(12L, UnitStatus.INSPECTION, 1L, START, END, PRICE, EXPIRES),
+        expectConflict(() -> service.createHold(12L, StorageUnitStatus.INSPECTION, 1L, START, END, PRICE, EXPIRES),
                 "inspection unit rejects holds");
         check(service.rentalsOf(12L).isEmpty(), "holds rejected by unit status are not stored");
 
         hold.transitionTo(RentalStatus.CANCELLED);
-        Rental rehold = service.createHold(10L, UnitStatus.AVAILABLE, 3L, START, END, PRICE, EXPIRES);
+        Rental rehold = service.createHold(10L, StorageUnitStatus.AVAILABLE, 3L, START, END, PRICE, EXPIRES);
         check(rehold.getStatus() == RentalStatus.PENDING_PAYMENT, "cancelled hold frees the unit");
 
         concurrentRace();
@@ -73,7 +73,7 @@ public final class RentalHoldSelfCheck {
                 ready.countDown();
                 try {
                     go.await();
-                    service.createHold(10L, UnitStatus.AVAILABLE, customerId, START, END, PRICE, EXPIRES);
+                    service.createHold(10L, StorageUnitStatus.AVAILABLE, customerId, START, END, PRICE, EXPIRES);
                     created.incrementAndGet();
                 } catch (UnitNotAvailableException expected) {
                     rejected.incrementAndGet();

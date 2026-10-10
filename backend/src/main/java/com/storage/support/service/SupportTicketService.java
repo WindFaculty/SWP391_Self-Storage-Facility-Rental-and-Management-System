@@ -1,10 +1,13 @@
 package com.storage.support.service;
 
+import com.storage.account.entity.User;
+import com.storage.account.entity.UserRole;
+import com.storage.account.entity.UserStatus;
+import com.storage.account.repository.UserRepository;
 import com.storage.support.entity.SupportTicket;
 import com.storage.support.repository.SupportTicketRepository;
 import java.time.Instant;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SupportTicketService {
 
     private final SupportTicketRepository supportTicketRepository;
-    private final JdbcTemplate jdbcTemplate;
+    private final UserRepository userRepository;
 
     public SupportTicketService(SupportTicketRepository supportTicketRepository,
-                                JdbcTemplate jdbcTemplate) {
+                                UserRepository userRepository) {
         this.supportTicketRepository = supportTicketRepository;
-        this.jdbcTemplate = jdbcTemplate;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -31,19 +34,12 @@ public class SupportTicketService {
     @Transactional
     public SupportTicket assign(Long ticketId, Long staffId) {
         SupportTicket ticket = find(ticketId);
-        // ponytail: raw lookup until BE1's account module lands; staff must be active FACILITY_STAFF.
-        Long staffFacilityId;
-        try {
-            staffFacilityId = jdbcTemplate.queryForObject(
-                    "select facility_id from users where id = ? and role = 'FACILITY_STAFF' and status = 'ACTIVE'",
-                    Long.class, staffId);
-        } catch (EmptyResultDataAccessException e) {
-            staffFacilityId = null;
-        }
-        if (staffFacilityId == null) {
-            throw new IllegalStateException("staff not found, inactive or not a facility staff: " + staffId);
-        }
-        if (!staffFacilityId.equals(ticket.getFacilityId())) {
+        User staff = userRepository.findById(staffId)
+                .filter(user -> user.getRole() == UserRole.FACILITY_STAFF
+                        && user.getStatus() == UserStatus.ACTIVE)
+                .orElseThrow(() -> new IllegalStateException(
+                        "staff not found, inactive or not a facility staff: " + staffId));
+        if (staff.getFacilityId() == null || !staff.getFacilityId().equals(ticket.getFacilityId())) {
             throw new IllegalStateException("staff " + staffId
                     + " does not belong to facility " + ticket.getFacilityId());
         }
@@ -78,6 +74,21 @@ public class SupportTicketService {
             throw new IllegalStateException("ticket cannot be closed in status " + ticket.getStatus());
         }
         return ticket;
+    }
+
+    @Transactional(readOnly = true)
+    public SupportTicket get(long ticketId) {
+        return find(ticketId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SupportTicket> ticketsOfCustomer(Long customerId) {
+        return supportTicketRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SupportTicket> ticketsOfFacility(Long facilityId) {
+        return supportTicketRepository.findByFacilityIdOrderByCreatedAtDesc(facilityId);
     }
 
     private SupportTicket find(Long ticketId) {

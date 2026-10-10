@@ -1,6 +1,6 @@
 package com.storage.rental.service;
 
-import com.storage.facility.entity.UnitStatus;
+import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.Rental;
 
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ public final class RentalAvailability {
     private RentalAvailability() {
     }
 
-    public static boolean isAvailable(UnitStatus unitStatus, Collection<Rental> unitRentals,
+    public static boolean isAvailable(StorageUnitStatus unitStatus, Collection<Rental> unitRentals,
                                       LocalDate startDate, LocalDate endDate) {
         Objects.requireNonNull(unitStatus, "unitStatus");
         Objects.requireNonNull(unitRentals, "unitRentals");

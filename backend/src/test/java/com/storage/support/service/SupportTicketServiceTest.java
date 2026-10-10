@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.storage.account.entity.User;
+import com.storage.account.entity.UserRole;
+import com.storage.account.entity.UserStatus;
+import com.storage.account.repository.UserRepository;
 import com.storage.support.entity.SupportTicket;
 import com.storage.support.repository.SupportTicketRepository;
 import java.util.Optional;
@@ -18,8 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class SupportTicketServiceTest {
@@ -28,18 +28,26 @@ class SupportTicketServiceTest {
     private SupportTicketRepository supportTicketRepository;
 
     @Mock
-    private JdbcTemplate jdbcTemplate;
+    private UserRepository userRepository;
 
     private SupportTicketService supportTicketService;
 
     @BeforeEach
     void setUp() {
-        supportTicketService = new SupportTicketService(supportTicketRepository, jdbcTemplate);
+        supportTicketService = new SupportTicketService(supportTicketRepository, userRepository);
     }
 
     private static SupportTicket openTicket() {
         return SupportTicket.open(9L, 3L, null, SupportTicket.Category.ACCESS,
                 "Gate code lost", "Please reset my gate code");
+    }
+
+    private static User facilityStaff(Long facilityId) {
+        User staff = new User();
+        staff.setRole(UserRole.FACILITY_STAFF);
+        staff.setStatus(UserStatus.ACTIVE);
+        staff.setFacilityId(facilityId);
+        return staff;
     }
 
     @Test
@@ -60,7 +68,7 @@ class SupportTicketServiceTest {
     void assignsStaffFromSameFacility() {
         SupportTicket ticket = openTicket();
         when(supportTicketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), eq(7L))).thenReturn(3L);
+        when(userRepository.findById(7L)).thenReturn(Optional.of(facilityStaff(3L)));
 
         SupportTicket assigned = supportTicketService.assign(1L, 7L);
 
@@ -72,7 +80,7 @@ class SupportTicketServiceTest {
     void rejectsStaffFromAnotherFacility() {
         SupportTicket ticket = openTicket();
         when(supportTicketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), eq(7L))).thenReturn(4L);
+        when(userRepository.findById(7L)).thenReturn(Optional.of(facilityStaff(4L)));
 
         assertThrows(IllegalStateException.class, () -> supportTicketService.assign(1L, 7L));
 
@@ -80,13 +88,18 @@ class SupportTicketServiceTest {
     }
 
     @Test
-    void rejectsUnknownOrInactiveStaff() {
+    void rejectsUnknownInactiveOrNonStaffUser() {
         SupportTicket ticket = openTicket();
         when(supportTicketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), eq(7L)))
-                .thenThrow(new EmptyResultDataAccessException(1));
+        when(userRepository.findById(7L)).thenReturn(Optional.empty());
 
         assertThrows(IllegalStateException.class, () -> supportTicketService.assign(1L, 7L));
+
+        User inactive = facilityStaff(3L);
+        inactive.setStatus(UserStatus.DISABLED);
+        when(userRepository.findById(8L)).thenReturn(Optional.of(inactive));
+
+        assertThrows(IllegalStateException.class, () -> supportTicketService.assign(1L, 8L));
     }
 
     @Test
@@ -122,7 +135,7 @@ class SupportTicketServiceTest {
         ticket.start();
         ticket.resolve(java.time.Instant.now());
         when(supportTicketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), eq(7L))).thenReturn(3L);
+        when(userRepository.findById(7L)).thenReturn(Optional.of(facilityStaff(3L)));
 
         assertThrows(IllegalStateException.class, () -> supportTicketService.assign(1L, 7L));
     }
