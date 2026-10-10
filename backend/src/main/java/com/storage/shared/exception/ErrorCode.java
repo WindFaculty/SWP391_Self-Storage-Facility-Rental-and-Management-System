@@ -15,6 +15,15 @@ public enum ErrorCode {
 
     NOT_FOUND("NOT_FOUND", "Không tìm thấy tài nguyên yêu cầu", HttpStatus.NOT_FOUND),
     USER_NOT_FOUND("USER_NOT_FOUND", "Người dùng không tồn tại", HttpStatus.NOT_FOUND),
+    FACILITY_NOT_FOUND("FACILITY_NOT_FOUND", "Không tìm thấy cơ sở kho", HttpStatus.NOT_FOUND),
+    UNIT_TYPE_NOT_FOUND("UNIT_TYPE_NOT_FOUND", "Không tìm thấy loại kho", HttpStatus.NOT_FOUND),
+    STORAGE_UNIT_NOT_FOUND("STORAGE_UNIT_NOT_FOUND", "Không tìm thấy đơn vị kho", HttpStatus.NOT_FOUND),
+
+    INVALID_UNIT_STATUS_TRANSITION("INVALID_UNIT_STATUS_TRANSITION", "Chuyển trạng thái kho không hợp lệ", HttpStatus.BAD_REQUEST),
+
+    FACILITY_CODE_EXISTS("FACILITY_CODE_EXISTS", "Mã cơ sở kho đã tồn tại", HttpStatus.CONFLICT),
+    UNIT_TYPE_NAME_EXISTS("UNIT_TYPE_NAME_EXISTS", "Tên loại kho đã tồn tại", HttpStatus.CONFLICT),
+    STORAGE_UNIT_CODE_EXISTS("STORAGE_UNIT_CODE_EXISTS", "Mã đơn vị kho đã tồn tại trong cơ sở", HttpStatus.CONFLICT),
 
     EMAIL_ALREADY_EXISTS("EMAIL_ALREADY_EXISTS", "Email đã tồn tại trong hệ thống", HttpStatus.CONFLICT),
 

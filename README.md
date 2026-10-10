@@ -2,7 +2,7 @@
 
 Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lưu trữ.
 
-**Trạng thái:** backend buildable (BE1-01: Java 25, Spring Boot 4.1.1, Maven Wrapper, profile; BE1-02: Flyway baseline MySQL + seed demo local; BE1-03: auth email/password, JWT access/refresh, logout thu hồi token theo ADR-0001 đề xuất; BE1-04: RBAC theo prefix route, facility scope và ownership guard). API hiện có duy nhất `/api/v1/auth/*`. Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
+**Trạng thái:** backend buildable (BE1-01..BE1-05: nền Java 25 + Spring Boot 4.1.1, Flyway baseline MySQL + seed local, auth JWT, RBAC/facility scope/ownership, CRUD cơ sở/loại kho/đơn vị kho + catalog công khai theo ADR-0001 đề xuất). Frontend vẫn là scaffold thư mục. Các thư mục trống được giữ trong Git bằng `.gitkeep`.
 
 ## Kiến trúc mục tiêu
 
@@ -34,6 +34,10 @@ Base path `/api/v1`; response theo `ApiResponse` (`success`/`data` hoặc `error
 | POST | `/auth/refresh` | Xoay vòng refresh token (token cũ bị thu hồi) |
 | POST | `/auth/logout` | Thu hồi refresh token (idempotent) |
 | GET | `/auth/me` | Thông tin user hiện tại (Bearer access token) |
+| GET | `/facilities`, `/facilities/{id}`, `/facilities/{id}/unit-types`, `/facilities/{id}/available-units` | Catalog công khai (available-units chỉ trả kho AVAILABLE, phân trang) |
+| POST/PUT | `/business/facilities`, `/business/unit-types` | BUSINESS_MANAGER/ADMIN tạo & cập nhật cơ sở, tạo loại kho |
+| GET/POST | `/manager/facilities/{id}/units` | Danh sách (phân trang)/tạo đơn vị kho — scope cơ sở được gán |
+| PUT | `/manager/units/{id}/status` | Đổi trạng thái kho theo transition hợp lệ — scope cơ sở |
 
 Access token TTL 30 phút, refresh TTL 7 ngày, cấu hình qua `app.jwt.*`; xem `docs/architecture/adr-0001-authentication-token-strategy.md`.
 
