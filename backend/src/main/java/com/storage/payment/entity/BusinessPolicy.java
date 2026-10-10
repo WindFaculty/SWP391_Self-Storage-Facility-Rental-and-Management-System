@@ -45,6 +45,53 @@ public class BusinessPolicy {
     protected BusinessPolicy() {
     }
 
+    public static BusinessPolicy initial() {
+        BusinessPolicy policy = new BusinessPolicy();
+        policy.id = 1;
+        return policy;
+    }
+
+    public void update(BigDecimal depositPercent, Integer renewalNoticeDays,
+                       BigDecimal cancellationFee, Integer returnNoticeDays,
+                       Integer overdueGraceDays, BigDecimal overdueFeePerDay,
+                       BigDecimal maxDiscountPercent, Long updatedByUserId) {
+        requirePercent("depositPercent", depositPercent);
+        requirePercent("maxDiscountPercent", maxDiscountPercent);
+        requireNonNegative("cancellationFee", cancellationFee);
+        requireNonNegative("overdueFeePerDay", overdueFeePerDay);
+        requireDays("renewalNoticeDays", renewalNoticeDays);
+        requireDays("returnNoticeDays", returnNoticeDays);
+        requireDays("overdueGraceDays", overdueGraceDays);
+        this.depositPercent = depositPercent;
+        this.renewalNoticeDays = renewalNoticeDays;
+        this.cancellationFee = cancellationFee;
+        this.returnNoticeDays = returnNoticeDays;
+        this.overdueGraceDays = overdueGraceDays;
+        this.overdueFeePerDay = overdueFeePerDay;
+        this.maxDiscountPercent = maxDiscountPercent;
+        this.updatedByUserId = updatedByUserId;
+        this.updatedAt = Instant.now();
+    }
+
+    private static void requirePercent(String field, BigDecimal value) {
+        if (value == null || value.signum() < 0
+                || value.compareTo(BigDecimal.valueOf(100)) > 0) {
+            throw new IllegalArgumentException(field + " must be between 0 and 100");
+        }
+    }
+
+    private static void requireNonNegative(String field, BigDecimal value) {
+        if (value == null || value.signum() < 0) {
+            throw new IllegalArgumentException(field + " must be >= 0");
+        }
+    }
+
+    private static void requireDays(String field, Integer value) {
+        if (value == null || value < 0) {
+            throw new IllegalArgumentException(field + " must be >= 0");
+        }
+    }
+
     public Short getId() {
         return id;
     }
