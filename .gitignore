@@ -30,8 +30,16 @@ coverage/
 /stitch_self_storage_editorial_homepage_system/
 
 # Editor/OS
+/tranxuankhoa.code-workspace
 .idea/
 .vscode/
 *.iml
 .DS_Store
 Thumbs.db
+
+# Local Git worktrees
+/.worktrees/
+/ho-xuan-thanh/
+/bui-tuan-thanh/
+/bui-van-tinh/
+/le-tri-thien/

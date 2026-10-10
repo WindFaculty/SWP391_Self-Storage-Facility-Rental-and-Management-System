@@ -1,17 +1,45 @@
-# SWP391 — Base Architecture
+# SWP391 — Self-Storage Facility Rental & Management System
 
-Cấu trúc nền cho hệ thống quản lý dịch vụ cho thuê kho tự lưu trữ.
+Đồ án xây dựng hệ thống cho thuê và quản lý kho tự lưu trữ, phục vụ khách hàng, nhân viên cơ sở, quản lý cơ sở, quản lý kinh doanh và quản trị viên.
 
-**Trạng thái:** đã dọn source cũ và dựng cây thư mục mới ở local. Chưa có mã ứng dụng, file Java, manifest Maven/npm hoặc cấu hình chạy/deploy mới. Các thư mục trống được giữ trong Git bằng `.gitkeep`. Dự án chưa thể build hoặc chạy.
+## Trạng thái hiện tại
 
-## Kiến trúc mục tiêu
+Dự án đang ở giai đoạn chuẩn bị kiến trúc và tài liệu thiết kế.
 
-- Backend: Spring Boot modular monolith, package theo tính năng; luồng Controller → Service → Repository.
-- Frontend: React + Vite, tổ chức theo feature và dùng nguồn thiết kế Stitch được bảo toàn.
-- Database mục tiêu: MySQL/InnoDB. Thư mục `sql/` hiện giữ schema PostgreSQL và ERD tham chiếu nguyên bản; không chạy trực tiếp script đó trên MySQL.
-- Deployment tương lai: frontend trên Cloudflare Pages; backend/MySQL trên EC2. Chưa cấu hình hay tạo tài nguyên cloud.
+| Thành phần | Trạng thái |
+| --- | --- |
+| `backend/` | Khung thư mục Java; chưa có mã ứng dụng hoặc manifest build |
+| `frontend/` | Khung thư mục theo feature; chưa có mã ứng dụng hoặc `package.json` |
+| `sql/` | Schema PostgreSQL và các sơ đồ ERD tham chiếu |
+| `stitch_self_storage_editorial_homepage_system/` | Bản mẫu giao diện React + Vite riêng tại máy local |
+| `docs/` | Thư mục dành cho tài liệu kiến trúc, API và vận hành |
+| `infra/` | Khung thư mục dành cho Docker, EC2 và Cloudflare |
 
-## Cây thư mục
+Các thư mục khung được giữ bằng `.gitkeep`. Backend và frontend chính chưa thể build hoặc chạy; chưa có API, migration MySQL, cấu hình kết nối database hay cấu hình triển khai.
+
+## Phạm vi nghiệp vụ dự kiến
+
+- Tài khoản và phân quyền theo năm vai trò.
+- Quản lý cơ sở, loại kho và từng kho lưu trữ.
+- Đặt kho, bàn giao, theo dõi hợp đồng thuê, gia hạn và trả kho.
+- Hóa đơn, thanh toán, tiền đặt cọc và các khoản phí.
+- Yêu cầu hỗ trợ và phân công công việc cho nhân viên.
+- Chính sách kinh doanh, báo cáo vận hành và nhật ký hệ thống.
+
+Đây là phạm vi thiết kế, chưa phải danh sách chức năng đã hoàn thiện.
+
+## Kiến trúc định hướng
+
+| Thành phần | Định hướng |
+| --- | --- |
+| Backend | Spring Boot dạng modular monolith, tổ chức theo nghiệp vụ |
+| Frontend | React + Vite, tổ chức theo feature |
+| Database ứng dụng | MySQL/InnoDB; cần chuyển đổi từ schema PostgreSQL tham chiếu |
+| Triển khai | Frontend trên Cloudflare Pages; backend và MySQL trên EC2 |
+
+Các công nghệ và môi trường triển khai trên là định hướng; cấu hình ứng dụng chính chưa được tạo.
+
+## Cấu trúc thư mục
 
 ```text
 SWP391/
@@ -28,58 +56,87 @@ SWP391/
 │       │   │   └── shared/
 │       │   └── resources/db/migration/mysql/
 │       └── test/
-│           ├── java/com/storage/{account,facility,rental,payment,support,management,shared}/
+│           ├── java/com/storage/
 │           └── resources/
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   ├── app/{routes,providers}/
+│   │   ├── app/
 │   │   ├── layouts/
-│   │   ├── components/{ui,domain}/
+│   │   ├── components/
 │   │   ├── features/
-│   │   │   ├── auth/
-│   │   │   ├── catalog/
-│   │   │   ├── reservation/
-│   │   │   ├── rental/
-│   │   │   ├── billing/
-│   │   │   ├── support/
-│   │   │   ├── staff/
-│   │   │   ├── facility/
-│   │   │   ├── management/
-│   │   │   └── admin/
 │   │   ├── api/
 │   │   ├── styles/
-│   │   └── assets/{images,icons,fonts}/
-│   └── tests/{unit,integration,e2e}/
-├── sql/                              # Giữ nguyên SQL/ERD hiện có
+│   │   └── assets/
+│   └── tests/
+├── sql/
 ├── docs/
-│   ├── stitch_self_storage_editorial_homepage_system/  # Giữ nguyên
 │   ├── architecture/
 │   ├── api/
 │   └── operations/
-├── infra/{docker,ec2,cloudflare}/
-├── .local-backups/                    # ZIP nguồn cũ, không commit
+├── infra/
+│   ├── docker/
+│   ├── ec2/
+│   └── cloudflare/
+├── stitch_self_storage_editorial_homepage_system/  # Bản mẫu local, Git bỏ qua
+├── .local-backups/                               # Bản sao lưu local, Git bỏ qua
 ├── .gitignore
 └── README.md
 ```
 
-## Quy ước thư mục
+### Backend
 
-Mỗi module backend `account/facility/rental/payment/support/management` có `controller/`, `dto/`, `entity/`, `repository/`, `service/`. `shared/` có `config/`, `security/`, `entity/`, `exception/`, `response/`, `utils/`. Không đặt orchestration nghiệp vụ vào shared hoặc controller.
+Các module `account`, `facility`, `rental`, `payment`, `support` và `management` có các thư mục `controller/`, `dto/`, `entity/`, `repository/`, `service/`. Luồng xử lý dự kiến: `Controller → Service → Repository`; nghiệp vụ đặt trong service.
 
-Mỗi feature frontend có `pages/`, `components/`, `api/`, `hooks/`. API dùng chung nằm trong `src/api/`; layout/tokens/UI primitives dùng chung, nhưng permission và nghiệp vụ do backend xác thực.
+`shared/` dành cho `config/`, `security/`, `entity/`, `exception/`, `response/` và `utils/` dùng chung.
 
-Migration MySQL sau này có một nguồn executable chuẩn ở `backend/src/main/resources/db/migration/mysql/`. Hiện thư mục chỉ có placeholder. Domain/model, quy ước ngày và policy phải được đối chiếu trước khi viết migration.
+Migration MySQL khi triển khai sẽ nằm tại `backend/src/main/resources/db/migration/mysql/`; hiện chỉ có placeholder.
 
-## Những phần được bảo toàn
+### Frontend
 
-- `sql/`: không sửa, di chuyển hoặc xóa SQL/ERD.
-- `docs/stitch_self_storage_editorial_homepage_system/`: nguồn frontend mới, không sửa hoặc xóa. App mẫu vẫn giữ riêng, chưa được chép vào frontend mới.
-- `.git/`: giữ lịch sử và index hiện có; không commit, stage, reset hoặc push trong lần dựng base này.
-- Backup nguồn cũ: `.local-backups/pre-base-restructure-2026-10-09-3c3706.zip` chứa 176 file trước cleanup cùng `BACKUP_MANIFEST.json`; đã kiểm CRC và SHA-256. Không chứa dependency/generated folders; không thay thế backup database.
+`src/features/` gồm `auth`, `catalog`, `reservation`, `rental`, `billing`, `support`, `staff`, `facility`, `management` và `admin`. Mỗi feature có `pages/`, `components/`, `api/`, `hooks/`.
 
-Source Java/JSX, migration runtime cũ, manifests, Docker/Compose/run scripts và báo cáo/tài liệu cũ đã được lưu trong ZIP rồi dọn khỏi cây làm việc. Các thay đổi đã staged từ trước vẫn ở index; cần rà soát Git khi thực hiện commit sau này.
+`src/app/` có `routes/` và `providers/`; component dùng chung nằm trong `src/components/ui/` và `src/components/domain/`. Các thư mục test gồm `unit/`, `integration/`, `e2e/`, chưa có test hoặc công cụ chạy test.
 
-## Phạm vi hiện tại
+## Xem bản mẫu giao diện Stitch
 
-Chỉ scaffold thư mục + placeholder + README/.gitignore. Chưa viết backend/frontend mới, chưa sửa SQL, chưa chuyển đổi Stitch, chưa cài dependency, chưa migration/seed database và chưa deploy. Giai đoạn tiếp theo cần yêu cầu riêng: domain/schema → backend → frontend → integration → deployment.
+Bản mẫu nằm tại thư mục gốc `stitch_self_storage_editorial_homepage_system/`, tách biệt với `frontend/`. Bản mẫu sử dụng React 18, React Router 6 và Vite 6; có 15 trang, gồm trang chủ và các màn hình khách hàng, vận hành, quản trị.
+
+Thư mục này đang bị bỏ qua bởi `.gitignore`, nên một bản clone mới có thể không chứa bản mẫu. Chỉ thực hiện các lệnh dưới đây khi thư mục và `package.json` của bản mẫu đã có trên máy.
+
+Cần Node.js và npm tương thích với Vite trong lockfile (Node.js `^18.0.0 || ^20.0.0 || >=22.0.0`). Từ thư mục gốc dự án:
+
+```powershell
+cd stitch_self_storage_editorial_homepage_system
+npm ci
+npm run dev
+```
+
+Mở địa chỉ Vite in trong terminal. Cổng được cấu hình là `3000`, thường là `http://localhost:3000`; Vite có thể chọn cổng khác nếu cổng này đang được sử dụng.
+
+Để build và xem bản build, chạy trong thư mục bản mẫu:
+
+```powershell
+npm run build
+npm run preview
+```
+
+Các script trên thuộc bản mẫu giao diện. Backend chính chưa được triển khai để kết nối các luồng nghiệp vụ.
+
+## Schema và tài liệu tham chiếu
+
+- [Schema PostgreSQL](sql/self_storage_schema.sql): 13 bảng mô tả tài khoản, kho, thuê kho, hóa đơn, thanh toán, hỗ trợ và nhật ký.
+- [ERD tổng thể](sql/self_storage_erd.png) và [nguồn Mermaid](sql/self_storage_erd.mmd).
+- ERD theo nhóm: [kho và thuê kho](sql/erd_inventory_rental.png), [thanh toán](sql/erd_billing.png), [hỗ trợ](sql/erd_support.png).
+
+Schema hiện có dùng các tính năng PostgreSQL như `TIMESTAMPTZ`, `btree_gist` và exclusion constraint để chống trùng lịch thuê. Không chạy trực tiếp script này trên MySQL; cần chuyển đổi kiểu dữ liệu và cơ chế bảo vệ lịch thuê trước khi tạo migration. Khoảng thuê trong schema được quy ước là `[start_date, end_date)`, không bao gồm ngày kết thúc.
+
+Nếu có bản mẫu local, quy chuẩn giao diện nằm trong `stitch_self_storage_editorial_homepage_system/design.md`.
+
+## Quy ước phát triển
+
+- Giữ SQL/ERD và nguồn thiết kế Stitch làm tài liệu tham chiếu khi triển khai ứng dụng mới.
+- Backend chịu trách nhiệm kiểm tra quyền truy cập, phạm vi cơ sở và quy tắc nghiệp vụ.
+- Đồng bộ domain/model với schema trước khi viết migration và tích hợp API.
+- Không đưa dependency, bản build, file môi trường, khóa bí mật hoặc bản sao lưu local vào Git.
+- Bổ sung hướng dẫn cài đặt, cấu hình, test và triển khai khi từng thành phần có mã chạy thực tế.
