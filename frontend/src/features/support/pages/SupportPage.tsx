@@ -5,8 +5,8 @@ import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import { Input } from '../../../components/ui/Input';
-import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { Select } from '../../../components/ui/Select';
+import { SkeletonList } from '../../../components/ui/Skeleton';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
 import { formatDateTime } from '../../../lib/format';
 import { TICKET_PRIORITY_LABELS, TICKET_STATUS_DISPLAY } from '../../../lib/statusMappings';
@@ -175,7 +175,7 @@ export const SupportPage = () => {
 
       <div className="mt-8">
         {ticketsQuery.isPending ? (
-          <LoadingSpinner text="Đang tải yêu cầu hỗ trợ…" />
+          <SkeletonList count={3} className="h-32" />
         ) : ticketsQuery.isError ? (
           <ErrorState
             title="Không tải được danh sách yêu cầu"

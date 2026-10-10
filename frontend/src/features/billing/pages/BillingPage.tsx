@@ -4,7 +4,7 @@ import { ApiError } from '../../../api/client';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ErrorState } from '../../../components/ui/ErrorState';
-import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
+import { SkeletonList } from '../../../components/ui/Skeleton';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
 import { cn } from '../../../lib/cn';
 import { formatCurrency, formatDate, formatDateTime } from '../../../lib/format';
@@ -114,7 +114,7 @@ export const BillingPage = () => {
 
       <div className="mt-6">
         {invoicesQuery.isPending ? (
-          <LoadingSpinner text="Đang tải hóa đơn…" />
+          <SkeletonList count={3} className="h-32" />
         ) : invoicesQuery.isError ? (
           <ErrorState
             title="Không tải được danh sách hóa đơn"

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Boxes, LogOut } from 'lucide-react';
+import { Boxes, LogOut, Menu, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useAuth } from '../features/auth/useAuth';
 import { cn } from '../lib/cn';
@@ -15,9 +16,11 @@ const NAV_LINKS = [
 export const PublicLayout = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
+    setMobileMenuOpen(false);
     navigate('/auth');
   };
 
@@ -74,8 +77,47 @@ export const PublicLayout = () => {
                 Đăng nhập
               </Button>
             )}
+
+            <button
+              type="button"
+              aria-label={mobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="cursor-pointer rounded-md p-2 text-text-muted transition-colors hover:bg-surface-muted hover:text-text-main md:hidden"
+            >
+              {mobileMenuOpen ? (
+                <X className="size-5" aria-hidden="true" />
+              ) : (
+                <Menu className="size-5" aria-hidden="true" />
+              )}
+            </button>
           </div>
         </div>
+
+        {mobileMenuOpen ? (
+          <nav className="border-t border-border-hairline bg-surface px-4 py-3 md:hidden">
+            <div className="flex flex-col gap-1">
+              {NAV_LINKS.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.end}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'rounded-md px-3 py-2.5 text-body-medium transition-colors',
+                      isActive
+                        ? 'bg-forest-tint font-semibold text-primary'
+                        : 'text-text-muted hover:bg-surface-muted hover:text-text-main',
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
+          </nav>
+        ) : null}
       </header>
 
       <main className="flex-1">

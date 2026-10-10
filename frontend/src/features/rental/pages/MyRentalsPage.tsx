@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ErrorState } from '../../../components/ui/ErrorState';
-import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
+import { SkeletonList } from '../../../components/ui/Skeleton';
 import { cn } from '../../../lib/cn';
 import { useMyInvoices } from '../../billing/hooks/useInvoices';
 import { RentalCard } from '../components/RentalCard';
@@ -79,7 +79,7 @@ export const MyRentalsPage = () => {
 
       <div className="mt-6">
         {rentalsQuery.isPending ? (
-          <LoadingSpinner text="Đang tải đơn thuê…" />
+          <SkeletonList count={3} className="h-40" />
         ) : rentalsQuery.isError ? (
           <ErrorState
             title="Không tải được danh sách đơn thuê"

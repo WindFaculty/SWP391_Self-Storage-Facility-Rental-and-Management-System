@@ -9,7 +9,7 @@ Dự án đang ở giai đoạn chuẩn bị kiến trúc và tài liệu thiế
 | Thành phần | Trạng thái |
 | --- | --- |
 | `backend/` | Khung thư mục Java; chưa có mã ứng dụng hoặc manifest build |
-| `frontend/` | Vite + React + TypeScript theo feature; tokens, UI kit, typed API client; FE1 customer app đủ luồng cơ bản (FE1-02→05) |
+| `frontend/` | Vite + React + TypeScript theo feature; tokens, UI kit, typed API client; FE1 customer app đủ luồng + test + responsive (FE1-02→06) |
 | `sql/` | Schema PostgreSQL và các sơ đồ ERD tham chiếu |
 | `stitch_self_storage_editorial_homepage_system/` | Bản mẫu giao diện React + Vite riêng tại máy local |
 | `docs/` | Thư mục dành cho tài liệu kiến trúc, API và vận hành |
@@ -106,7 +106,28 @@ npm ci
 npm run dev
 ```
 
-Kiểm tra chất lượng: `npm run lint` (oxlint), `npm run typecheck` (tsc), `npm test` (Vitest), `npm run build` (typecheck + Vite build). Vite dev proxy `/api/v1` tới `http://localhost:8088`; đặt `VITE_API_BASE_URL` khi trỏ tới môi trường khác.
+Kiểm tra chất lượng: `npm run lint` (oxlint), `npm run typecheck` (tsc), `npm test` (Vitest + Testing Library), `npm run build` (typecheck + Vite build). Vite dev proxy `/api/v1` tới `http://localhost:8088`; đặt `VITE_API_BASE_URL` khi trỏ tới môi trường khác.
+
+### Triển khai frontend lên Cloudflare Pages
+
+Cấu hình Pages (tạo project trên dashboard Cloudflare hoặc bằng Wrangler):
+
+| Mục | Giá trị |
+| --- | --- |
+| Root directory | `frontend` |
+| Build command | `npm run build` |
+| Build output | `dist` |
+| Environment variable | `VITE_API_BASE_URL=https://<api-domain>/api/v1` |
+
+`frontend/public/_redirects` đã cấu hình SPA fallback (`/* /index.html 200`). Deploy thủ công bằng Wrangler:
+
+```powershell
+cd frontend
+npm run build
+npx wrangler pages deploy dist --project-name=<ten-project>
+```
+
+Chưa có tài khoản/credentials Cloudflare trong repo; bước deploy thật thực hiện khi có quyền truy cập (W8).
 
 ## Xem bản mẫu giao diện Stitch
 

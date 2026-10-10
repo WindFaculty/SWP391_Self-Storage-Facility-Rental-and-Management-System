@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ErrorState } from '../../../components/ui/ErrorState';
-import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
+import { SkeletonList } from '../../../components/ui/Skeleton';
 import { CatalogFilters, type CatalogFilterValue } from '../components/CatalogFilters';
 import { FacilityCard } from '../components/FacilityCard';
 import { useAvailability, useFacilities, useUnitTypes } from '../hooks/useCatalog';
@@ -149,7 +149,7 @@ export const FacilityListPage = () => {
         ) : null}
 
         {facilitiesQuery.isPending || listPending ? (
-          <LoadingSpinner text="Đang tải danh sách cơ sở…" />
+          <SkeletonList count={3} className="h-44" />
         ) : facilitiesQuery.isError ? (
           <ErrorState
             title="Không tải được danh sách cơ sở"
