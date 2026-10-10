@@ -2,14 +2,14 @@ import { useEffect, useId, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 
 interface ModalProps {
-  open: boolean;
+  open?: boolean;
   title: string;
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
 }
 
-export const Modal = ({ open, title, onClose, children, footer }: ModalProps) => {
+export const Modal = ({ open = true, title, onClose, children, footer }: ModalProps) => {
   const titleId = useId();
 
   useEffect(() => {

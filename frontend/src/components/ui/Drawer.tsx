@@ -2,13 +2,14 @@ import { useEffect, useId, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 
 interface DrawerProps {
-  open: boolean;
+  open?: boolean;
   title: string;
   onClose: () => void;
   children: ReactNode;
+  footer?: ReactNode;
 }
 
-export const Drawer = ({ open, title, onClose, children }: DrawerProps) => {
+export const Drawer = ({ open = true, title, onClose, children, footer }: DrawerProps) => {
   const titleId = useId();
 
   useEffect(() => {
@@ -45,6 +46,11 @@ export const Drawer = ({ open, title, onClose, children }: DrawerProps) => {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
+        {footer ? (
+          <div className="flex flex-wrap justify-end gap-3 border-t border-border-hairline px-5 py-4">
+            {footer}
+          </div>
+        ) : null}
       </aside>
     </div>
   );

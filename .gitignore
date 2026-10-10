@@ -12,6 +12,10 @@ coverage/
 *.war
 *.log
 
+# Test artifacts
+test-results/
+playwright-report/
+
 # Local secrets/environment
 .env
 .env.*

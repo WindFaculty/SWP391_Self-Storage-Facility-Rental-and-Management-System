@@ -8,9 +8,10 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  compact?: boolean;
   isLoading?: boolean;
   icon?: ComponentType<{ className?: string }>;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
@@ -29,7 +30,8 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 
 export const Button = ({
   variant = 'primary',
-  size = 'md',
+  size,
+  compact = false,
   isLoading = false,
   icon: Icon,
   className,
@@ -44,7 +46,7 @@ export const Button = ({
     className={cn(
       'inline-flex cursor-pointer items-center justify-center rounded-md font-medium transition duration-150 ease-standard disabled:cursor-not-allowed disabled:opacity-50',
       VARIANT_CLASSES[variant],
-      SIZE_CLASSES[size],
+      SIZE_CLASSES[size ?? (compact ? 'sm' : 'md')],
       className,
     )}
     {...props}

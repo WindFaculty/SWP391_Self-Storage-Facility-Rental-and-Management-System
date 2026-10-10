@@ -1,6 +1,8 @@
-import { Route, Routes } from 'react-router-dom';
+import { createRoutesFromElements, Route, useRoutes, type NonIndexRouteObject } from 'react-router-dom';
 import { ProtectedRoute } from '../../components/guards/ProtectedRoute';
 import { PublicLayout } from '../../layouts/PublicLayout';
+import { WorkspaceLayout } from '../../layouts/WorkspaceLayout';
+import { SessionProvider } from '../providers/SessionProvider';
 import { AuthPage } from '../../features/auth/pages/AuthPage';
 import { ForbiddenPage } from '../../features/auth/pages/ForbiddenPage';
 import { BillingPage } from '../../features/billing/pages/BillingPage';
@@ -11,10 +13,11 @@ import { HomePage } from '../../features/catalog/pages/HomePage';
 import { MyRentalsPage } from '../../features/rental/pages/MyRentalsPage';
 import { ReservationPage } from '../../features/reservation/pages/ReservationPage';
 import { SupportPage } from '../../features/support/pages/SupportPage';
+import { appRoutes } from './router';
 import { NotFoundPage } from './NotFoundPage';
 
-export const AppRoutes = () => (
-  <Routes>
+const customerRoutes = createRoutesFromElements(
+  <>
     <Route element={<PublicLayout />}>
       <Route index element={<HomePage />} />
       <Route path="/facilities" element={<FacilityListPage />} />
@@ -49,5 +52,27 @@ export const AppRoutes = () => (
     <Route path="/auth" element={<AuthPage />} />
     <Route path="/forbidden" element={<ForbiddenPage />} />
     <Route path="*" element={<NotFoundPage />} />
-  </Routes>
+  </>,
 );
+
+const workspaceRoot = appRoutes[0] as NonIndexRouteObject;
+
+const workspaceRoutes = (workspaceRoot.children ?? [])
+  .filter(
+    (child): child is NonIndexRouteObject =>
+      child.index !== true && child.path !== undefined && child.path !== '*',
+  )
+  .map((child) => ({ ...child, path: `/${child.path}` }));
+
+export const AppRoutes = () =>
+  useRoutes([
+    ...customerRoutes,
+    {
+      element: (
+        <SessionProvider>
+          <WorkspaceLayout />
+        </SessionProvider>
+      ),
+      children: workspaceRoutes,
+    },
+  ]);
