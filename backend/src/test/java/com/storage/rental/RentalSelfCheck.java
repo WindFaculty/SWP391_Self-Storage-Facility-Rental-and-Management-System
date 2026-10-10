@@ -26,7 +26,9 @@ public final class RentalSelfCheck {
 
         Rental expiredHold = hold(LocalDate.of(2026, 10, 10), LocalDate.of(2026, 11, 10));
         expiredHold.transitionTo(RentalStatus.EXPIRED);
-        expectFailure(() -> expiredHold.transitionTo(RentalStatus.RESERVED), "expired hold stays expired");
+        expiredHold.transitionTo(RentalStatus.RESERVED);
+        check(expiredHold.getStatus() == RentalStatus.RESERVED, "expired hold is revived by late payment");
+        expectFailure(() -> expiredHold.transitionTo(RentalStatus.EXPIRED), "reserved cannot expire directly");
 
         Rental cancelledHold = hold(LocalDate.of(2026, 10, 10), LocalDate.of(2026, 11, 10));
         cancelledHold.transitionTo(RentalStatus.CANCELLED);

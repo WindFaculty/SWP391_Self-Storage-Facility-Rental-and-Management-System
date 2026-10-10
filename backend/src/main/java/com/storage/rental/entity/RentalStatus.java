@@ -18,9 +18,9 @@ public enum RentalStatus {
             RESERVED, Set.of(ACTIVE, CANCELLED),
             ACTIVE, Set.of(OVERDUE, RETURNED),
             OVERDUE, Set.of(RETURNED),
+            EXPIRED, Set.of(RESERVED),
             RETURNED, Set.of(),
-            CANCELLED, Set.of(),
-            EXPIRED, Set.of());
+            CANCELLED, Set.of());
 
     private static final Set<RentalStatus> AVAILABILITY_BLOCKING =
             EnumSet.of(PENDING_PAYMENT, RESERVED, ACTIVE, OVERDUE);
