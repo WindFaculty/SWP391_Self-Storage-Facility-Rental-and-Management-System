@@ -10,13 +10,15 @@ public class Rental {
     private final Long customerId;
     private final Long unitId;
     private final LocalDate startDate;
-    private final LocalDate endDate;
+    private LocalDate endDate;
     private final BigDecimal pricePerMonth;
     private final Instant paymentExpiresAt;
     private RentalStatus status;
     private Instant checkedInAt;
     private AccessMethod accessMethod;
     private String handoverCondition;
+    private Instant returnedAt;
+    private String returnCondition;
 
     private Rental(Long customerId, Long unitId, LocalDate startDate, LocalDate endDate,
                    BigDecimal pricePerMonth, Instant paymentExpiresAt) {
@@ -62,6 +64,26 @@ public class Rental {
         this.handoverCondition = handoverCondition;
     }
 
+    public void extendTo(LocalDate newEndDate) {
+        Objects.requireNonNull(newEndDate, "newEndDate");
+        if (!newEndDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("newEndDate must be after current endDate: " +
+                    newEndDate + " <= " + endDate);
+        }
+        this.endDate = newEndDate;
+    }
+
+    public void checkOut(Instant at, String returnCondition) {
+        Objects.requireNonNull(at, "at");
+        if (checkedInAt != null && at.isBefore(checkedInAt)) {
+            throw new IllegalArgumentException("returnedAt must not precede checkedInAt: " +
+                    at + " < " + checkedInAt);
+        }
+        transitionTo(RentalStatus.RETURNED);
+        this.returnedAt = at;
+        this.returnCondition = returnCondition;
+    }
+
     public Long getCustomerId() {
         return customerId;
     }
@@ -100,5 +122,13 @@ public class Rental {
 
     public String getHandoverCondition() {
         return handoverCondition;
+    }
+
+    public Instant getReturnedAt() {
+        return returnedAt;
+    }
+
+    public String getReturnCondition() {
+        return returnCondition;
     }
 }

@@ -2,7 +2,9 @@ package com.storage.rental.service;
 
 import com.storage.facility.entity.UnitStatus;
 import com.storage.rental.entity.Rental;
+import com.storage.rental.entity.RentalRenewal;
 import com.storage.rental.entity.RentalStatus;
+import com.storage.rental.entity.RenewalStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -96,6 +98,77 @@ public class RentalHoldService {
 
     public List<Rental> rentalsOf(long unitId) {
         return rentalsByUnit.getOrDefault(unitId, List.of());
+    }
+
+    public RentalRenewal requestRenewal(Rental rental, UnitStatus unitStatus,
+                                        LocalDate requestedEndDate, Instant requestedAt) {
+        ReentrantLock lock = lockFor(rental.getUnitId());
+        lock.lock();
+        try {
+            requireActive(rental);
+            List<Rental> existing = rentalsByUnit.getOrDefault(rental.getUnitId(), List.of());
+            if (!existing.contains(rental)) {
+                throw new IllegalArgumentException("Unknown rental " + rental + " for unit " + rental.getUnitId());
+            }
+            RentalRenewal renewal = new RentalRenewal(rental, requestedEndDate, requestedAt);
+            if (!RentalAvailability.isAvailable(unitStatus, existing, rental.getEndDate(), requestedEndDate)) {
+                throw new UnitNotAvailableException(rental.getUnitId(), rental.getEndDate(), requestedEndDate);
+            }
+            return renewal;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void applyRenewal(RentalRenewal renewal, UnitStatus unitStatus, Instant at) {
+        Rental rental = renewal.getRental();
+        ReentrantLock lock = lockFor(rental.getUnitId());
+        lock.lock();
+        try {
+            if (renewal.getStatus() != RenewalStatus.REQUESTED) {
+                throw new IllegalStateException("Renewal already decided: " + renewal.getStatus());
+            }
+            requireActive(rental);
+            List<Rental> existing = rentalsByUnit.getOrDefault(rental.getUnitId(), List.of());
+            if (!existing.contains(rental)) {
+                throw new IllegalArgumentException("Unknown rental " + rental + " for unit " + rental.getUnitId());
+            }
+            if (!RentalAvailability.isAvailable(unitStatus, existing,
+                    rental.getEndDate(), renewal.getRequestedEndDate())) {
+                throw new UnitNotAvailableException(rental.getUnitId(), rental.getEndDate(),
+                        renewal.getRequestedEndDate());
+            }
+            rental.extendTo(renewal.getRequestedEndDate());
+            renewal.apply(at);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public int markOverdue(LocalDate today) {
+        int overdue = 0;
+        for (Long unitId : rentalsByUnit.keySet()) {
+            ReentrantLock lock = lockFor(unitId);
+            lock.lock();
+            try {
+                for (Rental rental : rentalsByUnit.getOrDefault(unitId, List.of())) {
+                    if (rental.getStatus() == RentalStatus.ACTIVE && !today.isBefore(rental.getEndDate())) {
+                        rental.transitionTo(RentalStatus.OVERDUE);
+                        overdue++;
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        return overdue;
+    }
+
+    private static void requireActive(Rental rental) {
+        RentalStatus status = rental.getStatus();
+        if (status != RentalStatus.ACTIVE && status != RentalStatus.OVERDUE) {
+            throw new IllegalStateException("Renewal requires an active rental: " + status);
+        }
     }
 
     private ReentrantLock lockFor(long unitId) {
