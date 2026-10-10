@@ -43,6 +43,15 @@ public class PaymentAttempt {
     @Column(name = "paid_at")
     private Instant paidAt;
 
+    @Column(name = "refunded_at")
+    private Instant refundedAt;
+
+    @Column(name = "refunded_by_user_id")
+    private Long refundedByUserId;
+
+    @Column(name = "refund_note", length = 255)
+    private String refundNote;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -79,6 +88,17 @@ public class PaymentAttempt {
         return true;
     }
 
+    public boolean refund(Instant refundedAt, Long refundedByUserId, String note) {
+        if (status != Status.SUCCESS) {
+            return false;
+        }
+        status = Status.REFUNDED;
+        this.refundedAt = refundedAt;
+        this.refundedByUserId = refundedByUserId;
+        this.refundNote = note;
+        return true;
+    }
+
     public Long getId() {
         return id;
     }
@@ -109,6 +129,18 @@ public class PaymentAttempt {
 
     public Instant getPaidAt() {
         return paidAt;
+    }
+
+    public Instant getRefundedAt() {
+        return refundedAt;
+    }
+
+    public Long getRefundedByUserId() {
+        return refundedByUserId;
+    }
+
+    public String getRefundNote() {
+        return refundNote;
     }
 
     public Instant getCreatedAt() {

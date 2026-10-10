@@ -62,7 +62,8 @@ public class PaymentService {
         Invoice invoice = invoiceRepository.findById(attempt.getInvoiceId())
                 .orElseThrow(() -> new IllegalStateException(
                         "invoice missing for attempt " + attempt.getId()));
-        // ponytail: success arriving after the invoice left PENDING needs the reconcile/refund queue (BE3-03).
+        // ponytail: late success keeps the invoice untouched; resolution is manual refund (RefundService)
+        // or querydr reconcile once BE3-03 sandbox credentials exist.
         invoice.markPaid();
         return attempt;
     }

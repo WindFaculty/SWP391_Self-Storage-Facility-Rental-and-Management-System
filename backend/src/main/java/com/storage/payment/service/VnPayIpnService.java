@@ -47,7 +47,7 @@ public class VnPayIpnService {
             boolean succeeded = "00".equals(params.get("vnp_ResponseCode"))
                     && "00".equals(params.get("vnp_TransactionStatus"));
             // ponytail: success on an invoice that is no longer PENDING (late IPN) still records the
-            // attempt; reconcile/refund queue arrives with BE3-05 and the querydr API in BE3-03.
+            // attempt; staff resolves via manual refund (RefundService), querydr reconcile pending G1.
             paymentService.handleGatewayResult(txnRef, succeeded,
                     vnPayService.parsePayDate(params.get("vnp_PayDate")),
                     params.get("vnp_TransactionNo"));
