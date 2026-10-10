@@ -1,5 +1,10 @@
-import { PAYMENT_STATE_LABELS, RENTAL_STATUS_LABELS, TASK_STATUS_LABELS } from '../rentalRules'
-import type { PaymentState, RentalStatus, TaskStatus } from '../types'
+import {
+  PAYMENT_STATE_LABELS,
+  RENTAL_STATUS_LABELS,
+  TASK_STATUS_LABELS,
+} from '../rentalRules'
+import { TICKET_STATUS_LABELS } from '../supportRules'
+import type { PaymentState, RentalStatus, TaskStatus, TicketStatus } from '../types'
 
 const RENTAL_STATUS_DOT: Record<RentalStatus, string> = {
   PENDING_PAYMENT: 'bg-text-muted',
@@ -24,6 +29,13 @@ const PAYMENT_STATE_DOT: Record<PaymentState, string> = {
   OVERDUE: 'bg-danger',
 }
 
+const TICKET_STATUS_DOT: Record<TicketStatus, string> = {
+  OPEN: 'bg-warning',
+  IN_PROGRESS: 'bg-info',
+  RESOLVED: 'bg-success',
+  CLOSED: 'bg-text-muted',
+}
+
 function DotLabel({ dot, label }: { dot: string; label: string }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-label-help text-text-main">
@@ -43,4 +55,8 @@ export function TaskStatusLabel({ status }: { status: TaskStatus }) {
 
 export function PaymentStateLabel({ state }: { state: PaymentState }) {
   return <DotLabel dot={PAYMENT_STATE_DOT[state]} label={PAYMENT_STATE_LABELS[state]} />
+}
+
+export function TicketStatusLabel({ status }: { status: TicketStatus }) {
+  return <DotLabel dot={TICKET_STATUS_DOT[status]} label={TICKET_STATUS_LABELS[status]} />
 }

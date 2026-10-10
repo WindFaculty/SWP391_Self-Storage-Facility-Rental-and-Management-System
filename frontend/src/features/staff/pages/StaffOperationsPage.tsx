@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Tabs } from '../../../components/ui/Tabs'
 import { PaymentStateLabel, TaskStatusLabel } from '../../facility/components/StatusLabels'
+import { TicketsPanel } from '../../facility/components/TicketsPanel'
 import { useStaffTasks } from '../../facility/hooks/useRentalOps'
 import { TASK_STATUS_LABELS, TASK_TYPE_LABELS } from '../../facility/rentalRules'
 import type { StaffTask, TaskFilters, TaskSlot, TaskStatus, TaskType } from '../../facility/types'
@@ -326,6 +327,10 @@ export function StaffOperationsPage() {
           }}
         />
       )}
+
+      <div className="mt-space-xl">
+        <TicketsPanel facilityId={facilityId} onMutated={() => void reload()} />
+      </div>
     </div>
   )
 }

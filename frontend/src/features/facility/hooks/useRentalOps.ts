@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import { listRentals, listStaffMembers, listStaffTasks } from '../api/rentalOpsApi'
+import { listTickets } from '../api/supportTicketsApi'
 import type {
   Rental,
   RentalFilters,
   RentalSummary,
   StaffMember,
   StaffTask,
+  SupportTicket,
   TaskFilters,
   TaskSummary,
+  TicketFilters,
 } from '../types'
 
 const EMPTY_RENTAL_SUMMARY: RentalSummary = {
@@ -103,4 +106,33 @@ export function useStaffMembers(facilityId: number) {
   }, [facilityId])
 
   return { staff }
+}
+
+export function useTickets(filters: TicketFilters) {
+  const [tickets, setTickets] = useState<SupportTicket[]>([])
+  const [activeCount, setActiveCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const { facilityId, status, search } = filters
+
+  const reload = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await listTickets({ facilityId, status, search })
+      setTickets(result.items)
+      setActiveCount(result.activeCount)
+    } catch {
+      setError('Không tải được danh sách ticket. Vui lòng thử lại.')
+    } finally {
+      setLoading(false)
+    }
+  }, [facilityId, status, search])
+
+  useEffect(() => {
+    void reload()
+  }, [reload])
+
+  return { tickets, activeCount, loading, error, reload }
 }

@@ -1,5 +1,9 @@
+import { setMockUnitStatus } from './facilityUnitsApi'
+import { idCounters, rentalStore, taskStore, ticketStore } from './opsStore'
+import { MOCK_STAFF } from './rentalMockData'
 import {
   canHandover,
+  canReturn,
   filterRentals,
   filterTasks,
   isSameDay,
@@ -19,14 +23,10 @@ import type {
   TaskStatus,
   TaskSummary,
   TaskType,
+  UnitInspectionResult,
 } from '../types'
-import { MOCK_RENTALS, MOCK_STAFF, MOCK_STAFF_TASKS, today } from './rentalMockData'
 
 const LATENCY_MS = 150
-
-const rentalStore: Rental[] = MOCK_RENTALS.map((rental) => ({ ...rental }))
-const taskStore: StaffTask[] = MOCK_STAFF_TASKS.map((task) => ({ ...task }))
-let taskIdSequence = taskStore.reduce((max, task) => Math.max(max, task.id), 0)
 
 function delay(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, LATENCY_MS))
@@ -49,7 +49,7 @@ export async function listRentals(
   facilityRentals.forEach((rental) => {
     byStatus[rental.status] += 1
   })
-  const now = today()
+  const now = new Date()
   const byTab: RentalSummary['byTab'] = {
     reserved: 0,
     active: 0,
@@ -85,7 +85,7 @@ export async function listStaffTasks(
 ): Promise<{ items: StaffTask[]; summary: TaskSummary }> {
   await delay()
   const facilityTasks = taskStore.filter((task) => task.facilityId === filters.facilityId)
-  const now = today()
+  const now = new Date()
   const scoped = filterTasks(facilityTasks, filters, now)
   const byStatus: Record<TaskStatus, number> = {
     ASSIGNED: 0,
@@ -150,9 +150,9 @@ export async function assignTask(input: AssignTaskInput): Promise<StaffTask> {
   if (existingOpen) {
     throw new Error(`Hợp đồng đã có công việc ${TASK_TYPE_LABELS[input.taskType]} đang mở.`)
   }
-  taskIdSequence += 1
+  idCounters.task += 1
   const task: StaffTask = {
-    id: taskIdSequence,
+    id: idCounters.task,
     facilityId: input.facilityId,
     taskType: input.taskType,
     status: 'ASSIGNED',
@@ -198,6 +198,12 @@ export async function completeTask(taskId: number, notes: string): Promise<Staff
   if (task.taskType === 'HANDOVER') {
     throw new Error('Công việc bàn giao cần hoàn tất bằng biểu mẫu check-in.')
   }
+  if (task.taskType === 'RETURN_INSPECTION') {
+    throw new Error('Công việc trả kho cần hoàn tất bằng biểu mẫu xác nhận trả kho.')
+  }
+  if (task.taskType === 'UNIT_INSPECTION') {
+    throw new Error('Công việc kiểm tra kho cần ghi nhận kết quả kiểm tra.')
+  }
   const transition = isTaskTransitionAllowed(task.status, 'DONE')
   if (!transition.allowed) {
     throw new Error(transition.reason)
@@ -205,9 +211,17 @@ export async function completeTask(taskId: number, notes: string): Promise<Staff
   if (!notes.trim()) {
     throw new Error('Nhập ghi nhận kết quả công việc.')
   }
+  const now = new Date().toISOString()
   task.status = 'DONE'
-  task.completedAt = new Date().toISOString()
+  task.completedAt = now
   task.notes = notes.trim()
+  if (task.taskType === 'SUPPORT' && task.ticketId) {
+    const ticket = ticketStore.find((item) => item.id === task.ticketId)
+    if (ticket && ticket.status === 'IN_PROGRESS') {
+      ticket.status = 'RESOLVED'
+      ticket.resolvedAt = now
+    }
+  }
   return { ...task }
 }
 
@@ -257,5 +271,93 @@ export async function completeHandover(
   task.status = 'DONE'
   task.completedAt = now
   task.notes = input.handoverCondition.trim()
+  return { task: { ...task }, rental: { ...rental } }
+}
+
+export interface ReturnInput {
+  condition: string
+}
+
+export async function completeReturn(
+  taskId: number,
+  input: ReturnInput,
+): Promise<{ task: StaffTask; rental: Rental }> {
+  await delay()
+  const task = taskStore.find((item) => item.id === taskId)
+  if (!task) {
+    throw new Error('Không tìm thấy công việc.')
+  }
+  if (task.taskType !== 'RETURN_INSPECTION') {
+    throw new Error('Công việc này không phải trả kho.')
+  }
+  const rental = task.rentalId
+    ? rentalStore.find((item) => item.id === task.rentalId)
+    : undefined
+  if (!rental) {
+    throw new Error('Không tìm thấy hợp đồng của công việc.')
+  }
+  if (task.status === 'ASSIGNED') {
+    throw new Error('Cần nhận việc trước khi xác nhận trả kho.')
+  }
+  const transition = isTaskTransitionAllowed(task.status, 'DONE')
+  if (!transition.allowed) {
+    throw new Error(transition.reason)
+  }
+  const eligibility = canReturn(rental)
+  if (!eligibility.allowed) {
+    throw new Error(eligibility.reason)
+  }
+  if (!input.condition.trim()) {
+    throw new Error('Ghi nhận tình trạng kho khi trả.')
+  }
+  const now = new Date().toISOString()
+  rental.status = 'RETURNED'
+  rental.returnedAt = now
+  rental.returnCondition = input.condition.trim()
+  setMockUnitStatus(rental.unitId, 'INSPECTION')
+  task.status = 'DONE'
+  task.completedAt = now
+  task.notes = input.condition.trim()
+  return { task: { ...task }, rental: { ...rental } }
+}
+
+export interface UnitInspectionInput {
+  result: UnitInspectionResult
+  notes: string
+}
+
+export async function completeUnitInspection(
+  taskId: number,
+  input: UnitInspectionInput,
+): Promise<{ task: StaffTask; rental: Rental }> {
+  await delay()
+  const task = taskStore.find((item) => item.id === taskId)
+  if (!task) {
+    throw new Error('Không tìm thấy công việc.')
+  }
+  if (task.taskType !== 'UNIT_INSPECTION') {
+    throw new Error('Công việc này không phải kiểm tra kho.')
+  }
+  const rental = task.rentalId
+    ? rentalStore.find((item) => item.id === task.rentalId)
+    : undefined
+  if (!rental) {
+    throw new Error('Không tìm thấy hợp đồng của công việc.')
+  }
+  if (task.status === 'ASSIGNED') {
+    throw new Error('Cần nhận việc trước khi ghi nhận kết quả kiểm tra.')
+  }
+  const transition = isTaskTransitionAllowed(task.status, 'DONE')
+  if (!transition.allowed) {
+    throw new Error(transition.reason)
+  }
+  if (!input.notes.trim()) {
+    throw new Error('Nhập ghi nhận kết quả kiểm tra.')
+  }
+  const now = new Date().toISOString()
+  setMockUnitStatus(rental.unitId, input.result === 'PASS' ? 'AVAILABLE' : 'MAINTENANCE')
+  task.status = 'DONE'
+  task.completedAt = now
+  task.notes = `${input.result === 'PASS' ? 'Đạt kiểm tra' : 'Không đạt'}: ${input.notes.trim()}`
   return { task: { ...task }, rental: { ...rental } }
 }

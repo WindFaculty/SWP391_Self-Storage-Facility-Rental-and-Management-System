@@ -24,6 +24,13 @@ function delay(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, LATENCY_MS))
 }
 
+export function setMockUnitStatus(unitId: number, status: UnitStatus): void {
+  const unit = store.find((item) => item.id === unitId)
+  if (unit) {
+    unit.status = status
+  }
+}
+
 export async function listFacilities(): Promise<Facility[]> {
   await delay()
   return MOCK_FACILITIES.map((facility) => ({ ...facility }))

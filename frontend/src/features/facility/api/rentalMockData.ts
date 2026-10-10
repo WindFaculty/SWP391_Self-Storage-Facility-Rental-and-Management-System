@@ -9,7 +9,7 @@ import type {
   TaskType,
 } from '../types'
 
-function at(dayOffset: number, hour: number, minute = 0): string {
+export function at(dayOffset: number, hour: number, minute = 0): string {
   const date = new Date()
   date.setDate(date.getDate() + dayOffset)
   date.setHours(hour, minute, 0, 0)
@@ -56,11 +56,14 @@ interface RentalSeed {
   paymentState: PaymentState
   appointment?: { dayOffset: number; hour: number; minute?: number }
   assignedStaffName?: string
+  returned?: { dayOffset: number; hour: number; minute?: number }
+  returnCondition?: string
 }
 
 function makeRental(id: number, seed: RentalSeed): Rental {
   const { unitCode, unitTypeId, unitTypeName } = unitInfo(seed.unitId)
-  const checkedIn = seed.status === 'ACTIVE' || seed.status === 'OVERDUE'
+  const checkedIn =
+    seed.status === 'ACTIVE' || seed.status === 'OVERDUE' || seed.status === 'RETURNED'
   return {
     id,
     facilityId: 1,
@@ -81,6 +84,8 @@ function makeRental(id: number, seed: RentalSeed): Rental {
     checkedInAt: checkedIn ? at(seed.startOffset, 9) : null,
     accessMethod: checkedIn ? 'ACCESS_CARD' : null,
     handoverCondition: checkedIn ? 'Kho sạch, khóa điện tử và thẻ truy cập hoạt động tốt.' : null,
+    returnedAt: seed.returned ? at(seed.returned.dayOffset, seed.returned.hour, seed.returned.minute ?? 0) : null,
+    returnCondition: seed.returnCondition ?? null,
     assignedStaffName: seed.assignedStaffName ?? null,
     openHandoverTaskId: null,
   }
@@ -159,8 +164,10 @@ export const MOCK_RENTALS: Rental[] = [
     startOffset: -95,
     endOffset: -3,
     pricePerMonth: 1_450_000,
-    status: 'OVERDUE',
-    paymentState: 'OVERDUE',
+    status: 'RETURNED',
+    paymentState: 'PAID',
+    returned: { dayOffset: -2, hour: 16 },
+    returnCondition: 'Trả muộn 1 ngày; kho còn sạch, đã thu hồi thẻ truy cập.',
   }),
   makeRental(8, {
     unitId: 20,
@@ -169,7 +176,7 @@ export const MOCK_RENTALS: Rental[] = [
     startOffset: -120,
     endOffset: -2,
     pricePerMonth: 650_000,
-    status: 'RETURNED',
+    status: 'OVERDUE',
     paymentState: 'PAID',
   }),
   makeRental(9, {
@@ -303,7 +310,7 @@ export const MOCK_STAFF_TASKS: StaffTask[] = [
     staffId: 201,
     ticketId: 1,
     scheduled: { dayOffset: 0, hour: 10, minute: 30 },
-    customerNameOverride: 'Nguyễn Minh Quân',
+    customerNameOverride: 'Vũ Quốc Bảo',
   }),
   makeTask(7, {
     taskType: 'HANDOVER',
@@ -320,6 +327,16 @@ export const MOCK_STAFF_TASKS: StaffTask[] = [
     scheduled: { dayOffset: -1, hour: 9 },
     completed: { dayOffset: -1, hour: 9, minute: 30 },
     notes: 'Vệ sinh kho, kiểm tra gioăng cửa.',
+  }),
+  makeTask(9, {
+    taskType: 'SUPPORT',
+    status: 'DONE',
+    staffId: 202,
+    ticketId: 4,
+    scheduled: { dayOffset: -1, hour: 13, minute: 30 },
+    completed: { dayOffset: -1, hour: 15 },
+    notes: 'Đã hỗ trợ xe đẩy và nhân viên vận chuyển.',
+    customerNameOverride: 'Đỗ Thùy Linh',
   }),
 ]
 

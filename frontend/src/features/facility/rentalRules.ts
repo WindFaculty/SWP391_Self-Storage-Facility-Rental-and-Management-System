@@ -116,6 +116,13 @@ export function canHandover(rental: Rental): { allowed: boolean; reason?: string
   return { allowed: true }
 }
 
+export function canReturn(rental: Rental): { allowed: boolean; reason?: string } {
+  if (rental.status !== 'ACTIVE' && rental.status !== 'OVERDUE') {
+    return { allowed: false, reason: 'Chỉ xác nhận trả kho với hợp đồng đang thuê hoặc quá hạn.' }
+  }
+  return { allowed: true }
+}
+
 const TASK_TRANSITIONS: Record<TaskStatus, TaskStatus[]> = {
   ASSIGNED: ['IN_PROGRESS', 'CANCELLED'],
   IN_PROGRESS: ['DONE', 'CANCELLED'],

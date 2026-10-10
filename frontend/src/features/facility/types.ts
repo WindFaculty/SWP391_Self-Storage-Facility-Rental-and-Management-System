@@ -95,6 +95,8 @@ export interface Rental {
   checkedInAt: string | null
   accessMethod: AccessMethod | null
   handoverCondition: string | null
+  returnedAt: string | null
+  returnCondition: string | null
   assignedStaffName: string | null
   openHandoverTaskId: number | null
 }
@@ -149,4 +151,31 @@ export interface RentalSummary {
 export interface TaskSummary {
   byStatus: Record<TaskStatus, number>
   byType: Record<TaskType, number>
+}
+
+export type UnitInspectionResult = 'PASS' | 'FAIL'
+
+export type TicketCategory = 'UNIT' | 'LOCK' | 'ACCESS' | 'PAYMENT' | 'ITEMS' | 'OTHER'
+
+export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
+
+export interface SupportTicket {
+  id: number
+  facilityId: number
+  customerName: string
+  rentalId: number | null
+  unitCode: string | null
+  category: TicketCategory
+  title: string
+  description: string
+  status: TicketStatus
+  createdAt: string
+  resolvedAt: string | null
+  assignedStaffName: string | null
+}
+
+export interface TicketFilters {
+  facilityId: number
+  status: TicketStatus | null
+  search: string
 }

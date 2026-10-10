@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   canHandover,
+  canReturn,
   filterRentals,
   filterTasks,
   isRentalExpiring,
@@ -34,6 +35,8 @@ function makeRental(overrides: Partial<Rental> = {}): Rental {
     checkedInAt: null,
     accessMethod: null,
     handoverCondition: null,
+    returnedAt: null,
+    returnCondition: null,
     assignedStaffName: null,
     openHandoverTaskId: null,
     ...overrides,
@@ -129,6 +132,16 @@ describe('canHandover', () => {
     expect(canHandover(makeRental({ status: 'RESERVED', paymentState: 'OVERDUE' })).reason).toContain(
       'Chưa thu đủ',
     )
+  })
+})
+
+describe('canReturn', () => {
+  it('allows ACTIVE and OVERDUE rentals only', () => {
+    expect(canReturn(makeRental({ status: 'ACTIVE' })).allowed).toBe(true)
+    expect(canReturn(makeRental({ status: 'OVERDUE' })).allowed).toBe(true)
+    expect(canReturn(makeRental({ status: 'RETURNED' })).allowed).toBe(false)
+    expect(canReturn(makeRental({ status: 'RESERVED' })).allowed).toBe(false)
+    expect(canReturn(makeRental({ status: 'CANCELLED' })).reason).toContain('đang thuê hoặc quá hạn')
   })
 })
 
