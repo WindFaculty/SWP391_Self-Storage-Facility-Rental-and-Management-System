@@ -1,6 +1,6 @@
 export type InvoiceStatus = 'PENDING' | 'PAID' | 'CANCELLED' | 'EXPIRED';
 
-export type InvoiceType = 'DEPOSIT' | 'RENT' | 'RENEWAL' | 'EXTRA' | 'OVERDUE';
+export type InvoiceType = 'DEPOSIT' | 'RENTAL' | 'RENEWAL' | 'EXTRA' | 'OVERDUE';
 
 export interface InvoiceSummary {
   id: string;

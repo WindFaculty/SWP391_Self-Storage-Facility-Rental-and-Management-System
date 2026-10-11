@@ -12,9 +12,7 @@ export interface Facility {
 export interface UnitType {
   id: string;
   name: string;
-  width: number;
-  length: number;
-  height: number;
+  sizeM2: number;
   description: string | null;
   minMonthlyPrice: number;
   maxMonthlyPrice: number;

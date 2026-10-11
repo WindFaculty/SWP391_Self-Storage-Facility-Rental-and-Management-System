@@ -50,4 +50,16 @@ public class FeeType {
     public boolean isActive() {
         return active;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDefaultAmount(BigDecimal defaultAmount) {
+        this.defaultAmount = defaultAmount;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

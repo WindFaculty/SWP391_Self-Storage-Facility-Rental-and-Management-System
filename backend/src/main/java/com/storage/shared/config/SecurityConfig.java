@@ -62,13 +62,19 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/payments/vnpay/ipn", "/payments/vnpay/return").permitAll()
                         .requestMatchers(HttpMethod.GET, "/facilities", "/facilities/*",
-                                "/facilities/*/unit-types", "/facilities/*/available-units")
+                                "/facilities/*/unit-types", "/facilities/*/available-units",
+                                "/unit-types", "/availability")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/business/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER")
+                        .requestMatchers("/management/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER")
                         .requestMatchers("/manager/**").hasAnyRole("ADMIN", "FACILITY_MANAGER")
                         .requestMatchers("/staff/**").hasAnyRole("ADMIN", "FACILITY_MANAGER", "FACILITY_STAFF")
+                        .requestMatchers("/ops/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER",
+                                "FACILITY_MANAGER", "FACILITY_STAFF")
                         .requestMatchers("/customer/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers("/rentals/**", "/invoices/**", "/support-tickets/**",
+                                "/payments/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) ->

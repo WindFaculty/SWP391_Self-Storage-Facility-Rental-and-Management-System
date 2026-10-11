@@ -29,9 +29,9 @@ import { estimateRent } from '../lib/estimate';
 type Step = 1 | 2 | 3;
 
 const STEPS: { id: Step; label: string }[] = [
-  { id: 1, label: 'Thông tin thuê' },
-  { id: 2, label: 'Kiểm tra chi phí' },
-  { id: 3, label: 'Xác nhận' },
+  { id: 1, label: 'ThÃ´ng tin thuÃª' },
+  { id: 2, label: 'Kiá»ƒm tra chi phÃ­' },
+  { id: 3, label: 'XÃ¡c nháº­n' },
 ];
 
 interface SummaryRowProps {
@@ -96,15 +96,15 @@ export const ReservationPage = () => {
 
   const handleContinueFromInfo = () => {
     if (!filters.facilityId || !filters.unitTypeId) {
-      setError('Vui lòng chọn cơ sở và loại kho.');
+      setError('Vui lÃ²ng chá»n cÆ¡ sá»Ÿ vÃ  loáº¡i kho.');
       return;
     }
     if (!isValidIsoDate(filters.startDate)) {
-      setError('Ngày bắt đầu không hợp lệ.');
+      setError('NgÃ y báº¯t Ä‘áº§u khÃ´ng há»£p lá»‡.');
       return;
     }
     if (!acceptedTerms) {
-      setError('Bạn cần đồng ý với điều khoản thuê kho để tiếp tục.');
+      setError('Báº¡n cáº§n Ä‘á»“ng Ã½ vá»›i Ä‘iá»u khoáº£n thuÃª kho Ä‘á»ƒ tiáº¿p tá»¥c.');
       return;
     }
     goToStep(2);
@@ -128,7 +128,7 @@ export const ReservationPage = () => {
           setError(
             err instanceof ApiError
               ? err.message
-              : 'Không thể giữ chỗ. Vui lòng kiểm tra lại thông tin và thử lại.',
+              : 'KhÃ´ng thá»ƒ giá»¯ chá»—. Vui lÃ²ng kiá»ƒm tra láº¡i thÃ´ng tin vÃ  thá»­ láº¡i.',
           );
         },
       },
@@ -143,7 +143,7 @@ export const ReservationPage = () => {
         setError(
           err instanceof ApiError
             ? err.message
-            : 'Không tạo được liên kết thanh toán VNPay. Vui lòng thử lại.',
+            : 'KhÃ´ng táº¡o Ä‘Æ°á»£c liÃªn káº¿t thanh toÃ¡n VNPay. Vui lÃ²ng thá»­ láº¡i.',
         );
       },
     });
@@ -156,45 +156,45 @@ export const ReservationPage = () => {
       <section className="page-container px-4 py-16 sm:px-6 lg:px-10">
         <div className="flex flex-col items-center gap-3 text-center">
           <CheckCircle2 className="size-10 text-success" aria-hidden="true" />
-          <h1 className="text-page-title text-text-main">Đã giữ chỗ thành công</h1>
+          <h1 className="text-page-title text-text-main">ÄÃ£ giá»¯ chá»— thÃ nh cÃ´ng</h1>
           <p className="max-w-lg text-body text-text-muted">
-            Kho đã được khóa lịch cho kỳ thuê của bạn. Hoàn tất thanh toán để hợp đồng được xác
-            nhận.
+            Kho Ä‘Ã£ Ä‘Æ°á»£c khÃ³a lá»‹ch cho ká»³ thuÃª cá»§a báº¡n. HoÃ n táº¥t thanh toÃ¡n Ä‘á»ƒ há»£p Ä‘á»“ng Ä‘Æ°á»£c xÃ¡c
+            nháº­n.
           </p>
         </div>
 
         <div className="mt-8 rounded-lg border border-border-hairline bg-surface p-5">
-          <SummaryRow label="Trạng thái đơn thuê">
+          <SummaryRow label="Tráº¡ng thÃ¡i Ä‘Æ¡n thuÃª">
             <StatusLabel label={rentalStatus.label} tone={rentalStatus.tone} />
           </SummaryRow>
           {rental.unitCode ? (
-            <SummaryRow label="Kho được gán">
+            <SummaryRow label="Kho Ä‘Æ°á»£c gÃ¡n">
               <strong>{rental.unitCode}</strong>
             </SummaryRow>
           ) : null}
-          <SummaryRow label="Kỳ thuê">
-            {formatDate(rental.startDate)} – {formatDate(rental.endDate)}
+          <SummaryRow label="Ká»³ thuÃª">
+            {formatDate(rental.startDate)} â€“ {formatDate(rental.endDate)}
           </SummaryRow>
           {rental.holdExpiresAt ? (
-            <SummaryRow label="Hết hạn giữ chỗ">
+            <SummaryRow label="Háº¿t háº¡n giá»¯ chá»—">
               <strong className="text-warning">{formatDateTime(rental.holdExpiresAt)}</strong>
             </SummaryRow>
           ) : null}
           {invoice ? (
             <>
-              <SummaryRow label="Hóa đơn">
+              <SummaryRow label="HÃ³a Ä‘Æ¡n">
                 <StatusLabel
                   label={INVOICE_STATUS_DISPLAY[invoice.status].label}
                   tone={INVOICE_STATUS_DISPLAY[invoice.status].tone}
                 />
               </SummaryRow>
               {typeof invoice.rentAmount === 'number' ? (
-                <SummaryRow label="Tiền thuê">{formatCurrency(invoice.rentAmount)}</SummaryRow>
+                <SummaryRow label="Tiá»n thuÃª">{formatCurrency(invoice.rentAmount)}</SummaryRow>
               ) : null}
               {typeof invoice.depositAmount === 'number' ? (
-                <SummaryRow label="Tiền cọc">{formatCurrency(invoice.depositAmount)}</SummaryRow>
+                <SummaryRow label="Tiá»n cá»c">{formatCurrency(invoice.depositAmount)}</SummaryRow>
               ) : null}
-              <SummaryRow label="Tổng cần thanh toán">
+              <SummaryRow label="Tá»•ng cáº§n thanh toÃ¡n">
                 <strong className="text-body-medium">{formatCurrency(invoice.totalAmount)}</strong>
               </SummaryRow>
             </>
@@ -210,11 +210,11 @@ export const ReservationPage = () => {
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           {invoice && invoice.status === 'PENDING' ? (
             <Button isLoading={createVnPayUrl.isPending} onClick={handlePay}>
-              Thanh toán ngay qua VNPay
+              Thanh toÃ¡n ngay qua VNPay
             </Button>
           ) : null}
           <Button variant="outline" onClick={() => navigate('/my-rentals')}>
-            Xem Kho của tôi
+            Xem Kho cá»§a tÃ´i
           </Button>
         </div>
       </section>
@@ -223,10 +223,10 @@ export const ReservationPage = () => {
 
   return (
     <section className="page-container px-4 py-10 sm:px-6 lg:px-10">
-      <h1 className="text-page-title text-text-main">Đặt kho</h1>
+      <h1 className="text-page-title text-text-main">Äáº·t kho</h1>
       <p className="mt-2 text-body text-text-muted">
-        Hoàn tất 3 bước để giữ chỗ. Hệ thống kiểm tra lại tồn kho và gán kho cụ thể khi bạn xác
-        nhận.
+        HoÃ n táº¥t 3 bÆ°á»›c Ä‘á»ƒ giá»¯ chá»—. Há»‡ thá»‘ng kiá»ƒm tra láº¡i tá»“n kho vÃ  gÃ¡n kho cá»¥ thá»ƒ khi báº¡n xÃ¡c
+        nháº­n.
       </p>
 
       <ol className="mt-8 flex flex-wrap items-center gap-3">
@@ -272,14 +272,14 @@ export const ReservationPage = () => {
         <div className="mt-8 flex flex-col gap-6">
           {facilitiesQuery.isError || unitTypesQuery.isError ? (
             <ErrorState
-              title="Không tải được dữ liệu cơ sở"
+              title="KhÃ´ng táº£i Ä‘Æ°á»£c dá»¯ liá»‡u cÆ¡ sá»Ÿ"
               onRetry={() => {
                 facilitiesQuery.refetch();
                 unitTypesQuery.refetch();
               }}
             />
           ) : facilitiesQuery.isPending || unitTypesQuery.isPending ? (
-            <LoadingSpinner text="Đang tải dữ liệu cơ sở…" />
+            <LoadingSpinner text="Äang táº£i dá»¯ liá»‡u cÆ¡ sá»Ÿâ€¦" />
           ) : (
             <>
               <CatalogFilters
@@ -290,19 +290,19 @@ export const ReservationPage = () => {
                 value={filters}
                 onChange={setFilters}
                 onSubmit={handleContinueFromInfo}
-                submitLabel="Kiểm tra chi phí"
+                submitLabel="Kiá»ƒm tra chi phÃ­"
               />
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="reservation-note" className="text-label text-text-main">
-                  Ghi chú cho đơn thuê (không bắt buộc)
+                  Ghi chÃº cho Ä‘Æ¡n thuÃª (khÃ´ng báº¯t buá»™c)
                 </label>
                 <textarea
                   id="reservation-note"
                   rows={3}
                   value={note}
                   onChange={(event) => setNote(event.target.value)}
-                  placeholder="Ví dụ: cần bàn giao ngoài giờ hành chính"
+                  placeholder="VÃ­ dá»¥: cáº§n bÃ n giao ngoÃ i giá» hÃ nh chÃ­nh"
                   className="w-full rounded-md border border-border-hairline bg-surface px-3 py-2.5 text-body text-text-main transition-colors placeholder:text-text-muted/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
               </div>
@@ -315,8 +315,8 @@ export const ReservationPage = () => {
                   className="mt-0.5 size-4 cursor-pointer accent-primary"
                 />
                 <span className="text-table text-text-muted">
-                  Tôi đã đọc và đồng ý với điều khoản thuê kho, quy định hủy và chính sách hoàn cọc
-                  hiện hành.
+                  TÃ´i Ä‘Ã£ Ä‘á»c vÃ  Ä‘á»“ng Ã½ vá»›i Ä‘iá»u khoáº£n thuÃª kho, quy Ä‘á»‹nh há»§y vÃ  chÃ­nh sÃ¡ch hoÃ n cá»c
+                  hiá»‡n hÃ nh.
                 </span>
               </label>
             </>
@@ -327,51 +327,51 @@ export const ReservationPage = () => {
       {step === 2 && unitType ? (
         <div className="mt-8 flex flex-col gap-6">
           <div className="rounded-lg border border-border-hairline bg-surface p-5">
-            <SummaryRow label="Cơ sở">
+            <SummaryRow label="CÆ¡ sá»Ÿ">
               {facility ? facility.name : filters.facilityId}
             </SummaryRow>
-            <SummaryRow label="Loại kho">
-              {unitType.name} · {formatArea(unitType.width, unitType.length)}
+            <SummaryRow label="Loáº¡i kho">
+              {unitType.name} Â· {formatArea(unitType.sizeM2)}
             </SummaryRow>
-            <SummaryRow label="Kỳ thuê">
-              {formatDate(range.startDate)} – {formatDate(range.endDate)} ({filters.months} tháng,
-              không gồm ngày kết thúc)
+            <SummaryRow label="Ká»³ thuÃª">
+              {formatDate(range.startDate)} â€“ {formatDate(range.endDate)} ({filters.months} thÃ¡ng,
+              khÃ´ng gá»“m ngÃ y káº¿t thÃºc)
             </SummaryRow>
-            <SummaryRow label="Tồn kho trong kỳ">
+            <SummaryRow label="Tá»“n kho trong ká»³">
               {availabilityQuery.isPending ? (
-                'Đang kiểm tra…'
+                'Äang kiá»ƒm traâ€¦'
               ) : availabilityQuery.isError ? (
-                <span className="text-warning">Không kiểm tra được tồn kho</span>
+                <span className="text-warning">KhÃ´ng kiá»ƒm tra Ä‘Æ°á»£c tá»“n kho</span>
               ) : availableCount && availableCount > 0 ? (
-                <StatusLabel label={`Còn ${availableCount} kho`} tone="success" />
+                <StatusLabel label={`CÃ²n ${availableCount} kho`} tone="success" />
               ) : (
-                <StatusLabel label="Hết kho trong kỳ này" tone="neutral" />
+                <StatusLabel label="Háº¿t kho trong ká»³ nÃ y" tone="neutral" />
               )}
             </SummaryRow>
             {estimate ? (
-              <SummaryRow label="Tiền thuê dự kiến">
-                {formatCurrency(estimate.minTotal)} – {formatCurrency(estimate.maxTotal)}
+              <SummaryRow label="Tiá»n thuÃª dá»± kiáº¿n">
+                {formatCurrency(estimate.minTotal)} â€“ {formatCurrency(estimate.maxTotal)}
               </SummaryRow>
             ) : null}
           </div>
 
           <p className="text-table text-text-muted">
-            Tiền cọc và tổng phải trả cuối cùng được xác nhận ngay khi giữ chỗ, theo chính sách phí
-            đang áp dụng. Giá thuê phụ thuộc kho cụ thể được hệ thống gán.
+            Tiá»n cá»c vÃ  tá»•ng pháº£i tráº£ cuá»‘i cÃ¹ng Ä‘Æ°á»£c xÃ¡c nháº­n ngay khi giá»¯ chá»—, theo chÃ­nh sÃ¡ch phÃ­
+            Ä‘ang Ã¡p dá»¥ng. GiÃ¡ thuÃª phá»¥ thuá»™c kho cá»¥ thá»ƒ Ä‘Æ°á»£c há»‡ thá»‘ng gÃ¡n.
           </p>
 
           {availableCount === 0 ? (
             <p className="rounded-md border border-warning-bg bg-warning-bg/60 px-4 py-3 text-table text-warning">
-              Loại kho này có thể vừa hết trong kỳ đã chọn. Bạn vẫn có thể tiếp tục — hệ thống sẽ
-              kiểm tra lại khi xác nhận.
+              Loáº¡i kho nÃ y cÃ³ thá»ƒ vá»«a háº¿t trong ká»³ Ä‘Ã£ chá»n. Báº¡n váº«n cÃ³ thá»ƒ tiáº¿p tá»¥c â€” há»‡ thá»‘ng sáº½
+              kiá»ƒm tra láº¡i khi xÃ¡c nháº­n.
             </p>
           ) : null}
 
           <div className="flex flex-wrap gap-3">
             <Button variant="outline" onClick={() => goToStep(1)}>
-              Quay lại
+              Quay láº¡i
             </Button>
-            <Button onClick={() => goToStep(3)}>Tiếp tục</Button>
+            <Button onClick={() => goToStep(3)}>Tiáº¿p tá»¥c</Button>
           </div>
         </div>
       ) : null}
@@ -379,26 +379,26 @@ export const ReservationPage = () => {
       {step === 3 && unitType ? (
         <div className="mt-8 flex flex-col gap-6">
           <div className="rounded-lg border border-border-hairline bg-surface p-5">
-            <SummaryRow label="Cơ sở">
+            <SummaryRow label="CÆ¡ sá»Ÿ">
               {facility ? facility.name : filters.facilityId}
             </SummaryRow>
-            <SummaryRow label="Loại kho">
-              {unitType.name} · {formatArea(unitType.width, unitType.length)}
+            <SummaryRow label="Loáº¡i kho">
+              {unitType.name} Â· {formatArea(unitType.sizeM2)}
             </SummaryRow>
-            <SummaryRow label="Kỳ thuê">
-              {formatDate(range.startDate)} – {formatDate(range.endDate)} ({filters.months} tháng)
+            <SummaryRow label="Ká»³ thuÃª">
+              {formatDate(range.startDate)} â€“ {formatDate(range.endDate)} ({filters.months} thÃ¡ng)
             </SummaryRow>
-            {note.trim() ? <SummaryRow label="Ghi chú">{note.trim()}</SummaryRow> : null}
+            {note.trim() ? <SummaryRow label="Ghi chÃº">{note.trim()}</SummaryRow> : null}
             {estimate ? (
-              <SummaryRow label="Tiền thuê dự kiến">
-                {formatCurrency(estimate.minTotal)} – {formatCurrency(estimate.maxTotal)}
+              <SummaryRow label="Tiá»n thuÃª dá»± kiáº¿n">
+                {formatCurrency(estimate.minTotal)} â€“ {formatCurrency(estimate.maxTotal)}
               </SummaryRow>
             ) : null}
           </div>
 
           <p className="text-table text-text-muted">
-            Khi xác nhận, hệ thống sẽ khóa lịch kho, gán một kho cụ thể và tạo hóa đơn trong thời
-            gian giữ chỗ. Bạn cần thanh toán trước khi hết hạn giữ chỗ.
+            Khi xÃ¡c nháº­n, há»‡ thá»‘ng sáº½ khÃ³a lá»‹ch kho, gÃ¡n má»™t kho cá»¥ thá»ƒ vÃ  táº¡o hÃ³a Ä‘Æ¡n trong thá»i
+            gian giá»¯ chá»—. Báº¡n cáº§n thanh toÃ¡n trÆ°á»›c khi háº¿t háº¡n giá»¯ chá»—.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -407,10 +407,10 @@ export const ReservationPage = () => {
               onClick={() => goToStep(2)}
               disabled={createHold.isPending}
             >
-              Quay lại
+              Quay láº¡i
             </Button>
             <Button isLoading={createHold.isPending} onClick={handleConfirmHold}>
-              Xác nhận giữ chỗ
+              XÃ¡c nháº­n giá»¯ chá»—
             </Button>
           </div>
         </div>
@@ -419,9 +419,9 @@ export const ReservationPage = () => {
       {step > 1 && !unitType ? (
         <div className="mt-8">
           <EmptyState
-            title="Thiếu thông tin loại kho"
-            description="Vui lòng quay lại bước 1 và chọn cơ sở cùng loại kho."
-            action={<Button onClick={() => goToStep(1)}>Quay lại bước 1</Button>}
+            title="Thiáº¿u thÃ´ng tin loáº¡i kho"
+            description="Vui lÃ²ng quay láº¡i bÆ°á»›c 1 vÃ  chá»n cÆ¡ sá»Ÿ cÃ¹ng loáº¡i kho."
+            action={<Button onClick={() => goToStep(1)}>Quay láº¡i bÆ°á»›c 1</Button>}
           />
         </div>
       ) : null}

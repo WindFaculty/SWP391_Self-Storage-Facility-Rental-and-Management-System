@@ -114,4 +114,8 @@ public class UserAdminService {
         return users.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
+
+    public User requireById(Long userId) {
+        return user(userId);
+    }
 }

@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -42,6 +44,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 12)
     private UserStatus status = UserStatus.ACTIVE;
+
+    // database-generated: set once at insert, never written by the application
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Instant createdAt;
 
     public Long getId() {
         return id;
@@ -101,5 +107,9 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 }

@@ -19,8 +19,9 @@ public final class RentalStateMachineSelfCheck {
     private static final Map<RentalStatus, Set<RentalStatus>> EXPECTED_RENTAL_TRANSITIONS = Map.of(
             RentalStatus.PENDING_PAYMENT, Set.of(RentalStatus.RESERVED, RentalStatus.CANCELLED, RentalStatus.EXPIRED),
             RentalStatus.RESERVED, Set.of(RentalStatus.ACTIVE, RentalStatus.CANCELLED),
-            RentalStatus.ACTIVE, Set.of(RentalStatus.OVERDUE, RentalStatus.RETURNED),
-            RentalStatus.OVERDUE, Set.of(RentalStatus.RETURNED),
+            RentalStatus.ACTIVE, Set.of(RentalStatus.OVERDUE, RentalStatus.RETURNED, RentalStatus.RETURN_REQUESTED),
+            RentalStatus.OVERDUE, Set.of(RentalStatus.RETURNED, RentalStatus.RETURN_REQUESTED),
+            RentalStatus.RETURN_REQUESTED, Set.of(RentalStatus.RETURNED, RentalStatus.ACTIVE),
             RentalStatus.EXPIRED, Set.of(RentalStatus.RESERVED),
             RentalStatus.RETURNED, Set.of(),
             RentalStatus.CANCELLED, Set.of());
@@ -32,9 +33,10 @@ public final class RentalStateMachineSelfCheck {
             TaskStatus.CANCELLED, Set.of());
 
     private static final Map<RenewalStatus, Set<RenewalStatus>> EXPECTED_RENEWAL_TRANSITIONS = Map.of(
-            RenewalStatus.REQUESTED, Set.of(RenewalStatus.APPLIED, RenewalStatus.REJECTED),
-            RenewalStatus.APPLIED, Set.of(),
-            RenewalStatus.REJECTED, Set.of());
+            RenewalStatus.REQUESTED, Set.of(RenewalStatus.APPROVED, RenewalStatus.REJECTED, RenewalStatus.APPLIED),
+            RenewalStatus.APPROVED, Set.of(RenewalStatus.APPLIED, RenewalStatus.REJECTED),
+            RenewalStatus.REJECTED, Set.of(),
+            RenewalStatus.APPLIED, Set.of());
 
     private static final LocalDate START = LocalDate.of(2026, 10, 10);
     private static final LocalDate END = LocalDate.of(2026, 11, 10);
@@ -83,7 +85,7 @@ public final class RentalStateMachineSelfCheck {
 
     private static void availabilityBlockingMatrix() {
         Set<RentalStatus> blocking = Set.of(RentalStatus.PENDING_PAYMENT, RentalStatus.RESERVED,
-                RentalStatus.ACTIVE, RentalStatus.OVERDUE);
+                RentalStatus.ACTIVE, RentalStatus.OVERDUE, RentalStatus.RETURN_REQUESTED);
         for (RentalStatus status : RentalStatus.values()) {
             check(status.blocksAvailability() == blocking.contains(status), status + " blocking flag");
         }
@@ -152,6 +154,11 @@ public final class RentalStateMachineSelfCheck {
                 rental.transitionTo(RentalStatus.RESERVED);
                 rental.transitionTo(RentalStatus.ACTIVE);
                 rental.transitionTo(RentalStatus.OVERDUE);
+            }
+            case RETURN_REQUESTED -> {
+                rental.transitionTo(RentalStatus.RESERVED);
+                rental.transitionTo(RentalStatus.ACTIVE);
+                rental.transitionTo(RentalStatus.RETURN_REQUESTED);
             }
             case RETURNED -> {
                 rental.transitionTo(RentalStatus.RESERVED);

@@ -12,6 +12,8 @@ import com.storage.payment.entity.Invoice;
 import com.storage.payment.entity.PaymentAttempt;
 import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
+import com.storage.rental.repository.RentalRenewalRepository;
+import com.storage.rental.repository.RentalRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -31,11 +33,18 @@ class PaymentServiceTest {
     @Mock
     private PaymentAttemptRepository paymentAttemptRepository;
 
+    @Mock
+    private RentalRepository rentalRepository;
+
+    @Mock
+    private RentalRenewalRepository renewalRepository;
+
     private PaymentService paymentService;
 
     @BeforeEach
     void setUp() {
-        paymentService = new PaymentService(invoiceRepository, paymentAttemptRepository);
+        paymentService = new PaymentService(invoiceRepository, paymentAttemptRepository,
+                rentalRepository, renewalRepository);
     }
 
     private static Invoice pendingRentInvoice() {

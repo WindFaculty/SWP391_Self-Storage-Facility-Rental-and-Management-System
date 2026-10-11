@@ -35,7 +35,7 @@ const renderPage = () => {
 const pendingInvoice = {
   id: 'inv12345678',
   rentalId: 'r1',
-  type: 'RENT',
+  type: 'RENTAL',
   status: 'PENDING',
   totalAmount: 3750000,
   rentAmount: 1250000,

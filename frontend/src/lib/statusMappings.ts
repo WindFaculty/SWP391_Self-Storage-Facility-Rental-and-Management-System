@@ -27,7 +27,7 @@ export const INVOICE_STATUS_DISPLAY: Record<InvoiceStatus, StatusDisplay> = {
 
 export const INVOICE_TYPE_LABELS: Record<InvoiceType, string> = {
   DEPOSIT: 'Tiền cọc',
-  RENT: 'Tiền thuê',
+  RENTAL: 'Tiền thuê',
   RENEWAL: 'Gia hạn',
   EXTRA: 'Phụ phí',
   OVERDUE: 'Phí quá hạn',

@@ -111,7 +111,7 @@ class AdminAndAuditTests {
                         .header("Authorization", bearer(adminToken))
                         .param("facilityId", facilityAId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[*].email",
+                .andExpect(jsonPath("$.data.items[*].email",
                         hasItem("manager-" + suffix + "@example.com")));
     }
 
@@ -195,9 +195,9 @@ class AdminAndAuditTests {
 
         mvc.perform(get("/admin/audit-logs")
                         .header("Authorization", bearer(adminToken))
-                        .param("action", "ADMIN_CREATE_USER"))
+                        .param("action", "USER_CREATED"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].action").value("ADMIN_CREATE_USER"))
+                .andExpect(jsonPath("$.data.content[0].action").value("USER_CREATED"))
                 .andExpect(jsonPath("$.data.content[0].entityType").value("USER"))
                 .andExpect(jsonPath("$.data.content[0].ipAddress").isNotEmpty());
 

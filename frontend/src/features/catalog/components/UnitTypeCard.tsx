@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
-import { formatArea, formatMeters, formatPriceRange } from '../../../lib/format';
+import { formatArea, formatPriceRange } from '../../../lib/format';
 import type { UnitType } from '../types';
 
 interface UnitTypeCardProps {
@@ -16,13 +16,12 @@ export const UnitTypeCard = ({ unitType, availableCount, onSelect }: UnitTypeCar
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="text-subsection text-text-main">{unitType.name}</h3>
         <span className="text-table font-medium text-primary">
-          {formatArea(unitType.width, unitType.length)}
+          {formatArea(unitType.sizeM2)}
         </span>
       </div>
       {unitType.description ? (
         <p className="text-table text-text-muted">{unitType.description}</p>
       ) : null}
-      <p className="text-table text-text-muted">Chiều cao {formatMeters(unitType.height)}</p>
     </div>
 
     <div className="mt-4 flex items-center justify-between gap-3 border-t border-border-hairline pt-4">

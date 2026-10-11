@@ -17,7 +17,7 @@ public class Invoice {
 
     public enum Type { DEPOSIT, RENTAL, RENEWAL, EXTRA, OVERDUE }
 
-    public enum Status { PENDING, PAID, WAIVED, CANCELLED }
+    public enum Status { PENDING, PAID, WAIVED, CANCELLED, EXPIRED }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -108,6 +108,14 @@ public class Invoice {
             return false;
         }
         status = Status.CANCELLED;
+        return true;
+    }
+
+    public boolean markExpired() {
+        if (status != Status.PENDING) {
+            return false;
+        }
+        status = Status.EXPIRED;
         return true;
     }
 

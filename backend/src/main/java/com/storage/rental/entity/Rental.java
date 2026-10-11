@@ -1,24 +1,73 @@
 package com.storage.rental.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
+@Table(name = "rentals")
 public class Rental {
 
-    private final Long customerId;
-    private final Long unitId;
-    private final LocalDate startDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
+
+    @Column(name = "unit_id", nullable = false)
+    private Long unitId;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
-    private final BigDecimal pricePerMonth;
-    private final Instant paymentExpiresAt;
+
+    @Column(name = "appointment_at")
+    private Instant appointmentAt;
+
+    @Column(name = "price_per_month", nullable = false, precision = 14, scale = 2)
+    private BigDecimal pricePerMonth;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
     private RentalStatus status;
+
+    @Column(name = "payment_expires_at")
+    private Instant paymentExpiresAt;
+
+    @Column(name = "checked_in_at")
     private Instant checkedInAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "access_method", length = 20)
     private AccessMethod accessMethod;
+
+    @Column(name = "handover_condition")
     private String handoverCondition;
+
+    @Column(name = "returned_at")
     private Instant returnedAt;
+
+    @Column(name = "return_condition")
     private String returnCondition;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    protected Rental() {
+    }
 
     private Rental(Long customerId, Long unitId, LocalDate startDate, LocalDate endDate,
                    BigDecimal pricePerMonth, Instant paymentExpiresAt) {
@@ -36,6 +85,7 @@ public class Rental {
         }
         this.paymentExpiresAt = Objects.requireNonNull(paymentExpiresAt, "paymentExpiresAt");
         this.status = RentalStatus.PENDING_PAYMENT;
+        this.createdAt = Instant.now();
     }
 
     public static Rental createHold(Long customerId, Long unitId, LocalDate startDate, LocalDate endDate,
@@ -49,6 +99,10 @@ public class Rental {
             throw new IllegalStateException("Illegal rental transition: " + status + " -> " + next);
         }
         status = next;
+    }
+
+    public void setAppointmentAt(Instant appointmentAt) {
+        this.appointmentAt = appointmentAt;
     }
 
     public boolean overlaps(LocalDate otherStart, LocalDate otherEnd) {
@@ -84,6 +138,10 @@ public class Rental {
         this.returnCondition = returnCondition;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Long getCustomerId() {
         return customerId;
     }
@@ -100,16 +158,20 @@ public class Rental {
         return endDate;
     }
 
+    public Instant getAppointmentAt() {
+        return appointmentAt;
+    }
+
     public BigDecimal getPricePerMonth() {
         return pricePerMonth;
     }
 
-    public Instant getPaymentExpiresAt() {
-        return paymentExpiresAt;
-    }
-
     public RentalStatus getStatus() {
         return status;
+    }
+
+    public Instant getPaymentExpiresAt() {
+        return paymentExpiresAt;
     }
 
     public Instant getCheckedInAt() {
@@ -130,5 +192,9 @@ public class Rental {
 
     public String getReturnCondition() {
         return returnCondition;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 }

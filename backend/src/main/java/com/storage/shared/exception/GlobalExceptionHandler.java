@@ -41,6 +41,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(error));
     }
 
+    /*
+     * Domain guards in entities and services reject bad input with
+     * IllegalArgumentException; the client must see 400, not 500.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Illegal argument: {}", ex.getMessage());
+        ApiError error = new ApiError(ErrorCode.BAD_REQUEST.getCode(),
+                ex.getMessage() == null ? ErrorCode.BAD_REQUEST.getDefaultMessage() : ex.getMessage(),
+                null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(error));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
         ApiError error = new ApiError(ErrorCode.INVALID_CREDENTIALS.getCode(),

@@ -37,11 +37,15 @@ public class SupportController {
 
     @PostMapping("/customer/support-tickets")
     public ResponseEntity<ApiResponse<TicketResponse>> create(@Valid @RequestBody CreateTicketRequest request) {
-        Long customerId = currentUserId();
-        SupportTicket ticket = supportTicketService.create(customerId, request.facilityId(),
-                request.rentalId(), request.category(), request.title(), request.description());
-        activityLogService.record(customerId, "SUPPORT_TICKET_CREATED", "SUPPORT_TICKET", ticket.getId(), null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(TicketResponse.from(ticket)));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(createTicket(currentUserId(), request)));
+    }
+
+    @PostMapping("/support-tickets")
+    public ResponseEntity<ApiResponse<TicketResponse>> createCustomerAlias(
+            @Valid @RequestBody CreateTicketRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(createTicket(currentUserId(), request)));
     }
 
     @GetMapping("/customer/support-tickets")
@@ -49,6 +53,19 @@ public class SupportController {
         return ApiResponse.success(supportTicketService.ticketsOfCustomer(currentUserId()).stream()
                 .map(TicketResponse::from)
                 .toList());
+    }
+
+    @GetMapping("/support-tickets/me")
+    public ApiResponse<List<TicketResponse>> mineCustomerAlias() {
+        return mine();
+    }
+
+    private TicketResponse createTicket(Long customerId, CreateTicketRequest request) {
+        SupportTicket ticket = supportTicketService.create(customerId, request.facilityId(),
+                request.rentalId(), request.category(), request.title(), request.description());
+        activityLogService.record(customerId, "SUPPORT_TICKET_CREATED", "SUPPORT_TICKET",
+                ticket.getId(), null);
+        return TicketResponse.from(ticket);
     }
 
     @GetMapping("/staff/support-tickets")

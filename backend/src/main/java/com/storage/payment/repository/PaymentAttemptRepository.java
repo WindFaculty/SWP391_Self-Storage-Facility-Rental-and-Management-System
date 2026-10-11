@@ -35,4 +35,22 @@ public interface PaymentAttemptRepository extends JpaRepository<PaymentAttempt, 
     @Query("select coalesce(sum(a.amount), 0) as total, count(a) as count "
             + "from PaymentAttempt a where a.refundedAt >= :from and a.refundedAt < :to")
     AmountCount summarizeByRefundedAt(@Param("from") Instant from, @Param("to") Instant to);
+
+    interface MonthlyAmount {
+        int getYear();
+
+        int getMonth();
+
+        BigDecimal getTotal();
+    }
+
+    @Query("""
+            select year(a.paidAt) as year, month(a.paidAt) as month,
+                   coalesce(sum(a.amount), 0) as total
+            from PaymentAttempt a
+            where a.paidAt is not null and a.invoiceId in :invoiceIds
+            group by year(a.paidAt), month(a.paidAt)
+            order by year(a.paidAt), month(a.paidAt)
+            """)
+    List<MonthlyAmount> summarizePaidByMonth(@Param("invoiceIds") List<Long> invoiceIds);
 }

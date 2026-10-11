@@ -4,6 +4,11 @@ import com.storage.payment.entity.Invoice;
 import com.storage.payment.entity.PaymentAttempt;
 import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
+import com.storage.rental.entity.Rental;
+import com.storage.rental.entity.RentalRenewal;
+import com.storage.rental.entity.RentalStatus;
+import com.storage.rental.repository.RentalRenewalRepository;
+import com.storage.rental.repository.RentalRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -15,11 +20,17 @@ public class PaymentService {
 
     private final InvoiceRepository invoiceRepository;
     private final PaymentAttemptRepository paymentAttemptRepository;
+    private final RentalRepository rentalRepository;
+    private final RentalRenewalRepository renewalRepository;
 
     public PaymentService(InvoiceRepository invoiceRepository,
-                          PaymentAttemptRepository paymentAttemptRepository) {
+                          PaymentAttemptRepository paymentAttemptRepository,
+                          RentalRepository rentalRepository,
+                          RentalRenewalRepository renewalRepository) {
         this.invoiceRepository = invoiceRepository;
         this.paymentAttemptRepository = paymentAttemptRepository;
+        this.rentalRepository = rentalRepository;
+        this.renewalRepository = renewalRepository;
     }
 
     @Transactional
@@ -65,6 +76,21 @@ public class PaymentService {
         // ponytail: late success keeps the invoice untouched; resolution is manual refund (RefundService)
         // or querydr reconcile once BE3-03 sandbox credentials exist.
         invoice.markPaid();
+        // Every successful payment routes through here, so a paid hold confirms the
+        // reservation and a paid renewal extends the contract. One caller cannot skip it.
+        if (invoice.getType() == Invoice.Type.RENTAL) {
+            rentalRepository.findById(invoice.getRentalId())
+                    .filter(rental -> rental.getStatus() == RentalStatus.PENDING_PAYMENT)
+                    .ifPresent(rental -> rental.transitionTo(RentalStatus.RESERVED));
+        } else if (invoice.getType() == Invoice.Type.RENEWAL
+                && invoice.getRenewalId() != null) {
+            renewalRepository.findById(invoice.getRenewalId())
+                    .ifPresent(renewal -> rentalRepository.findById(invoice.getRentalId())
+                            .ifPresent(rental -> {
+                                rental.extendTo(renewal.getRequestedEndDate());
+                                renewal.apply(paidAt == null ? Instant.now() : paidAt);
+                            }));
+        }
         return attempt;
     }
 
