@@ -1,63 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '../useAuth';
+import { useEffect, useState } from 'react';
 import { authApi } from '../api/authApi';
 import { googleAuthorizationUrl } from '../../../api/client';
 
-type Facebook = {
-  init: (options: { appId: string; version: string; cookie: boolean }) => void;
-  login: (callback: (response: { authResponse?: { accessToken: string } }) => void,
-    options: { scope: string }) => void;
-};
-declare global {
-  interface Window { FB?: Facebook }
-}
-
-const scripts = new Map<string, Promise<void>>();
-function loadScript(src: string) {
-  if (!scripts.has(src)) {
-    scripts.set(src, new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => { scripts.delete(src); script.remove(); reject(new Error('Không tải được dịch vụ đăng nhập.')); };
-      document.head.appendChild(script);
-    }));
-  }
-  return scripts.get(src)!;
-}
-
 export const SocialLogin = () => {
-  const { socialLogin } = useAuth();
-  const loginRef = useRef(socialLogin);
-  useEffect(() => { loginRef.current = socialLogin; }, [socialLogin]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [facebookReady, setFacebookReady] = useState(false);
   const [googleReady, setGoogleReady] = useState(false);
-  const facebookId = import.meta.env.VITE_FACEBOOK_APP_ID;
 
   useEffect(() => {
     let active = true;
     void authApi.googleConfig().then(config => { if (active) setGoogleReady(config.enabled); })
       .catch(() => { if (active) setError('Không thể tải cấu hình đăng nhập Google.'); });
-    if (facebookId) void loadScript('https://connect.facebook.net/vi_VN/sdk.js').then(() => {
-      if (!active || !window.FB) return;
-      window.FB.init({ appId: facebookId, version: import.meta.env.VITE_FACEBOOK_API_VERSION || 'v25.0', cookie: false });
-      setFacebookReady(true);
-    }).catch((err: Error) => { if (active) setError(err.message); });
     return () => { active = false; };
-  }, [facebookId]);
-
-  const facebookLogin = () => {
-    setError(''); setBusy(true);
-    window.FB?.login((response) => {
-      if (!response.authResponse) { setBusy(false); setError('Đăng nhập Facebook đã hủy hoặc chưa được cấp quyền.'); return; }
-      void loginRef.current('facebook', response.authResponse.accessToken)
-        .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Đăng nhập thất bại.'))
-        .finally(() => setBusy(false));
-    }, { scope: 'public_profile,email' });
-  };
+  }, []);
 
   return <div className="mt-6 flex flex-col gap-3">
     <p className="text-center text-label text-text-muted">Hoặc tiếp tục với</p>
@@ -72,10 +27,6 @@ export const SocialLogin = () => {
         <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z" />
       </svg>
       <span>{googleReady ? 'Continue with Google' : 'Google (chưa cấu hình)'}</span>
-    </button>
-    <button type="button" onClick={facebookLogin} disabled={!facebookReady || busy}
-      className="rounded-md bg-[#1877F2] p-3 text-white disabled:opacity-50">
-      {facebookId ? 'Tiếp tục với Facebook' : 'Facebook (chưa cấu hình)'}
     </button>
     {busy && <p role="status" className="text-label text-text-muted">Đang xác minh đăng nhập…</p>}
   </div>;

@@ -5,7 +5,6 @@ import com.storage.payment.dto.CustomerBillingDtos.CustomerPaymentAttempt;
 import com.storage.payment.dto.CustomerBillingDtos.VnPayUrlRequest;
 import com.storage.payment.dto.CustomerBillingDtos.VnPayUrlResponse;
 import com.storage.payment.service.CustomerBillingService;
-import com.storage.shared.exception.BusinessException;
 import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.exception.NotFoundException;
 import com.storage.shared.response.ApiResponse;
@@ -37,12 +36,12 @@ public class CustomerBillingController {
 
     @GetMapping("/invoices/me")
     public ApiResponse<List<CustomerInvoice>> myInvoices() {
-        return ApiResponse.success(customerBillingService.myInvoices(currentUserId()));
+        return ApiResponse.success(customerBillingService.myInvoices(SecurityUtils.requireCurrentUserId()));
     }
 
     @GetMapping("/invoices/{invoiceId}")
     public ApiResponse<CustomerInvoice> myInvoice(@PathVariable Long invoiceId) {
-        return customerBillingService.myInvoice(currentUserId(), invoiceId)
+        return customerBillingService.myInvoice(SecurityUtils.requireCurrentUserId(), invoiceId)
                 .map(invoice -> ApiResponse.success(invoice))
                 .orElseThrow(() -> new NotFoundException(ErrorCode.INVOICE_NOT_FOUND));
     }
@@ -50,20 +49,16 @@ public class CustomerBillingController {
     @PostMapping("/payments/vnpay/url")
     public ApiResponse<VnPayUrlResponse> createVnPayUrl(@Valid @RequestBody VnPayUrlRequest request,
                                                         HttpServletRequest httpRequest) {
-        String url = customerBillingService.createVnPayUrl(currentUserId(), request.invoiceId(),
+        String url = customerBillingService.createVnPayUrl(SecurityUtils.requireCurrentUserId(), request.invoiceId(),
                 httpRequest);
         return ApiResponse.success(new VnPayUrlResponse(url));
     }
 
     @GetMapping("/payments/attempts/{reference}")
     public ApiResponse<CustomerPaymentAttempt> myAttempt(@PathVariable String reference) {
-        return customerBillingService.myAttempt(currentUserId(), reference)
+        return customerBillingService.myAttempt(SecurityUtils.requireCurrentUserId(), reference)
                 .map(attempt -> ApiResponse.success(attempt))
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
     }
 
-    private static Long currentUserId() {
-        return SecurityUtils.getCurrentUserId()
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
-    }
 }

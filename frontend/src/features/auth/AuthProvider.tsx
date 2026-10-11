@@ -39,13 +39,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       apiClient.clearTokens(); setUser(null);
     }).catch(() => setLogoutError('Không thể đăng xuất. Vui lòng thử lại.'));
   };
-  const socialLogin = async (provider: 'google' | 'facebook', token: string): Promise<AuthUser> => {
-    if (provider !== 'facebook') throw new Error('Use Continue with Google to sign in.');
-    await authApi.cookieFacebookLogin(token);
-    return acceptSession();
-  };
   return <AuthContext.Provider value={{ user, isAuthenticated: Boolean(user), isLoading,
-    login, register, socialLogin, logout }}>
+    login, register, logout }}>
     {logoutError && <p role="alert" className="fixed bottom-4 right-4 z-50 rounded-md bg-surface p-4 text-danger shadow-raised">{logoutError}</p>}
     {children}
   </AuthContext.Provider>;

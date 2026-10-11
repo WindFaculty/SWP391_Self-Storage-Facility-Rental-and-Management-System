@@ -1,6 +1,5 @@
 package com.storage.account.service;
 
-import com.storage.account.dto.UserDto;
 import com.storage.account.entity.ActivityLog;
 import com.storage.account.entity.User;
 import com.storage.account.entity.UserRole;
@@ -13,6 +12,7 @@ import com.storage.shared.exception.BusinessException;
 import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.exception.NotFoundException;
 import com.storage.shared.security.SecurityUtils;
+import com.storage.shared.text.Strings;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,18 +75,7 @@ public class AdminOpsService {
         if (users.existsByEmail(normalizedEmail)) {
             throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        boolean facilityScoped = role == UserRole.FACILITY_STAFF || role == UserRole.FACILITY_MANAGER;
-        if (facilityScoped && facilityId == null) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST,
-                    "Vai trÃƒÂ² " + role + " bÃ¡ÂºÂ¯t buÃ¡Â»â„¢c phÃ¡ÂºÂ£i gÃƒÂ¡n cÃ†Â¡ sÃ¡Â»Å¸");
-        }
-        if (!facilityScoped && facilityId != null) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST,
-                    "Vai trÃƒÂ² " + role + " khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c gÃƒÂ¡n cÃ†Â¡ sÃ¡Â»Å¸");
-        }
-        if (facilityId != null && !facilities.existsById(facilityId)) {
-            throw new NotFoundException(ErrorCode.FACILITY_NOT_FOUND);
-        }
+        requireFacilityScope(role, facilityId);
         User user = new User();
         user.setEmail(normalizedEmail);
         user.setPasswordHash(passwordEncoder.encode(
@@ -110,22 +99,11 @@ public class AdminOpsService {
         if (!user.getEmail().equals(normalizedEmail) && users.existsByEmail(normalizedEmail)) {
             throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        boolean facilityScoped = role == UserRole.FACILITY_STAFF || role == UserRole.FACILITY_MANAGER;
-        if (facilityScoped && facilityId == null) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST,
-                    "Vai trÃƒÂ² " + role + " bÃ¡ÂºÂ¯t buÃ¡Â»â„¢c phÃ¡ÂºÂ£i gÃƒÂ¡n cÃ†Â¡ sÃ¡Â»Å¸");
-        }
-        if (!facilityScoped && facilityId != null) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST,
-                    "Vai trÃƒÂ² " + role + " khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c gÃƒÂ¡n cÃ†Â¡ sÃ¡Â»Å¸");
-        }
-        if (facilityId != null && !facilities.existsById(facilityId)) {
-            throw new NotFoundException(ErrorCode.FACILITY_NOT_FOUND);
-        }
+        requireFacilityScope(role, facilityId);
         if (user.getRole() == UserRole.ADMIN && role != UserRole.ADMIN
                 && user.getStatus() == UserStatus.ACTIVE && activeAdminCount() <= 1) {
             throw new BusinessException(ErrorCode.BAD_REQUEST,
-                    "KhÃƒÂ´ng thÃ¡Â»Æ’ hÃ¡ÂºÂ¡ vai trÃƒÂ² quÃ¡ÂºÂ£n trÃ¡Â»â€¹ viÃƒÂªn hoÃ¡ÂºÂ¡t Ã„â€˜Ã¡Â»â„¢ng cuÃ¡Â»â€˜i cÃƒÂ¹ng");
+                    "Không thể hạ vai trò quản trị viên cuối cùng");
         }
         user.setEmail(normalizedEmail);
         user.setFullName(fullName.trim());
@@ -141,25 +119,18 @@ public class AdminOpsService {
     public OpsDtos.AdminUserDto updateUserStatus(Long userId, UserStatus status) {
         return toAdminUser(userAdminService.updateStatus(userId, status));
     }
+
     @Transactional(readOnly = true)
     public List<OpsDtos.ActivityLogDto> activityLogs(String action, String search) {
-        List<ActivityLog> matched = logs.search(null, action, PageRequest.of(0, LOG_LIMIT))
-                .getContent().stream()
-                .filter(log -> matchesActor(log, search))
-                .toList();
-        Map<Long, User> actors = Map.of();
-        List<Long> actorIds = matched.stream().map(ActivityLog::getUserId).distinct().toList();
-        if (!actorIds.isEmpty()) {
-            actors = Map.copyOf(users.findAllById(actorIds).stream()
-                    .collect(java.util.stream.Collectors.toMap(User::getId, user -> user)));
-        }
-        Map<Long, User> lookup = actors;
-        return matched.stream()
+        List<ActivityLog> page = logs.search(null, action, PageRequest.of(0, LOG_LIMIT)).getContent();
+        Map<Long, User> actors = actorsOf(page);
+        return page.stream()
+                .filter(log -> matchesActor(actors, log, search))
                 .map(log -> new OpsDtos.ActivityLogDto(log.getId(),
                         log.getUserId() == null ? null
-                                : lookup.get(log.getUserId()).getFullName(),
+                                : actors.get(log.getUserId()).getFullName(),
                         log.getAction(), log.getEntityType(), log.getEntityId(),
-                        detailOf(log), log.getIpAddress(), log.getCreatedAt()))
+                        log.getAction(), log.getIpAddress(), log.getCreatedAt()))
                 .toList();
     }
 
@@ -169,44 +140,47 @@ public class AdminOpsService {
     }
 
     private static boolean matches(User user, String search) {
-        if (search == null || search.isBlank()) {
+        if (Strings.isBlank(search)) {
             return true;
         }
         String needle = search.trim().toLowerCase(java.util.Locale.ROOT);
-        return user.getFullName().toLowerCase(java.util.Locale.ROOT).contains(needle)
-                || user.getEmail().toLowerCase(java.util.Locale.ROOT).contains(needle);
+        return Strings.containsIgnoreCase(user.getFullName(), needle)
+                || Strings.containsIgnoreCase(user.getEmail(), needle);
     }
 
-    private boolean matchesActor(ActivityLog log, String search) {
-        if (isBlank(search)) {
+    private Map<Long, User> actorsOf(List<ActivityLog> logs) {
+        List<Long> ids = logs.stream().map(ActivityLog::getUserId).distinct()
+                .filter(java.util.Objects::nonNull).toList();
+        return ids.isEmpty() ? Map.of()
+                : users.findAllById(ids).stream()
+                        .collect(java.util.stream.Collectors.toMap(User::getId, user -> user));
+    }
+
+    private static boolean matchesActor(Map<Long, User> actors, ActivityLog log, String search) {
+        if (Strings.isBlank(search)) {
             return true;
         }
-        if (log.getUserId() == null) {
+        User actor = log.getUserId() == null ? null : actors.get(log.getUserId());
+        if (actor == null) {
             return true;
         }
-        String needle = search.trim().toLowerCase(java.util.Locale.ROOT);
-        return users.findById(log.getUserId())
-                .map(user -> containsIgnoreCase(user.getFullName(), needle)
-                        || containsIgnoreCase(user.getEmail(), needle))
-                .orElse(true);
+        return Strings.containsIgnoreCase(actor.getFullName(), search)
+                || Strings.containsIgnoreCase(actor.getEmail(), search);
     }
 
-    private static boolean containsIgnoreCase(String value, String needle) {
-        return value != null && value.toLowerCase(java.util.Locale.ROOT).contains(needle);
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
-    }
-
-    private static String detailOf(ActivityLog log) {
-        return log.getAction();
-    }
-
-    private OpsDtos.AdminUserDto toAdminUser(UserDto user) {
-        // UserDto has no createdAt; reload to fill the FE2 form.
-        return toAdminUser(users.findById(user.id())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND)));
+    private void requireFacilityScope(UserRole role, Long facilityId) {
+        boolean facilityScoped = role == UserRole.FACILITY_STAFF || role == UserRole.FACILITY_MANAGER;
+        if (facilityScoped && facilityId == null) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
+                    "Vai trò " + role + " bắt buộc phải gắn cơ sở");
+        }
+        if (!facilityScoped && facilityId != null) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
+                    "Vai trò " + role + " không được gắn cơ sở");
+        }
+        if (facilityId != null && !facilities.existsById(facilityId)) {
+            throw new NotFoundException(ErrorCode.FACILITY_NOT_FOUND);
+        }
     }
 
     private OpsDtos.AdminUserDto toAdminUser(User user) {

@@ -41,6 +41,13 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findByFacilityId(@Param("facilityId") Long facilityId);
 
     @Query("""
+            select r from Rental r
+            where r.unitId in (select u.id from com.storage.facility.entity.StorageUnit u
+                               where u.facility.id in :facilityIds)
+            """)
+    List<Rental> findByFacilityIdIn(@Param("facilityIds") List<Long> facilityIds);
+
+    @Query("""
             select r.status as status, count(r) as rentalCount
             from Rental r
             where r.unitId in :unitIds

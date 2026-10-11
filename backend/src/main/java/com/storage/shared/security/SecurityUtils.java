@@ -1,5 +1,7 @@
 package com.storage.shared.security;
 
+import com.storage.shared.exception.BusinessException;
+import com.storage.shared.exception.ErrorCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -24,5 +26,10 @@ public final class SecurityUtils {
 
     public static Optional<String> getCurrentUserEmail() {
         return getCurrentUserPrincipal().map(UserPrincipal::getUsername);
+    }
+
+    public static Long requireCurrentUserId() {
+        return getCurrentUserId()
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
     }
 }

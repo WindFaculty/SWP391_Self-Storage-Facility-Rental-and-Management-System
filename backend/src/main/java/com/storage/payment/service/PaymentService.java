@@ -5,13 +5,11 @@ import com.storage.payment.entity.PaymentAttempt;
 import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
 import com.storage.rental.entity.Rental;
-import com.storage.rental.entity.RentalRenewal;
 import com.storage.rental.entity.RentalStatus;
 import com.storage.rental.repository.RentalRenewalRepository;
 import com.storage.rental.repository.RentalRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,8 +71,8 @@ public class PaymentService {
         Invoice invoice = invoiceRepository.findById(attempt.getInvoiceId())
                 .orElseThrow(() -> new IllegalStateException(
                         "invoice missing for attempt " + attempt.getId()));
-        // ponytail: late success keeps the invoice untouched; resolution is manual refund (RefundService)
-        // or querydr reconcile once BE3-03 sandbox credentials exist.
+        // ponytail: late success keeps the invoice untouched; refunds are handled
+        // by staff outside this flow (querydr reconcile once BE3-03 sandbox credentials exist).
         invoice.markPaid();
         // Every successful payment routes through here, so a paid hold confirms the
         // reservation and a paid renewal extends the contract. One caller cannot skip it.
@@ -92,15 +90,5 @@ public class PaymentService {
                             }));
         }
         return attempt;
-    }
-
-    @Transactional(readOnly = true)
-    public List<PaymentAttempt> paymentHistory(Long rentalId) {
-        return paymentAttemptRepository.findByRentalId(rentalId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PaymentAttempt> attemptsOfInvoice(Long invoiceId) {
-        return paymentAttemptRepository.findByInvoiceIdOrderByCreatedAtDesc(invoiceId);
     }
 }

@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,7 +58,6 @@ class FacilityManagementTests {
     Long facilityBId;
     Long unitTypeId;
     String facilityACode;
-    String facilityBCode;
     String suffix;
 
     @BeforeEach
@@ -70,13 +70,18 @@ class FacilityManagementTests {
 
         facilityACode = "FAC-A-" + suffix;
         facilityAId = createFacilityViaApi(facilityACode);
-        facilityBCode = "FAC-B-" + suffix;
-        facilityBId = createFacilityViaApi(facilityBCode);
+        facilityBId = createFacilityViaApi("FAC-B-" + suffix);
 
         managerAToken = createUserAndLogin("manager-a-" + suffix, UserRole.FACILITY_MANAGER, facilityAId);
         managerBToken = createUserAndLogin("manager-b-" + suffix, UserRole.FACILITY_MANAGER, facilityBId);
 
-        unitTypeId = createUnitTypeViaApi("Small " + suffix);
+        String unitTypeName = "Small " + suffix;
+        jdbc.update("""
+                INSERT INTO unit_types (name, size_m2, min_monthly_price, max_monthly_price, description)
+                VALUES (?, 5.00, 100000.00, 200000.00, 'Test size')
+                """, unitTypeName);
+        unitTypeId = jdbc.queryForObject("SELECT id FROM unit_types WHERE name = ?",
+                Long.class, unitTypeName);
     }
 
     @Test
@@ -93,30 +98,26 @@ class FacilityManagementTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[*].name", hasItem("Small " + suffix)));
 
-        mvc.perform(get("/facilities/" + facilityAId + "/available-units"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
-
-        mvc.perform(post("/business/facilities")
+        mvc.perform(post("/management/facilities")
                         .header("Authorization", bearer(customerToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(facilityBody(facilityACode)))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(post("/business/facilities")
+        mvc.perform(post("/management/facilities")
                         .header("Authorization", bearer(managerAToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(facilityBody(facilityACode)))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(post("/business/facilities")
+        mvc.perform(post("/management/facilities")
                         .header("Authorization", bearer(businessToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(facilityBody(facilityACode)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code").value("FACILITY_CODE_EXISTS"));
 
-        mvc.perform(put("/business/facilities/" + facilityAId)
+        mvc.perform(put("/management/facilities/" + facilityAId)
                         .header("Authorization", bearer(businessToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -129,43 +130,42 @@ class FacilityManagementTests {
     @Test
     void managerCanManageUnitsOnlyInAssignedFacility() throws Exception {
         String unitCode = "U1-" + suffix;
-        Long unitId = createUnitViaApi(managerAToken, facilityAId, unitCode, "150000.00");
+        createUnitViaApi(managerAToken, facilityAId, unitCode, "150000.00");
 
-        mvc.perform(get("/facilities/" + facilityAId + "/available-units"))
+        mvc.perform(get("/ops/units")
+                        .param("facilityId", facilityAId.toString())
+                        .header("Authorization", bearer(managerAToken)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[*].unitCode", hasItem(unitCode)));
+                .andExpect(jsonPath("$.data.items[*].unitCode", hasItem(unitCode)));
 
-        mvc.perform(post("/manager/facilities/" + facilityBId + "/units")
+        mvc.perform(post("/ops/units")
                         .header("Authorization", bearer(managerAToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(unitBody("UB1-" + suffix, "150000.00")))
+                        .content(unitBody(facilityBId, "UB1-" + suffix, "150000.00")))
                 .andExpect(status().isForbidden());
 
         createUnitViaApi(adminToken, facilityBId, "UB1-" + suffix, "150000.00");
 
-        mvc.perform(post("/manager/facilities/" + facilityAId + "/units")
+        mvc.perform(post("/ops/units")
                         .header("Authorization", bearer(managerAToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(unitBody("U2-" + suffix, "500000.00")))
+                        .content(unitBody(facilityAId, "U2-" + suffix, "500000.00")))
                 .andExpect(status().isBadRequest());
 
-        mvc.perform(post("/manager/facilities/" + facilityAId + "/units")
+        mvc.perform(post("/ops/units")
                         .header("Authorization", bearer(managerAToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(unitBody(unitCode, "150000.00")))
+                        .content(unitBody(facilityAId, unitCode, "150000.00")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code").value("STORAGE_UNIT_CODE_EXISTS"));
 
-        mvc.perform(get("/manager/facilities/" + facilityAId + "/units")
-                        .header("Authorization", bearer(managerAToken)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.totalElements").value(1));
-
-        mvc.perform(get("/manager/facilities/" + facilityBId + "/units")
+        mvc.perform(get("/ops/units")
+                        .param("facilityId", facilityBId.toString())
                         .header("Authorization", bearer(managerAToken)))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get("/manager/facilities/" + facilityAId + "/units")
+        mvc.perform(get("/ops/units")
+                        .param("facilityId", facilityAId.toString())
                         .header("Authorization", bearer(customerToken)))
                 .andExpect(status().isForbidden());
     }
@@ -174,27 +174,27 @@ class FacilityManagementTests {
     void unitStatusChangesAreValidatedAndFacilityScoped() throws Exception {
         Long unitId = createUnitViaApi(managerAToken, facilityAId, "US-" + suffix, "150000.00");
 
-        mvc.perform(put("/manager/units/" + unitId + "/status")
+        mvc.perform(patch("/ops/units/" + unitId + "/status")
                         .header("Authorization", bearer(managerBToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\":\"MAINTENANCE\"}"))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(put("/manager/units/" + unitId + "/status")
+        mvc.perform(patch("/ops/units/" + unitId + "/status")
                         .header("Authorization", bearer(managerAToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\":\"INSPECTION\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error.code").value("INVALID_UNIT_STATUS_TRANSITION"));
 
-        mvc.perform(put("/manager/units/" + unitId + "/status")
+        mvc.perform(patch("/ops/units/" + unitId + "/status")
                         .header("Authorization", bearer(managerAToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\":\"MAINTENANCE\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("MAINTENANCE"));
 
-        mvc.perform(put("/manager/units/" + unitId + "/status")
+        mvc.perform(patch("/ops/units/" + unitId + "/status")
                         .header("Authorization", bearer(managerAToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\":\"AVAILABLE\"}"))
@@ -212,10 +212,10 @@ class FacilityManagementTests {
                 """.formatted(code, code);
     }
 
-    private String unitBody(String unitCode, String monthlyPrice) {
+    private String unitBody(Long facilityId, String unitCode, String monthlyPrice) {
         return """
-                {"unitCode":"%s","unitTypeId":%d,"locationLabel":"Block A","monthlyPrice":%s}
-                """.formatted(unitCode, unitTypeId, monthlyPrice);
+                {"facilityId":%d,"unitCode":"%s","unitTypeId":%d,"locationLabel":"Block A","monthlyPrice":%s}
+                """.formatted(facilityId, unitCode, unitTypeId, monthlyPrice);
     }
 
     private Long readLong(MvcResult result, String path) throws Exception {
@@ -224,7 +224,7 @@ class FacilityManagementTests {
     }
 
     private Long createFacilityViaApi(String code) throws Exception {
-        MvcResult result = mvc.perform(post("/business/facilities")
+        MvcResult result = mvc.perform(post("/management/facilities")
                         .header("Authorization", bearer(businessToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(facilityBody(code)))
@@ -233,24 +233,12 @@ class FacilityManagementTests {
         return readLong(result, "$.data.id");
     }
 
-    private Long createUnitTypeViaApi(String name) throws Exception {
-        MvcResult result = mvc.perform(post("/business/unit-types")
-                        .header("Authorization", bearer(businessToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"%s","sizeM2":5.00,"minMonthlyPrice":100000.00,"maxMonthlyPrice":200000.00,"description":"Test size"}
-                                """.formatted(name)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        return readLong(result, "$.data.id");
-    }
-
     private Long createUnitViaApi(String token, Long facilityId, String unitCode, String monthlyPrice)
             throws Exception {
-        MvcResult result = mvc.perform(post("/manager/facilities/" + facilityId + "/units")
+        MvcResult result = mvc.perform(post("/ops/units")
                         .header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(unitBody(unitCode, monthlyPrice)))
+                        .content(unitBody(facilityId, unitCode, monthlyPrice)))
                 .andExpect(status().isCreated())
                 .andReturn();
         return readLong(result, "$.data.id");

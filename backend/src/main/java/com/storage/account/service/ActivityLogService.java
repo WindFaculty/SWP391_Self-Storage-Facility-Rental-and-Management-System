@@ -1,18 +1,18 @@
 package com.storage.account.service;
 
-import com.storage.account.dto.AdminDtos.ActivityLogResponse;
 import com.storage.account.entity.ActivityLog;
+import com.storage.account.entity.User;
+import com.storage.account.entity.UserStatus;
 import com.storage.account.repository.ActivityLogRepository;
-import com.storage.shared.response.PageResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import com.storage.account.repository.UserRepository;
+import com.storage.shared.exception.BusinessException;
+import com.storage.shared.exception.ErrorCode;
+import com.storage.shared.exception.NotFoundException;
+import com.storage.shared.security.SecurityUtils;
+import com.storage.shared.web.ClientIp;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Map;
 
@@ -51,26 +51,8 @@ public class ActivityLogService {
         entry.setAction(action);
         entry.setEntityType(entityType);
         entry.setEntityId(entityId);
-        entry.setIpAddress(currentIpAddress());
+        entry.setIpAddress(ClientIp.current());
         entry.setMetadata(metadata);
         return entry;
-    }
-
-    @Transactional(readOnly = true)
-    public PageResponse<ActivityLogResponse> list(Long userId, String action, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100));
-        return PageResponse.from(logs.search(userId, action, pageable).map(ActivityLogResponse::from));
-    }
-
-    private static String currentIpAddress() {
-        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes) {
-            HttpServletRequest request = attributes.getRequest();
-            String forwardedFor = request.getHeader("X-Forwarded-For");
-            if (StringUtils.hasText(forwardedFor)) {
-                return forwardedFor.split(",")[0].trim();
-            }
-            return request.getRemoteAddr();
-        }
-        return null;
     }
 }

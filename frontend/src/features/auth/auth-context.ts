@@ -6,7 +6,6 @@ export interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (payload: LoginRequest) => Promise<AuthUser>;
-  socialLogin: (provider: 'google' | 'facebook', token: string) => Promise<AuthUser>;
   register: (payload: RegisterRequest) => Promise<AuthUser>;
   logout: () => void;
 }

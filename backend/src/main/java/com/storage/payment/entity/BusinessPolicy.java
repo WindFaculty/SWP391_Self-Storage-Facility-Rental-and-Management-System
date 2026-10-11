@@ -11,6 +11,9 @@ import java.time.Instant;
 @Table(name = "business_policies")
 public class BusinessPolicy {
 
+    /** Single-row policy table; this is its only key. */
+    public static final short ID = 1;
+
     @Id
     @Column(name = "id")
     private Short id;

@@ -21,6 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByFacilityIdAndRoleInAndStatus(Long facilityId, List<UserRole> roles,
                                                  UserStatus status);
 
+    List<User> findByFacilityIdInAndRoleInAndStatus(List<Long> facilityIds, List<UserRole> roles,
+                                                    UserStatus status);
+
     @Query("""
             select u from User u
             where (:role is null or u.role = :role)

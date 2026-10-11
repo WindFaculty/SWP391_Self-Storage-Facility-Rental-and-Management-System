@@ -9,18 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BusinessPolicyService {
 
-    private static final short POLICY_ID = 1;
-
     private final BusinessPolicyRepository businessPolicyRepository;
 
     public BusinessPolicyService(BusinessPolicyRepository businessPolicyRepository) {
         this.businessPolicyRepository = businessPolicyRepository;
-    }
-
-    @Transactional(readOnly = true)
-    public BusinessPolicy current() {
-        return businessPolicyRepository.findById(POLICY_ID)
-                .orElseThrow(() -> new IllegalStateException("business policy is not configured"));
     }
 
     @Transactional
@@ -31,7 +23,7 @@ public class BusinessPolicyService {
         if (updatedByUserId == null) {
             throw new IllegalArgumentException("updatedByUserId is required");
         }
-        BusinessPolicy policy = businessPolicyRepository.findById(POLICY_ID)
+        BusinessPolicy policy = businessPolicyRepository.findById(BusinessPolicy.ID)
                 .orElseGet(BusinessPolicy::initial);
         policy.update(depositPercent, renewalNoticeDays, cancellationFee, returnNoticeDays,
                 overdueGraceDays, overdueFeePerDay, maxDiscountPercent, updatedByUserId);

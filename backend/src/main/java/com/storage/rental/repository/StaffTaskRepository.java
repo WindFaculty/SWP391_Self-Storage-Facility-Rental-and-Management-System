@@ -16,6 +16,8 @@ public interface StaffTaskRepository extends JpaRepository<StaffTask, Long> {
 
     List<StaffTask> findByRentalId(Long rentalId);
 
+    List<StaffTask> findByRentalIdIn(List<Long> rentalIds);
+
     List<StaffTask> findByTicketId(Long ticketId);
 
     List<StaffTask> findByAssignedStaffIdAndStatusNot(Long assignedStaffId, TaskStatus status);

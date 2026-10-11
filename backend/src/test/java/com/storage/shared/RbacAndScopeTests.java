@@ -5,7 +5,6 @@ import com.storage.account.entity.UserRole;
 import com.storage.account.entity.UserStatus;
 import com.storage.facility.service.FacilityAccessService;
 import com.storage.shared.exception.ForbiddenException;
-import com.storage.shared.security.OwnershipService;
 import com.storage.shared.security.UserPrincipal;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,9 +58,6 @@ class RbacAndScopeTests {
     @Autowired
     FacilityAccessService facilityAccess;
 
-    @Autowired
-    OwnershipService ownership;
-
     Long facilityAId;
     Long facilityBId;
     String customerToken;
@@ -90,35 +86,37 @@ class RbacAndScopeTests {
 
     @Test
     void routePrefixesFollowTheRoleMatrix() throws Exception {
-        mvc.perform(get("/customer/ping"))
+        mvc.perform(get("/ops/ping"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
 
-        mvc.perform(get("/customer/ping").header("Authorization", bearer(customerToken)))
-                .andExpect(status().isNotFound());
-        mvc.perform(get("/staff/ping").header("Authorization", bearer(customerToken)))
+        mvc.perform(get("/admin/ping").header("Authorization", bearer(customerToken)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error.code").value("FORBIDDEN"));
 
-        mvc.perform(get("/staff/ping").header("Authorization", bearer(staffAToken)))
-                .andExpect(status().isNotFound());
         mvc.perform(get("/admin/ping").header("Authorization", bearer(staffAToken)))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get("/manager/ping").header("Authorization", bearer(managerAToken)))
-                .andExpect(status().isNotFound());
-        mvc.perform(get("/staff/ping").header("Authorization", bearer(managerAToken)))
-                .andExpect(status().isNotFound());
-
-        mvc.perform(get("/business/ping").header("Authorization", bearer(businessToken)))
+        mvc.perform(get("/management/ping").header("Authorization", bearer(managerAToken)))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/management/ping").header("Authorization", bearer(businessToken)))
                 .andExpect(status().isNotFound());
         mvc.perform(get("/admin/ping").header("Authorization", bearer(businessToken)))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get("/admin/ping").header("Authorization", bearer(adminToken)))
+        mvc.perform(get("/management/ping").header("Authorization", bearer(adminToken)))
                 .andExpect(status().isNotFound());
-        mvc.perform(get("/customer/ping").header("Authorization", bearer(adminToken)))
+        mvc.perform(get("/ops/ping").header("Authorization", bearer(adminToken)))
                 .andExpect(status().isNotFound());
+        mvc.perform(get("/ops/ping").header("Authorization", bearer(staffAToken)))
+                .andExpect(status().isNotFound());
+        mvc.perform(get("/ops/ping").header("Authorization", bearer(customerToken)))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(get("/payments/ping").header("Authorization", bearer(customerToken)))
+                .andExpect(status().isNotFound());
+        mvc.perform(get("/payments/ping").header("Authorization", bearer(staffAToken)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -147,27 +145,6 @@ class RbacAndScopeTests {
         assertThat(facilityAccess.canAccessFacility(facilityAId)).isFalse();
         assertThatThrownBy(() -> facilityAccess.requireFacilityAccess(facilityAId))
                 .isInstanceOf(ForbiddenException.class);
-    }
-
-    @Test
-    void apiDocsArePubliclyAvailable() throws Exception {
-        mvc.perform(get("/v3/api-docs"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.info.title").value("Self-Storage Management API"))
-                .andExpect(jsonPath("$.paths['/auth/login']").exists());
-    }
-
-    @Test
-    void ownershipGuardMatchesOnlyTheCurrentUserId() {
-        authenticateAs(42L, UserRole.CUSTOMER, null);
-
-        assertThat(ownership.isOwner(42L)).isTrue();
-        assertThat(ownership.isOwner(43L)).isFalse();
-        assertThatThrownBy(() -> ownership.requireOwnership(43L))
-                .isInstanceOf(ForbiddenException.class);
-
-        SecurityContextHolder.clearContext();
-        assertThat(ownership.isOwner(42L)).isFalse();
     }
 
     private String bearer(String token) {

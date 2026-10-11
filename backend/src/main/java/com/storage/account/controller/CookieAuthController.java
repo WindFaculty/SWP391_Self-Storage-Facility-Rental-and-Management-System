@@ -32,11 +32,6 @@ public class CookieAuthController {
         AuthResponse result = auth.register(input); revokePrior(request); cookies.write(response, result);
         return ApiResponse.success(Map.of("user", result.user()));
     }
-    @PostMapping("/cookie/social/facebook") public ApiResponse<Map<String, UserDto>> facebook(
-            @jakarta.validation.Valid @RequestBody SocialLoginRequest input, HttpServletRequest request, HttpServletResponse response) {
-        AuthResponse result = auth.socialLogin("facebook", input.token()); revokePrior(request); cookies.write(response, result);
-        return ApiResponse.success(Map.of("user", result.user()));
-    }
     private void revokePrior(HttpServletRequest request) {
         String prior = AuthCookies.read(request, AuthCookies.REFRESH);
         if (prior != null && !prior.isBlank()) auth.logout(new RefreshTokenRequest(prior));

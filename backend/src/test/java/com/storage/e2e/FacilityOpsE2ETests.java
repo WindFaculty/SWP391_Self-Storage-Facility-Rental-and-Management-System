@@ -114,7 +114,7 @@ class FacilityOpsE2ETests {
                         .header("Authorization", bearer(managerToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"status":"MAINTENANCE","reason":"BÃ¡ÂºÂ£o trÃƒÂ¬ Ã„â€˜iÃ¡Â»Âu hÃƒÂ²a"}
+                                {"status":"MAINTENANCE","reason":"Bảo trì điện hóa"}
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("MAINTENANCE"));
@@ -140,7 +140,7 @@ class FacilityOpsE2ETests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"facilityId":%d,"unitTypeId":%d,"startDate":"%s","rentalMonths":3,
-                                 "note":"Giao ngoÃƒÂ i giÃ¡Â»Â"}
+                                 "note":"Giao ngoài giờ"}
                                 """.formatted(facilityId, unitTypeId, start)))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -175,7 +175,7 @@ class FacilityOpsE2ETests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"facilityId":%d,"rentalId":%d,"taskType":"HANDOVER",
-                                 "assignedStaffId":%d,"scheduledAt":"%s","notes":"Giao 9h sÃƒÂ¡ng"}
+                                 "assignedStaffId":%d,"scheduledAt":"%s","notes":"Giao 9h sáng"}
                                 """.formatted(facilityId, rentalId, staffId,
                                 LocalDate.now(ZoneOffset.UTC).atTime(9, 0).toInstant(ZoneOffset.UTC))))
                 .andExpect(status().isCreated())
@@ -210,7 +210,7 @@ class FacilityOpsE2ETests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"accessMethod":"ACCESS_CARD",
-                                 "handoverCondition":"Kho sÃ¡ÂºÂ¡ch, khÃƒÂ³a hoÃ¡ÂºÂ¡t Ã„â€˜Ã¡Â»â„¢ng tÃ¡Â»â€˜t"}
+                                 "handoverCondition":"Kho sạch, khóa hoạt động tốt"}
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.task.status").value("DONE"))
@@ -273,11 +273,11 @@ class FacilityOpsE2ETests {
         mvc.perform(post("/ops/tasks/" + returnTaskId + "/return")
                         .header("Authorization", bearer(staffToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"condition\":\"Kho sÃ¡ÂºÂ¡ch, khÃƒÂ´ng hÃ†Â° hÃ¡Â»Âng\"}"))
+                        .content("{\"condition\":\"Kho sạch, không hư hỏng\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.task.status").value("DONE"))
                 .andExpect(jsonPath("$.data.rental.status").value("RETURNED"))
-                .andExpect(jsonPath("$.data.rental.returnCondition").value("Kho sÃ¡ÂºÂ¡ch, khÃƒÂ´ng hÃ†Â° hÃ¡Â»Âng"));
+                .andExpect(jsonPath("$.data.rental.returnCondition").value("Kho sạch, không hư hỏng"));
 
         mvc.perform(get("/ops/units").param("facilityId", facilityId.toString())
                         .header("Authorization", bearer(managerToken)))
@@ -290,7 +290,7 @@ class FacilityOpsE2ETests {
         mvc.perform(post("/ops/tasks/" + inspectionTaskId + "/inspection")
                         .header("Authorization", bearer(staffToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"result\":\"PASS\",\"notes\":\"Kho Ã„â€˜Ã¡ÂºÂ¡t chuÃ¡ÂºÂ©n\"}"))
+                        .content("{\"result\":\"PASS\",\"notes\":\"Kho đạt chuẩn\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.task.status").value("DONE"));
 
@@ -353,8 +353,8 @@ class FacilityOpsE2ETests {
                         .header("Authorization", bearer(customerToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"facilityId":%d,"category":"LOCK","title":"MÃ¡ÂºÂ¥t chÃƒÂ¬a khÃƒÂ³a",
-                                 "description":"LÃƒÂ m mÃ¡ÂºÂ¥t chÃƒÂ¬a khÃƒÂ³a kho."}
+                                {"facilityId":%d,"category":"LOCK","title":"Mất chìa khóa",
+                                 "description":"Làm mất chìa khóa kho."}
                                 """.formatted(facilityId)))
                 .andExpect(status().isCreated())
                 .andReturn();
@@ -365,7 +365,7 @@ class FacilityOpsE2ETests {
                         .header("Authorization", bearer(managerToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"facilityId":%d,"staffId":%d,"notes":"HÃ¡Â»â€” trÃ¡Â»Â£ ngay"}
+                                {"facilityId":%d,"staffId":%d,"notes":"Hỏng — trả lại ngay"}
                                 """.formatted(facilityId, staffId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.ticket.assignedStaffName").isNotEmpty())
@@ -384,10 +384,10 @@ class FacilityOpsE2ETests {
                 .andExpect(jsonPath("$.data.category").value("LOCK"));
 
         // resolving then closing, as TicketsPanel expects
-        mvc.perform(post("/staff/support-tickets/" + ticketId + "/start")
+        mvc.perform(post("/ops/tickets/" + ticketId + "/start")
                         .header("Authorization", bearer(managerToken)))
                 .andExpect(status().isOk());
-        mvc.perform(post("/staff/support-tickets/" + ticketId + "/resolve")
+        mvc.perform(post("/ops/tickets/" + ticketId + "/resolve")
                         .header("Authorization", bearer(managerToken)))
                 .andExpect(status().isOk());
         mvc.perform(post("/ops/tickets/" + ticketId + "/close")
@@ -458,13 +458,13 @@ class FacilityOpsE2ETests {
     }
 
     private Long createUnit(String unitCode, String monthlyPrice) throws Exception {
-        MvcResult result = mvc.perform(post("/manager/facilities/" + facilityId + "/units")
+        MvcResult result = mvc.perform(post("/ops/units")
                         .header("Authorization", bearer(adminToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"unitCode":"%s","unitTypeId":%d,"locationLabel":"Block A",
-                                 "monthlyPrice":%s}
-                                """.formatted(unitCode, unitTypeId, monthlyPrice)))
+                                {"facilityId":%d,"unitCode":"%s","unitTypeId":%d,
+                                 "locationLabel":"Block A","monthlyPrice":%s}
+                                """.formatted(facilityId, unitCode, unitTypeId, monthlyPrice)))
                 .andExpect(status().isCreated())
                 .andReturn();
         return readLong(result, "$.data.id");
@@ -484,7 +484,7 @@ class FacilityOpsE2ETests {
 
     private Long createFacility() throws Exception {
         String code = "OPS-FAC-" + suffix + "-" + UUID.randomUUID().toString().substring(0, 4);
-        MvcResult result = mvc.perform(post("/business/facilities")
+        MvcResult result = mvc.perform(post("/management/facilities")
                         .header("Authorization", bearer(adminToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -496,16 +496,12 @@ class FacilityOpsE2ETests {
     }
 
     private Long createUnitType() throws Exception {
-        MvcResult result = mvc.perform(post("/business/unit-types")
-                        .header("Authorization", bearer(adminToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Ops Type %s","sizeM2":8.00,
-                                 "minMonthlyPrice":500000.00,"maxMonthlyPrice":1500000.00}
-                                """.formatted(suffix)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        return readLong(result, "$.data.id");
+        String name = "Ops Type " + suffix + "-" + UUID.randomUUID().toString().substring(0, 4);
+        jdbc.update("""
+                INSERT INTO unit_types (name, size_m2, min_monthly_price, max_monthly_price)
+                VALUES (?, 8.00, 500000.00, 1500000.00)
+                """, name);
+        return jdbc.queryForObject("select id from unit_types where name = ?", Long.class, name);
     }
 
     private String createUserAndLogin(String emailPrefix, String role, Long facilityId)

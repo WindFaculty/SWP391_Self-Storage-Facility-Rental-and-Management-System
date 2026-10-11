@@ -1,12 +1,9 @@
 package com.storage.account.controller;
 
-import com.storage.account.dto.AdminDtos.FacilityAssignmentRequest;
-import com.storage.account.dto.UserDto;
+import com.storage.account.dto.AdminDtos.UserStatusRequest;
 import com.storage.account.entity.UserRole;
 import com.storage.account.entity.UserStatus;
-import com.storage.account.service.ActivityLogService;
 import com.storage.account.service.AdminOpsService;
-import com.storage.account.service.UserAdminService;
 import com.storage.ops.dto.OpsDtos;
 import com.storage.ops.dto.OpsDtos.ActivityLogDto;
 import com.storage.ops.dto.OpsDtos.AdminUserDto;
@@ -28,23 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Admin account management. The workshop endpoints (users list, PUT user,
- * PATCH status, activity-logs) match frontend/src/features/admin/api/adminApi.ts;
- * the original paged endpoints used by the REST contract stay in place.
+ * Admin account management. Paths match frontend/src/features/admin/api/adminApi.ts.
  */
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final UserAdminService userAdminService;
-    private final ActivityLogService activityLogService;
     private final AdminOpsService adminOpsService;
 
-    public AdminController(UserAdminService userAdminService,
-                           ActivityLogService activityLogService,
-                           AdminOpsService adminOpsService) {
-        this.userAdminService = userAdminService;
-        this.activityLogService = activityLogService;
+    public AdminController(AdminOpsService adminOpsService) {
         this.adminOpsService = adminOpsService;
     }
 
@@ -76,7 +65,7 @@ public class AdminController {
     @RequestMapping(value = "/users/{userId}/status",
             method = {RequestMethod.PUT, RequestMethod.PATCH})
     public ApiResponse<AdminUserDto> updateUserStatus(@PathVariable Long userId,
-                                                      @Valid @RequestBody UserStatusBody body) {
+                                                      @Valid @RequestBody UserStatusRequest body) {
         return ApiResponse.success(adminOpsService.updateUserStatus(userId, body.status()));
     }
 
@@ -85,23 +74,5 @@ public class AdminController {
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String search) {
         return ApiResponse.success(adminOpsService.activityLogs(action, search));
-    }
-
-    @PutMapping("/users/{userId}/facility")
-    public ApiResponse<UserDto> assignFacility(@PathVariable Long userId,
-                                               @Valid @RequestBody FacilityAssignmentRequest request) {
-        return ApiResponse.success(userAdminService.assignFacility(userId, request.facilityId()));
-    }
-
-    @GetMapping("/audit-logs")
-    public ApiResponse<com.storage.shared.response.PageResponse<com.storage.account.dto.AdminDtos.ActivityLogResponse>> listAuditLogs(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) String action,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        return ApiResponse.success(activityLogService.list(userId, action, page, size));
-    }
-
-    public record UserStatusBody(@jakarta.validation.constraints.NotNull UserStatus status) {
     }
 }

@@ -348,7 +348,7 @@ class ManagementAdminE2ETests {
 
     private Long createFacility() throws Exception {
         String code = "ADM-FAC-" + suffix;
-        MvcResult result = mvc.perform(post("/business/facilities")
+        MvcResult result = mvc.perform(post("/management/facilities")
                         .header("Authorization", bearer(adminToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -360,14 +360,10 @@ class ManagementAdminE2ETests {
     }
 
     private void createUnitType() throws Exception {
-        mvc.perform(post("/business/unit-types")
-                        .header("Authorization", bearer(adminToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"Admin Type %s","sizeM2":5.00,
-                                 "minMonthlyPrice":500000.00,"maxMonthlyPrice":1500000.00}
-                                """.formatted(suffix)))
-                .andExpect(status().isCreated());
+        jdbc.update("""
+                INSERT INTO unit_types (name, size_m2, min_monthly_price, max_monthly_price)
+                VALUES (?, 5.00, 500000.00, 1500000.00)
+                """, "Admin Type " + suffix);
     }
 
     private Long insertUser(String emailPrefix, String role, Long facilityId) {

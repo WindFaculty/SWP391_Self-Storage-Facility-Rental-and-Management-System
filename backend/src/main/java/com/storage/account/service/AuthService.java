@@ -43,54 +43,19 @@ public class AuthService {
     private final JwtTokenProvider jwt;
     private final AuthenticationManager authenticationManager;
     private final ActivityLogService audit;
-    private final com.storage.account.repository.SocialIdentityRepository identities;
-    private final SocialTokenVerifier socialVerifier;
 
     public AuthService(UserRepository users,
                        RefreshTokenRepository refreshTokens,
                        PasswordEncoder passwordEncoder,
                        JwtTokenProvider jwt,
                        AuthenticationManager authenticationManager,
-                       ActivityLogService audit,
-                       com.storage.account.repository.SocialIdentityRepository identities,
-                       SocialTokenVerifier socialVerifier) {
+                       ActivityLogService audit) {
         this.users = users;
         this.refreshTokens = refreshTokens;
         this.passwordEncoder = passwordEncoder;
         this.jwt = jwt;
         this.authenticationManager = authenticationManager;
         this.audit = audit;
-        this.identities = identities;
-        this.socialVerifier = socialVerifier;
-    }
-
-    @Transactional
-    public AuthResponse socialLogin(String provider, String token) {
-        if (!"facebook".equals(provider)) throw new BusinessException(ErrorCode.INVALID_TOKEN);
-        var profile = socialVerifier.verify(provider, token);
-        var identity = identities.findByProviderAndSubject(provider, profile.subject());
-        User user;
-        if (identity.isPresent()) {
-            user = users.findById(identity.get().getUserId())
-                    .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        } else {
-            String email = normalizeEmail(profile.email());
-            if (users.existsByEmail(email)) {
-                throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS,
-                        "Email đã có tài khoản. Vui lòng đăng nhập bằng phương thức đã đăng ký.");
-            }
-            user = new User();
-            user.setEmail(email);
-            user.setFullName(profile.name().substring(0, Math.min(120, profile.name().length())));
-            user.setPasswordHash(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
-            user.setRole(UserRole.CUSTOMER);
-            user.setStatus(UserStatus.ACTIVE);
-            users.save(user);
-            identities.save(new com.storage.account.entity.SocialIdentity(provider, profile.subject(), user.getId()));
-        }
-        if (user.getStatus() != UserStatus.ACTIVE) throw new BusinessException(ErrorCode.USER_INACTIVE);
-        audit.record(user.getId(), "SOCIAL_LOGIN_SUCCESS", "USER", user.getId(), Map.of("provider", provider));
-        return issueTokens(user);
     }
 
     @Transactional

@@ -49,18 +49,15 @@ public final class ManagementDtos {
     public record FacilityStatusRequest(String status) {
     }
 
-    public record RevenuePoint(String month, String label, BigDecimal amount) {
-    }
-
     public record FacilityReportRow(Long facilityId, String name, long unitTotal,
                                     long unitOccupied, long unitAvailable, double occupancyRate,
-                                    BigDecimal revenue, long activeRentals,
+                                    java.math.BigDecimal revenue, long activeRentals,
                                     long overdueRentals) {
     }
 
-    public record ReportSummary(BigDecimal totalRevenue, double occupancyRate,
+    public record ReportSummary(java.math.BigDecimal totalRevenue, double occupancyRate,
                                 long activeRentals, long overdueRentals,
-                                java.util.List<RevenuePoint> revenuePoints,
+                                java.util.List<com.storage.shared.service.Analytics.MonthPoint> revenuePoints,
                                 java.util.List<FacilityReportRow> rows) {
     }
 }

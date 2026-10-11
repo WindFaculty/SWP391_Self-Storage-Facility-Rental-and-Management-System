@@ -6,7 +6,7 @@ import { authApi } from './api/authApi';
 import { apiClient } from '../../api/client';
 
 vi.mock('./api/authApi', () => ({ authApi: {
-  me: vi.fn(), cookieLogin: vi.fn(), cookieRegister: vi.fn(), cookieFacebookLogin: vi.fn(), logout: vi.fn(),
+  me: vi.fn(), cookieLogin: vi.fn(), cookieRegister: vi.fn(), logout: vi.fn(),
 } }));
 const customer = { id: 7, email: 'customer@example.com', fullName: 'Customer', role: 'CUSTOMER' as const };
 function SessionProbe() {

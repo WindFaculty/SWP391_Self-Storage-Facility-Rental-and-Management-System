@@ -8,8 +8,6 @@ import com.storage.rental.dto.RentalDtos.RentalResponse;
 import com.storage.rental.dto.RentalDtos.ReturnRequest;
 import com.storage.rental.dto.RentalDtos.ReturnResponse;
 import com.storage.rental.service.RentalService;
-import com.storage.shared.exception.BusinessException;
-import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.response.ApiResponse;
 import com.storage.shared.security.SecurityUtils;
 import jakarta.validation.Valid;
@@ -38,41 +36,41 @@ public class RentalController {
 
     @PostMapping("/holds")
     public ApiResponse<HoldResponse> createHold(@Valid @RequestBody HoldRequest request) {
-        return ApiResponse.success(rentalService.createHold(currentUserId(), request));
+        return ApiResponse.success(rentalService.createHold(SecurityUtils.requireCurrentUserId(),
+                request));
     }
 
     @GetMapping("/me")
     public ApiResponse<List<RentalResponse>> myRentals() {
-        return ApiResponse.success(rentalService.listMine(currentUserId()));
+        return ApiResponse.success(rentalService.listMine(SecurityUtils.requireCurrentUserId()));
     }
 
     @GetMapping("/{rentalId}")
     public ApiResponse<RentalResponse> myRental(@PathVariable Long rentalId) {
-        return ApiResponse.success(rentalService.getMine(currentUserId(), rentalId));
+        return ApiResponse.success(rentalService.getMine(SecurityUtils.requireCurrentUserId(),
+                rentalId));
     }
 
     @PostMapping("/{rentalId}/cancel")
     public ApiResponse<RentalResponse> cancel(@PathVariable Long rentalId,
                                               @RequestBody(required = false) String reason) {
-        rentalService.cancel(currentUserId(), rentalId, reason);
-        return ApiResponse.success(rentalService.getMine(currentUserId(), rentalId));
+        rentalService.cancel(SecurityUtils.requireCurrentUserId(), rentalId, reason);
+        return ApiResponse.success(rentalService.getMine(SecurityUtils.requireCurrentUserId(),
+                rentalId));
     }
 
     @PostMapping("/{rentalId}/renewals")
     public ApiResponse<RenewalResponse> renew(@PathVariable Long rentalId,
                                               @Valid @RequestBody RenewalRequest request) {
-        return ApiResponse.success(rentalService.requestRenewal(currentUserId(), rentalId, request));
+        return ApiResponse.success(rentalService.requestRenewal(SecurityUtils.requireCurrentUserId(),
+                rentalId, request));
     }
 
     @PostMapping("/{rentalId}/return-requests")
     public ApiResponse<ReturnResponse> requestReturn(@PathVariable Long rentalId,
                                                      @RequestBody(required = false) ReturnRequest request) {
-        return ApiResponse.success(rentalService.requestReturn(currentUserId(), rentalId,
+return ApiResponse.success(rentalService.requestReturn(
+                SecurityUtils.requireCurrentUserId(), rentalId,
                 request == null ? new ReturnRequest(null, null) : request));
-    }
-
-    private static Long currentUserId() {
-        return SecurityUtils.getCurrentUserId()
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
     }
 }

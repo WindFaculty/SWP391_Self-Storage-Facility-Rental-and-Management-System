@@ -125,9 +125,6 @@ public final class OpsDtos {
                                     java.util.List<OccupancyByType> occupancyByType) {
     }
 
-    public record RevenuePoint(String month, String label, BigDecimal amount) {
-    }
-
     public record AdminUserDto(Long id, String email, String fullName, String phone, String role,
                                Long facilityId, String status, Instant createdAt) {
     }

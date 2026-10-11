@@ -1,5 +1,9 @@
 # Google Login audit and verification — 2026-10-11
 
+## Update: Facebook removed
+
+Facebook login has been removed by user request: button/SDK, frontend context/API methods, both backend login endpoints, verifier/request DTO and environment properties. The four Facebook-only unit tests were removed with the deleted feature; Google integration and password lifecycle tests remain. The identity table and forward-only migrations remain because Google uses them; no existing user data was deleted. File lists and results below describe the earlier Google integration audit and are historical.
+
 Implementation and setup: [Google Login guide](../social-login.md).
 
 ## Source-backed audit and decisions

@@ -13,6 +13,7 @@ import com.storage.shared.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.storage.shared.web.ClientIp;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
@@ -85,7 +86,7 @@ public class CustomerBillingService {
                         .substring(0, 12).toUpperCase(java.util.Locale.ROOT));
         Instant now = Instant.now();
         Instant expiresAt = now.plus(java.time.Duration.ofMinutes(15));
-        return vnPayService.createPaymentUrl(attempt, clientIp(httpRequest), now, expiresAt);
+        return vnPayService.createPaymentUrl(attempt, ClientIp.of(httpRequest), now, expiresAt);
     }
 
     private BigDecimal invoiceTotal(Invoice invoice) {
@@ -100,13 +101,5 @@ public class CustomerBillingService {
 
     private Long rentalIdOfAttempt(PaymentAttempt attempt) {
         return invoices.findById(attempt.getInvoiceId()).map(Invoice::getRentalId).orElse(null);
-    }
-
-    private static String clientIp(jakarta.servlet.http.HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

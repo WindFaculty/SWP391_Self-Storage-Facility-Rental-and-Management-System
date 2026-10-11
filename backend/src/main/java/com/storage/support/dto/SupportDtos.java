@@ -18,9 +18,6 @@ public final class SupportDtos {
                                       @NotBlank String description) {
     }
 
-    public record AssignRequest(@NotNull Long staffId) {
-    }
-
     public record TicketResponse(Long id, Long customerId, Long facilityId, Long rentalId,
                                  Long assignedStaffId, String category, String title, String description,
                                  String status, Instant createdAt, Instant resolvedAt) {

@@ -6,7 +6,7 @@ Backend is a modular monolith with Java 25, Spring Boot 4.1.1, Spring Security, 
 
 Before: AuthenticationManager/BCrypt email-password authentication; access JWT 30 minutes, refresh JWT 7 days, SHA-256 hashes stored in `refresh_tokens`, refresh rotation and revocation. Stateless API reads roles/status from database. Frontend stored bearer credentials in localStorage and logout only cleared local state. Earlier Google implementation posted GIS ID tokens, not backend Authorization Code Flow.
 
-After: Spring Security OAuth2 Client handles Google Authorization Code/OIDC, including signature/issuer/audience/expiration and state/nonce, with PKCE. A temporary session holds the OAuth request, then is invalidated on success/failure. The callback issues the existing application's JWT infrastructure via HttpOnly cookies. Frontend restores authoritative profile/role from `/auth/me`, and refreshes cookie credentials when needed. Browser email/password and Facebook use cookie adapters; existing bearer APIs remain compatible. Google token POST is no longer a supported login path.
+After: Spring Security OAuth2 Client handles Google Authorization Code/OIDC, including signature/issuer/audience/expiration and state/nonce, with PKCE. A temporary session holds the OAuth request, then is invalidated on success/failure. The callback issues the existing application's JWT infrastructure via HttpOnly cookies. Frontend restores authoritative profile/role from `/auth/me`, and refreshes cookie credentials when needed. Browser email/password uses cookie adapters; existing bearer APIs remain compatible. Google token POST is no longer a supported login path.
 
 Browser cookies: host-only, API context path, SameSite=Lax, HttpOnly for access/refresh; Secure required in production. Unsafe cookie requests require CSRF. Frontend obtains CSRF token and sends `X-XSRF-TOKEN`, using `credentials: include`. Cross-origin deployment must use explicitly allowed CORS origins. Different-site frontend/API is unsupported by Lax cookies: use a same-site reverse proxy/API path rather than disabling CSRF.
 
@@ -60,7 +60,6 @@ All routes have `/api/v1` prefix:
 | GET `/auth/cookie/csrf` | CSRF token for browser |
 | POST `/auth/cookie/login` | Email/password login, HttpOnly JWT |
 | POST `/auth/cookie/register` | Customer registration, HttpOnly JWT |
-| POST `/auth/cookie/social/facebook` | Existing Facebook verification, cookie response |
 | POST `/auth/cookie/refresh` | Rotate refresh cookie, return user |
 | POST `/auth/cookie/logout` | Revoke refresh and clear cookies |
 

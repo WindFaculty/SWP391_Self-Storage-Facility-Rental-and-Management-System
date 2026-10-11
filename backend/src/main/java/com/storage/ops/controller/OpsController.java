@@ -10,7 +10,7 @@ import com.storage.ops.dto.OpsDtos.HandoverInput;
 import com.storage.ops.dto.OpsDtos.RentalDto;
 import com.storage.ops.dto.OpsDtos.RentalList;
 import com.storage.ops.dto.OpsDtos.ReturnInput;
-import com.storage.ops.dto.OpsDtos.RevenuePoint;
+import com.storage.shared.service.Analytics.MonthPoint;
 import com.storage.ops.dto.OpsDtos.StaffMemberDto;
 import com.storage.ops.dto.OpsDtos.StaffTaskDto;
 import com.storage.ops.dto.OpsDtos.StorageUnitDto;
@@ -210,6 +210,18 @@ public class OpsController {
         return com.storage.shared.response.ApiResponse.success(ops.closeTicket(ticketId));
     }
 
+    @PostMapping("/tickets/{ticketId}/start")
+    public com.storage.shared.response.ApiResponse<TicketDto> startTicket(
+            @PathVariable Long ticketId) {
+        return com.storage.shared.response.ApiResponse.success(ops.startTicket(ticketId));
+    }
+
+    @PostMapping("/tickets/{ticketId}/resolve")
+    public com.storage.shared.response.ApiResponse<TicketDto> resolveTicket(
+            @PathVariable Long ticketId) {
+        return com.storage.shared.response.ApiResponse.success(ops.resolveTicket(ticketId));
+    }
+
     // ---------- dashboard & revenue ----------
 
     @GetMapping("/facilities/{facilityId}/dashboard")
@@ -219,7 +231,7 @@ public class OpsController {
     }
 
     @GetMapping("/facilities/{facilityId}/revenue")
-    public com.storage.shared.response.ApiResponse<List<RevenuePoint>> revenue(
+    public com.storage.shared.response.ApiResponse<List<MonthPoint>> revenue(
             @PathVariable Long facilityId,
             @RequestParam(defaultValue = "6") int months) {
         return com.storage.shared.response.ApiResponse.success(

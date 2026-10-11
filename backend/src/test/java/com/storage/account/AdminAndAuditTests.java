@@ -161,7 +161,7 @@ class AdminAndAuditTests {
     }
 
     @Test
-    void auditLogsCaptureAuthAndAdminEvents() throws Exception {
+    void activityLogsCaptureAuthAndAdminEvents() throws Exception {
         mvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -175,36 +175,25 @@ class AdminAndAuditTests {
                         .content(createUserBody("manager3-" + suffix, UserRole.FACILITY_MANAGER, facilityAId)))
                 .andExpect(status().isCreated());
 
-        mvc.perform(get("/admin/audit-logs")
+        mvc.perform(get("/admin/activity-logs")
                         .header("Authorization", bearer(adminToken))
                         .param("action", "LOGIN_FAILED"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[*].metadata.email", hasItem(adminEmail)));
+                .andExpect(jsonPath("$.data[*].action", hasItem("LOGIN_FAILED")))
+                .andExpect(jsonPath("$.data[*].actorName").value(org.hamcrest.Matchers.notNullValue()));
 
-        Long adminId = readLong(mvc.perform(get("/auth/me")
-                        .header("Authorization", bearer(adminToken)))
-                .andExpect(status().isOk())
-                .andReturn(), "$.data.id");
-
-        mvc.perform(get("/admin/audit-logs")
-                        .header("Authorization", bearer(adminToken))
-                        .param("userId", adminId.toString())
-                        .param("action", "LOGIN_SUCCESS"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.totalElements").value(1));
-
-        mvc.perform(get("/admin/audit-logs")
+        mvc.perform(get("/admin/activity-logs")
                         .header("Authorization", bearer(adminToken))
                         .param("action", "USER_CREATED"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].action").value("USER_CREATED"))
-                .andExpect(jsonPath("$.data.content[0].entityType").value("USER"))
-                .andExpect(jsonPath("$.data.content[0].ipAddress").isNotEmpty());
+                .andExpect(jsonPath("$.data[0].action").value("USER_CREATED"))
+                .andExpect(jsonPath("$.data[0].entityType").value("USER"))
+                .andExpect(jsonPath("$.data[0].ipAddress").isNotEmpty());
 
-        mvc.perform(get("/admin/audit-logs").header("Authorization", bearer(businessToken)))
+        mvc.perform(get("/admin/activity-logs").header("Authorization", bearer(businessToken)))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get("/admin/audit-logs"))
+        mvc.perform(get("/admin/activity-logs"))
                 .andExpect(status().isUnauthorized());
     }
 

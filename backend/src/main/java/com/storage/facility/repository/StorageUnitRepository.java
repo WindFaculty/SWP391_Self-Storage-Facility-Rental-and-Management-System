@@ -34,6 +34,8 @@ public interface StorageUnitRepository extends JpaRepository<StorageUnit, Long> 
 
     List<StorageUnit> findByFacilityId(Long facilityId);
 
+    List<StorageUnit> findByFacilityIdIn(List<Long> facilityIds);
+
     /*
      * Units of a unit type in a facility that are physically rentable for a
      * [start, end) window: the unit itself is not under inspection or

@@ -16,7 +16,6 @@ import com.storage.rental.repository.RentalRenewalRepository;
 import com.storage.rental.repository.RentalRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -130,15 +129,6 @@ class PaymentServiceTest {
 
         assertEquals(PaymentAttempt.Status.SUCCESS, attempt.getStatus());
         assertEquals(Invoice.Status.CANCELLED, invoice.getStatus());
-    }
-
-    @Test
-    void returnsPaymentHistoryForRental() {
-        PaymentAttempt attempt = PaymentAttempt.pending(
-                1L, new BigDecimal("90.00"), "VNPAY", "VNPAY-1");
-        when(paymentAttemptRepository.findByRentalId(1L)).thenReturn(List.of(attempt));
-
-        assertEquals(List.of(attempt), paymentService.paymentHistory(1L));
     }
 
     @Test

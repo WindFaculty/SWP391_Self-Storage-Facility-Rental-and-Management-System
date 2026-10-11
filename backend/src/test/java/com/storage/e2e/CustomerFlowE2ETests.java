@@ -18,14 +18,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.mysql.MySQLContainer;
 
-import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasItem;
@@ -387,7 +385,7 @@ class CustomerFlowE2ETests {
 
     private Long createFacility() throws Exception {
         String code = "E2E-FAC-" + suffix;
-        MvcResult result = mvc.perform(post("/business/facilities")
+        MvcResult result = mvc.perform(post("/management/facilities")
                         .header("Authorization", bearer(adminToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -399,26 +397,22 @@ class CustomerFlowE2ETests {
     }
 
     private Long createUnitType() throws Exception {
-        MvcResult result = mvc.perform(post("/business/unit-types")
-                        .header("Authorization", bearer(adminToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"name":"E2E Type %s","sizeM2":6.00,
-                                 "minMonthlyPrice":500000.00,"maxMonthlyPrice":1500000.00}
-                                """.formatted(suffix)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        return readLong(result, "$.data.id");
+        String name = "E2E Type " + suffix;
+        jdbc.update("""
+                INSERT INTO unit_types (name, size_m2, min_monthly_price, max_monthly_price)
+                VALUES (?, 6.00, 500000.00, 1500000.00)
+                """, name);
+        return jdbc.queryForObject("select id from unit_types where name = ?", Long.class, name);
     }
 
     private Long createUnit(String unitCode, String monthlyPrice) throws Exception {
-        MvcResult result = mvc.perform(post("/manager/facilities/" + facilityId + "/units")
+        MvcResult result = mvc.perform(post("/ops/units")
                         .header("Authorization", bearer(adminToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"unitCode":"%s","unitTypeId":%d,"locationLabel":"Block A",
-                                 "monthlyPrice":%s}
-                                """.formatted(unitCode, unitTypeId, monthlyPrice)))
+                                {"facilityId":%d,"unitCode":"%s","unitTypeId":%d,
+                                 "locationLabel":"Block A","monthlyPrice":%s}
+                                """.formatted(facilityId, unitCode, unitTypeId, monthlyPrice)))
                 .andExpect(status().isCreated())
                 .andReturn();
         return readLong(result, "$.data.id");

@@ -4,7 +4,6 @@ import { SocialLogin } from './SocialLogin';
 import { authApi } from '../api/authApi';
 import { googleAuthorizationUrl } from '../../../api/client';
 
-vi.mock('../useAuth', () => ({ useAuth: () => ({ socialLogin: vi.fn() }) }));
 vi.mock('../api/authApi', () => ({ authApi: { googleConfig: vi.fn() } }));
 describe('Google authorization entry', () => {
   beforeEach(() => vi.resetAllMocks());

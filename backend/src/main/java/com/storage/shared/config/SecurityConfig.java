@@ -82,21 +82,16 @@ public class SecurityConfig {
                 .securityContext(context -> context.securityContextRepository(new NullSecurityContextRepository()))
                 .requestCache(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/oauth2/**", "/login/oauth2/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                        .requestMatchers("/auth/**", "/oauth2/**", "/login/oauth2/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/payments/vnpay/ipn", "/payments/vnpay/return").permitAll()
                         .requestMatchers(HttpMethod.GET, "/facilities", "/facilities/*",
-                                "/facilities/*/unit-types", "/facilities/*/available-units",
-                                "/unit-types", "/availability")
+                                "/facilities/*/unit-types", "/unit-types", "/availability")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/business/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER")
                         .requestMatchers("/management/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER")
-                        .requestMatchers("/manager/**").hasAnyRole("ADMIN", "FACILITY_MANAGER")
-                        .requestMatchers("/staff/**").hasAnyRole("ADMIN", "FACILITY_MANAGER", "FACILITY_STAFF")
                         .requestMatchers("/ops/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER",
                                 "FACILITY_MANAGER", "FACILITY_STAFF")
-                        .requestMatchers("/customer/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .requestMatchers("/rentals/**", "/invoices/**", "/support-tickets/**",
                                 "/payments/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated())
@@ -115,16 +110,8 @@ public class SecurityConfig {
         if (registrations != null) {
             var resolver = new DefaultOAuth2AuthorizationRequestResolver(registrations, "/oauth2/authorization");
             resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());
-            http.oauth2Login(oauth -> oauth.authorizationEndpoint(endpoint -> endpoint.authorizationRequestResolver(resolver))
-                    .authorizedClientRepository(new org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository() {
-                        public <T extends org.springframework.security.oauth2.client.OAuth2AuthorizedClient> T loadAuthorizedClient(
-                                String id, org.springframework.security.core.Authentication principal, jakarta.servlet.http.HttpServletRequest request) { return null; }
-                        public void saveAuthorizedClient(org.springframework.security.oauth2.client.OAuth2AuthorizedClient client,
-                                org.springframework.security.core.Authentication principal, jakarta.servlet.http.HttpServletRequest request,
-                                jakarta.servlet.http.HttpServletResponse response) { }
-                        public void removeAuthorizedClient(String id, org.springframework.security.core.Authentication principal,
-                                jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) { }
-                    })
+            http.oauth2Login(oauth -> oauth
+                    .authorizationEndpoint(endpoint -> endpoint.authorizationRequestResolver(resolver))
                     .successHandler(google::success).failureHandler(google::failure));
         }
         return http.build();
