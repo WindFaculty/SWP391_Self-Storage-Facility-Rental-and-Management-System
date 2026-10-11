@@ -1,0 +1,141 @@
+%% SWP391 - Logical ERD. Full physical columns and constraints: self_storage_schema.sql
+%% PK=Primary key; FK=Foreign key; UK=Unique key.
+%% Nullable foreign keys are indicated in the SQL; Mermaid cardinality o| represents 0..1.
+erDiagram
+    direction LR
+
+    facilities {
+        bigint id PK
+        string code UK
+        string name
+        string address
+        string status
+    }
+    users {
+        bigint id PK
+        bigint facility_id FK
+        string full_name
+        string email UK
+        string password_hash
+        string role
+        string status
+    }
+    unit_types {
+        bigint id PK
+        string name UK
+        decimal size_m2
+        decimal min_monthly_price
+        decimal max_monthly_price
+    }
+    storage_units {
+        bigint id PK
+        bigint facility_id FK
+        bigint unit_type_id FK
+        string unit_code
+        decimal monthly_price
+        string status
+    }
+    business_policies {
+        smallint id PK
+        decimal deposit_percent
+        int renewal_notice_days
+        decimal cancellation_fee
+        decimal overdue_fee_per_day
+        int overdue_grace_days
+        decimal max_discount_percent
+        bigint updated_by_user_id FK
+    }
+    fee_types {
+        bigint id PK
+        string code UK
+        string name
+        decimal default_amount
+        bool active
+    }
+    rentals {
+        bigint id PK
+        bigint customer_id FK
+        bigint unit_id FK
+        date start_date
+        date end_date
+        datetime appointment_at
+        decimal price_per_month
+        string status
+        datetime checked_in_at
+        datetime returned_at
+        string return_condition
+    }
+    rental_renewals {
+        bigint id PK
+        bigint rental_id FK
+        bigint approved_by_user_id FK
+        date previous_end_date
+        date requested_end_date
+        string status
+    }
+    invoices {
+        bigint id PK
+        bigint rental_id FK
+        bigint renewal_id FK
+        bigint fee_type_id FK
+        string invoice_type
+        decimal amount
+        decimal discount_amount
+        decimal total_amount
+        string status
+    }
+    payments {
+        bigint id PK
+        bigint invoice_id FK
+        decimal amount
+        string method
+        string provider_reference UK
+        string status
+        datetime paid_at
+    }
+    support_tickets {
+        bigint id PK
+        bigint customer_id FK
+        bigint facility_id FK
+        bigint rental_id FK
+        string category
+        string title
+        string status
+    }
+    staff_tasks {
+        bigint id PK
+        bigint assigned_staff_id FK
+        bigint rental_id FK
+        bigint ticket_id FK
+        string task_type
+        datetime scheduled_at
+        string status
+    }
+    activity_logs {
+        bigint id PK
+        bigint user_id FK
+        string action
+        string entity_type
+        bigint entity_id
+        datetime created_at
+    }
+
+    facilities ||--o{ storage_units : contains
+    facilities |o--o{ users : scopes
+    unit_types ||--o{ storage_units : categorizes
+    users ||--o{ rentals : reserves
+    storage_units ||--o{ rentals : allocated_to
+    rentals ||--o{ rental_renewals : extends
+    users |o--o{ rental_renewals : approves
+    rentals ||--o{ invoices : billed_for
+    rental_renewals |o--o| invoices : billed_by
+    fee_types |o--o{ invoices : extra_fee
+    invoices ||--o{ payments : paid_with
+    facilities ||--o{ support_tickets : handles
+    users ||--o{ support_tickets : opens
+    rentals |o--o{ support_tickets : concerns
+    users ||--o{ staff_tasks : assigned_to
+    rentals |o--o{ staff_tasks : operations
+    support_tickets |o--o{ staff_tasks : support_work
+    users |o--o{ activity_logs : performs
+    users |o--o| business_policies : last_updated_by

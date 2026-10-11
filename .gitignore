@@ -1,52 +1,50 @@
-# Compiled class file
+# Build/dependencies
+node_modules/
+target/
+dist/
+build/
+coverage/
+.vite/
+.cache/
+.npm/
 *.class
-
-# Log file
-*.log
-
-# Package Files #
 *.jar
 *.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+*.log
+/.run/
 
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+# Test artifacts
+test-results/
+playwright-report/
 
-# Node & Frontend
-node_modules/
-dist/
-dist-ssr/
-*.local
-.npm
-.eslintcache
-
-# Environment variables
+# Local secrets/environment
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.key/
+.aws/
 
-# IDE & Editor
+# Local preservation archives
+.local-backups/
+
+# Local Stitch design source
+/stitch_self_storage_editorial_homepage_system/
+
+# Editor/OS
+/tranxuankhoa.code-workspace
 .idea/
-*.iws
-*.iml
-*.ipr
 .vscode/
-*.sublime-project
-*.sublime-workspace
+*.iml
 .DS_Store
 Thumbs.db
+
+# Local Git worktrees
+/.worktrees/
+/ho-xuan-thanh/
+/bui-tuan-thanh/
+/bui-van-tinh/
+/le-tri-thien/
