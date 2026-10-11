@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { listRentals, listStaffMembers, listStaffTasks } from '../api/rentalOpsApi'
 import { listTickets } from '../api/supportTicketsApi'
 import type {
   Rental,
   RentalFilters,
   RentalSummary,
-  StaffMember,
   StaffTask,
   SupportTicket,
   TaskFilters,
@@ -33,106 +32,51 @@ const EMPTY_TASK_SUMMARY: TaskSummary = {
 }
 
 export function useRentals(filters: RentalFilters) {
-  const [rentals, setRentals] = useState<Rental[]>([])
-  const [summary, setSummary] = useState<RentalSummary>(EMPTY_RENTAL_SUMMARY)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const { facilityId, tab, search, paymentState, unitTypeId } = filters
-
-  const reload = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const result = await listRentals({ facilityId, tab, search, paymentState, unitTypeId })
-      setRentals(result.items)
-      setSummary(result.summary)
-    } catch {
-      setError('Không tải được danh sách hợp đồng. Vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [facilityId, tab, search, paymentState, unitTypeId])
-
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  return { rentals, summary, loading, error, reload }
+  const query = useQuery({
+    queryKey: ['ops', 'rentals', filters],
+    queryFn: () => listRentals(filters),
+  })
+  return {
+    rentals: query.data?.items ?? ([] as Rental[]),
+    summary: query.data?.summary ?? EMPTY_RENTAL_SUMMARY,
+    loading: query.isPending,
+    error: query.error ? 'Không tải được danh sách hợp đồng. Vui lòng thử lại.' : null,
+    reload: query.refetch,
+  }
 }
 
 export function useStaffTasks(filters: TaskFilters) {
-  const [tasks, setTasks] = useState<StaffTask[]>([])
-  const [summary, setSummary] = useState<TaskSummary>(EMPTY_TASK_SUMMARY)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const { facilityId, tab, status, slot, day, rentalId, search } = filters
-
-  const reload = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const result = await listStaffTasks({ facilityId, tab, status, slot, day, rentalId, search })
-      setTasks(result.items)
-      setSummary(result.summary)
-    } catch {
-      setError('Không tải được danh sách công việc. Vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [facilityId, tab, status, slot, day, rentalId, search])
-
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  return { tasks, summary, loading, error, reload }
+  const query = useQuery({
+    queryKey: ['ops', 'tasks', filters],
+    queryFn: () => listStaffTasks(filters),
+  })
+  return {
+    tasks: query.data?.items ?? ([] as StaffTask[]),
+    summary: query.data?.summary ?? EMPTY_TASK_SUMMARY,
+    loading: query.isPending,
+    error: query.error ? 'Không tải được danh sách công việc. Vui lòng thử lại.' : null,
+    reload: query.refetch,
+  }
 }
 
 export function useStaffMembers(facilityId: number) {
-  const [staff, setStaff] = useState<StaffMember[]>([])
-
-  useEffect(() => {
-    let cancelled = false
-    void listStaffMembers(facilityId).then((members) => {
-      if (!cancelled) {
-        setStaff(members)
-      }
-    }).catch(() => { /* Data remains empty when the backend is unavailable. */ })
-    return () => {
-      cancelled = true
-    }
-  }, [facilityId])
-
-  return { staff }
+  const query = useQuery({
+    queryKey: ['ops', 'staff', facilityId],
+    queryFn: () => listStaffMembers(facilityId),
+  })
+  return { staff: query.data ?? [] }
 }
 
 export function useTickets(filters: TicketFilters) {
-  const [tickets, setTickets] = useState<SupportTicket[]>([])
-  const [activeCount, setActiveCount] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const { facilityId, status, search } = filters
-
-  const reload = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const result = await listTickets({ facilityId, status, search })
-      setTickets(result.items)
-      setActiveCount(result.activeCount)
-    } catch {
-      setError('Không tải được danh sách ticket. Vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [facilityId, status, search])
-
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  return { tickets, activeCount, loading, error, reload }
+  const query = useQuery({
+    queryKey: ['ops', 'tickets', filters],
+    queryFn: () => listTickets(filters),
+  })
+  return {
+    tickets: query.data?.items ?? ([] as SupportTicket[]),
+    activeCount: query.data?.activeCount ?? 0,
+    loading: query.isPending,
+    error: query.error ? 'Không tải được danh sách ticket. Vui lòng thử lại.' : null,
+    reload: query.refetch,
+  }
 }

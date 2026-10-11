@@ -1,21 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { listUnitTypes } from '../api/facilityUnitsApi'
-import type { UnitType } from '../types'
 
 export function useUnitTypes() {
-  const [unitTypes, setUnitTypes] = useState<UnitType[]>([])
-
-  useEffect(() => {
-    let cancelled = false
-    void listUnitTypes().then((types) => {
-      if (!cancelled) {
-        setUnitTypes(types)
-      }
-    }).catch(() => { /* Data remains empty when the backend is unavailable. */ })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  return { unitTypes }
+  const query = useQuery({
+    queryKey: ['ops', 'unit-types'],
+    queryFn: listUnitTypes,
+  })
+  return { unitTypes: query.data ?? [] }
 }

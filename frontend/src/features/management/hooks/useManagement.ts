@@ -1,91 +1,60 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   getBusinessPolicy,
   getReportSummary,
   listFacilityOverviews,
   listFeeTypes,
 } from '../api/managementApi'
-import type {
-  BusinessPolicy,
-  FacilityOverview,
-  FeeType,
-  ReportFilters,
-  ReportSummary,
-} from '../types'
+import type { ReportFilters } from '../types'
 
 export function useFacilityOverviews() {
-  const [overviews, setOverviews] = useState<FacilityOverview[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const reload = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      setOverviews(await listFacilityOverviews())
-    } catch {
-      setError('Không tải được danh sách cơ sở. Vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  return { overviews, loading, error, reload }
+  const query = useQuery({
+    queryKey: ['management', 'facilities'],
+    queryFn: listFacilityOverviews,
+  })
+  return {
+    overviews: query.data ?? [],
+    loading: query.isPending,
+    error: query.error ? 'Không tải được danh sách cơ sở. Vui lòng thử lại.' : null,
+    reload: query.refetch,
+  }
 }
 
 export function usePolicyData() {
-  const [policy, setPolicy] = useState<BusinessPolicy | null>(null)
-  const [fees, setFees] = useState<FeeType[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const policyQuery = useQuery({
+    queryKey: ['management', 'policy'],
+    queryFn: getBusinessPolicy,
+  })
+  const feesQuery = useQuery({
+    queryKey: ['management', 'fee-types'],
+    queryFn: listFeeTypes,
+  })
 
   const reload = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [policyData, feeData] = await Promise.all([getBusinessPolicy(), listFeeTypes()])
-      setPolicy(policyData)
-      setFees(feeData)
-    } catch {
-      setError('Không tải được chính sách kinh doanh. Vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+    await Promise.all([policyQuery.refetch(), feesQuery.refetch()])
+  }, [policyQuery.refetch, feesQuery.refetch])
 
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  return { policy, fees, loading, error, reload }
+  return {
+    policy: policyQuery.data ?? null,
+    fees: feesQuery.data ?? [],
+    loading: policyQuery.isPending || feesQuery.isPending,
+    error: policyQuery.error || feesQuery.error
+      ? 'Không tải được chính sách kinh doanh. Vui lòng thử lại.'
+      : null,
+    reload,
+  }
 }
 
 export function useReportSummary(filters: ReportFilters) {
-  const [summary, setSummary] = useState<ReportSummary | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const { period, facilityId } = filters
-
-  const reload = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      setSummary(await getReportSummary({ period, facilityId }))
-    } catch {
-      setError('Không tải được báo cáo. Vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [period, facilityId])
-
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  return { summary, loading, error, reload }
+  const query = useQuery({
+    queryKey: ['management', 'reports', filters],
+    queryFn: () => getReportSummary(filters),
+  })
+  return {
+    summary: query.data ?? null,
+    loading: query.isPending,
+    error: query.error ? 'Không tải được báo cáo. Vui lòng thử lại.' : null,
+    reload: query.refetch,
+  }
 }

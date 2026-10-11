@@ -1,4 +1,4 @@
-import { workspaceClient } from '../../../api/workspaceClient'
+import { api } from '../../../api/api'
 import type { Rental } from '../types'
 
 export interface DashboardAttentionItem {
@@ -34,4 +34,4 @@ export interface FacilityDashboard {
   occupancyByType: OccupancyByType[]
 }
 
-export const getFacilityDashboard = (facilityId: number): Promise<FacilityDashboard> => workspaceClient.get(`/ops/facilities/${facilityId}/dashboard`)
+export const getFacilityDashboard = (facilityId: number): Promise<FacilityDashboard> => api.get(`/ops/facilities/${facilityId}/dashboard`)

@@ -1,27 +1,16 @@
-import { apiClient, type ApiResponse } from '../../../api/client';
-import type { AuthPayload, AuthUser, LoginRequest, RegisterRequest } from '../types';
+import { api } from '../../../api/api'
+import type { AuthPayload, AuthUser, LoginRequest, RegisterRequest } from '../types'
 
 export const authApi = {
-  googleConfig: (): Promise<{ enabled: boolean }> =>
-    apiClient.get<ApiResponse<{ enabled: boolean }>>('/auth/google/config').then(res => res.data),
+  googleConfig: (): Promise<{ enabled: boolean }> => api.get('/auth/google/config'),
   cookieLogin: (payload: LoginRequest): Promise<{ user: AuthUser }> =>
-    apiClient.post<ApiResponse<{ user: AuthUser }>>('/auth/cookie/login', payload).then(res => res.data),
+    api.post('/auth/cookie/login', payload),
   cookieRegister: (payload: RegisterRequest): Promise<{ user: AuthUser }> =>
-    apiClient.post<ApiResponse<{ user: AuthUser }>>('/auth/cookie/register', payload).then(res => res.data),
-  logout: (): Promise<unknown> => apiClient.post('/auth/cookie/logout', {}),
-  login: (payload: LoginRequest): Promise<AuthPayload> =>
-    apiClient.post<ApiResponse<AuthPayload>, LoginRequest>('/auth/login', payload).then((res) => res.data),
-
-  register: (payload: RegisterRequest): Promise<AuthPayload> =>
-    apiClient
-      .post<ApiResponse<AuthPayload>, RegisterRequest>('/auth/register', payload)
-      .then((res) => res.data),
-
-  me: (): Promise<AuthUser> =>
-    apiClient.get<ApiResponse<AuthUser>>('/auth/me').then((res) => res.data),
-
+    api.post('/auth/cookie/register', payload),
+  logout: (): Promise<unknown> => api.post('/auth/cookie/logout'),
+  login: (payload: LoginRequest): Promise<AuthPayload> => api.post('/auth/login', payload),
+  register: (payload: RegisterRequest): Promise<AuthPayload> => api.post('/auth/register', payload),
+  me: (): Promise<AuthUser> => api.get('/auth/me'),
   refresh: (refreshToken: string): Promise<AuthPayload> =>
-    apiClient
-      .post<ApiResponse<AuthPayload>>('/auth/refresh', { refreshToken })
-      .then((res) => res.data),
-};
+    api.post('/auth/refresh', { refreshToken }),
+}

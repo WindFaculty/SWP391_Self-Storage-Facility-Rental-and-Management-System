@@ -1,36 +1,22 @@
-import { apiClient, type ApiResponse } from '../../../api/client';
-import type { Facility, FacilityUnitTypeAvailability, UnitType } from '../types';
+import { api, withQuery } from '../../../api/api'
+import type { Facility, FacilityUnitTypeAvailability, UnitType } from '../types'
 
 export interface AvailabilityQuery {
-  startDate: string;
-  endDate: string;
-  facilityId?: string;
+  startDate: string
+  endDate: string
+  facilityId?: string
 }
 
 export const catalogApi = {
-  listFacilities: (): Promise<Facility[]> =>
-    apiClient.get<ApiResponse<Facility[]>>('/facilities').then((res) => res.data),
+  listFacilities: (): Promise<Facility[]> => api.get('/facilities'),
 
-  getFacility: (facilityId: string): Promise<Facility> =>
-    apiClient.get<ApiResponse<Facility>>(`/facilities/${facilityId}`).then((res) => res.data),
+  getFacility: (facilityId: string): Promise<Facility> => api.get(`/facilities/${facilityId}`),
 
-  listUnitTypes: (): Promise<UnitType[]> =>
-    apiClient.get<ApiResponse<UnitType[]>>('/unit-types').then((res) => res.data),
+  listUnitTypes: (): Promise<UnitType[]> => api.get('/unit-types'),
 
   listFacilityUnitTypes: (facilityId: string): Promise<UnitType[]> =>
-    apiClient
-      .get<ApiResponse<UnitType[]>>(`/facilities/${facilityId}/unit-types`)
-      .then((res) => res.data),
+    api.get(`/facilities/${facilityId}/unit-types`),
 
-  getAvailability: ({
-    startDate,
-    endDate,
-    facilityId,
-  }: AvailabilityQuery): Promise<FacilityUnitTypeAvailability[]> => {
-    const search = new URLSearchParams({ startDate, endDate });
-    if (facilityId) search.set('facilityId', facilityId);
-    return apiClient
-      .get<ApiResponse<FacilityUnitTypeAvailability[]>>(`/availability?${search.toString()}`)
-      .then((res) => res.data);
-  },
-};
+  getAvailability: (query: AvailabilityQuery): Promise<FacilityUnitTypeAvailability[]> =>
+    api.get(withQuery('/availability', query)),
+}

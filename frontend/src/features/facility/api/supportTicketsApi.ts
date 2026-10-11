@@ -1,8 +1,8 @@
-import { withQuery, workspaceClient } from '../../../api/workspaceClient'
+import { api, withQuery } from '../../../api/api'
 import type { StaffTask, SupportTicket, TicketFilters } from '../types'
 
 export interface AssignTicketInput { facilityId: number; ticketId: number; staffId: number; scheduledAt: string; notes?: string }
-export const listTickets = (filters: TicketFilters): Promise<{ items: SupportTicket[]; activeCount: number }> => workspaceClient.get(withQuery('/ops/tickets', filters))
-export const getTicket = (id: number): Promise<SupportTicket> => workspaceClient.get(`/ops/tickets/${id}`)
-export const assignTicket = ({ ticketId, ...input }: AssignTicketInput): Promise<{ ticket: SupportTicket; task: StaffTask }> => workspaceClient.post(`/ops/tickets/${ticketId}/assign`, input)
-export const closeTicket = (ticketId: number): Promise<SupportTicket> => workspaceClient.post(`/ops/tickets/${ticketId}/close`, {})
+export const listTickets = (filters: TicketFilters): Promise<{ items: SupportTicket[]; activeCount: number }> => api.get(withQuery('/ops/tickets', filters))
+export const getTicket = (id: number): Promise<SupportTicket> => api.get(`/ops/tickets/${id}`)
+export const assignTicket = ({ ticketId, ...input }: AssignTicketInput): Promise<{ ticket: SupportTicket; task: StaffTask }> => api.post(`/ops/tickets/${ticketId}/assign`, input)
+export const closeTicket = (ticketId: number): Promise<SupportTicket> => api.post(`/ops/tickets/${ticketId}/close`, {})

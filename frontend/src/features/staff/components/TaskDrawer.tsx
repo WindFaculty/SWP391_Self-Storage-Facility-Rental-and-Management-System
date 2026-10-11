@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState, type ReactNode } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Button } from '../../../components/ui/Button'
 import { Drawer } from '../../../components/ui/Drawer'
 import { formatCurrency, formatDate, formatDateTime } from '../../../lib/format'
@@ -24,13 +25,7 @@ import {
   TASK_TYPE_LABELS,
 } from '../../facility/rentalRules'
 import { TICKET_CATEGORY_LABELS } from '../../facility/supportRules'
-import type {
-  AccessMethod,
-  Rental,
-  StaffTask,
-  SupportTicket,
-  UnitInspectionResult,
-} from '../../facility/types'
+import type { AccessMethod, Rental, StaffTask, UnitInspectionResult } from '../../facility/types'
 
 const HANDOVER_CHECKLIST = [
   { key: 'identity' as const, label: 'Đã đối chiếu khách thuê và giấy tờ tùy thân' },
@@ -56,14 +51,8 @@ interface TaskDrawerProps {
 export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted }: TaskDrawerProps) {
   const [task, setTask] = useState(initialTask)
   const [notes, setNotes] = useState(initialTask.notes ?? '')
-  const [error, setError] = useState<string | null>(null)
+  const [actionError, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-
-  const [rental, setRental] = useState<Rental | null>(null)
-  const [rentalLoading, setRentalLoading] = useState(false)
-
-  const [ticket, setTicket] = useState<SupportTicket | null>(null)
-  const [ticketLoading, setTicketLoading] = useState(false)
 
   const [handoverChecklist, setHandoverChecklist] = useState({
     identity: false,
@@ -83,59 +72,25 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
   const [inspectionResult, setInspectionResult] = useState<UnitInspectionResult>('PASS')
   const [inspectionNotes, setInspectionNotes] = useState('')
 
-  useEffect(() => {
-    if (!task.rentalId) {
-      return
-    }
-    let cancelled = false
-    setRentalLoading(true)
-    void getRental(task.rentalId)
-      .then((item) => {
-        if (!cancelled) {
-          setRental(item)
-        }
-      })
-      .catch((loadError: unknown) => {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : 'Không tải được hợp đồng.')
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setRentalLoading(false)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [task.rentalId])
+  const rentalQuery = useQuery({
+    queryKey: ['ops', 'rental', task.rentalId],
+    queryFn: () => getRental(task.rentalId as number),
+    enabled: Boolean(task.rentalId),
+  })
 
-  useEffect(() => {
-    if (task.taskType !== 'SUPPORT' || !task.ticketId) {
-      return
-    }
-    let cancelled = false
-    setTicketLoading(true)
-    void getTicket(task.ticketId)
-      .then((item) => {
-        if (!cancelled) {
-          setTicket(item)
-        }
-      })
-      .catch((loadError: unknown) => {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : 'Không tải được ticket.')
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setTicketLoading(false)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [task.taskType, task.ticketId])
+  const ticketQuery = useQuery({
+    queryKey: ['ops', 'ticket', task.ticketId],
+    queryFn: () => getTicket(task.ticketId as number),
+    enabled: task.taskType === 'SUPPORT' && Boolean(task.ticketId),
+  })
+
+  const rental = rentalQuery.data ?? null
+  const rentalLoading = rentalQuery.isPending
+  const ticket = ticketQuery.data ?? null
+  const ticketLoading = ticketQuery.isPending
+
+  const loadError = rentalQuery.error ?? ticketQuery.error
+  const error = actionError ?? (loadError instanceof Error ? loadError.message : null)
 
   const handleStart = async () => {
     setBusy(true)
@@ -151,18 +106,24 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
     }
   }
 
-  const handleCompleteSupport = async () => {
+  const runAction = async (action: () => Promise<unknown>, successMessage: string, fallback: string) => {
     setBusy(true)
     setError(null)
     try {
-      await completeTask(task.id, notes)
-      const ticketMessage = ticket ? `; ticket #${ticket.id} chuyển sang Đã giải quyết` : ''
-      onCompleted(`Đã hoàn thành công việc #${task.id}${ticketMessage}.`)
-    } catch (completeError) {
-      setError(completeError instanceof Error ? completeError.message : 'Không ghi nhận được kết quả.')
+      await action()
+      onCompleted(successMessage)
+    } catch (actionError) {
+      setError(actionError instanceof Error ? actionError.message : fallback)
       setBusy(false)
     }
   }
+
+  const handleCompleteSupport = () =>
+    runAction(
+      () => completeTask(task.id, notes),
+      `Đã hoàn thành công việc #${task.id}${ticket ? `; ticket #${ticket.id} chuyển sang Đã giải quyết` : ''}.`,
+      'Không ghi nhận được kết quả.',
+    )
 
   const handoverEligibility = rental ? canHandover(rental) : null
   const handoverChecklistDone =
@@ -173,19 +134,15 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
     handoverChecklistDone &&
     handoverCondition.trim().length > 0
 
-  const handleHandover = async () => {
+  const handleHandover = () => {
     if (!rental) {
-      return
+      return Promise.resolve()
     }
-    setBusy(true)
-    setError(null)
-    try {
-      await completeHandover(task.id, { accessMethod, handoverCondition })
-      onCompleted(`Đã bàn giao kho ${rental.unitCode} và kích hoạt hợp đồng #${rental.id}.`)
-    } catch (handoverError) {
-      setError(handoverError instanceof Error ? handoverError.message : 'Không hoàn tất được bàn giao.')
-      setBusy(false)
-    }
+    return runAction(
+      () => completeHandover(task.id, { accessMethod, handoverCondition }),
+      `Đã bàn giao kho ${rental.unitCode} và kích hoạt hợp đồng #${rental.id}.`,
+      'Không hoàn tất được bàn giao.',
+    )
   }
 
   const returnEligibility = rental ? canReturn(rental) : null
@@ -197,40 +154,28 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
     returnChecklistDone &&
     returnCondition.trim().length > 0
 
-  const handleReturn = async () => {
+  const handleReturn = () => {
     if (!rental) {
-      return
+      return Promise.resolve()
     }
-    setBusy(true)
-    setError(null)
-    try {
-      await completeReturn(task.id, { condition: returnCondition })
-      onCompleted(
-        `Đã xác nhận trả kho ${rental.unitCode}; hợp đồng #${rental.id} đã kết thúc và kho chuyển sang kiểm tra.`,
-      )
-    } catch (returnError) {
-      setError(returnError instanceof Error ? returnError.message : 'Không xác nhận được trả kho.')
-      setBusy(false)
-    }
+    return runAction(
+      () => completeReturn(task.id, { condition: returnCondition }),
+      `Đã xác nhận trả kho ${rental.unitCode}; hợp đồng #${rental.id} đã kết thúc và kho chuyển sang kiểm tra.`,
+      'Không xác nhận được trả kho.',
+    )
   }
 
-  const handleInspection = async () => {
+  const handleInspection = () => {
     if (!rental) {
-      return
+      return Promise.resolve()
     }
-    setBusy(true)
-    setError(null)
-    try {
-      await completeUnitInspection(task.id, { result: inspectionResult, notes: inspectionNotes })
-      onCompleted(
-        inspectionResult === 'PASS'
-          ? `Kho ${rental.unitCode} đạt kiểm tra và sẵn sàng cho thuê lại.`
-          : `Kho ${rental.unitCode} không đạt kiểm tra và chuyển sang bảo trì.`,
-      )
-    } catch (inspectionError) {
-      setError(inspectionError instanceof Error ? inspectionError.message : 'Không ghi nhận được kết quả.')
-      setBusy(false)
-    }
+    return runAction(
+      () => completeUnitInspection(task.id, { result: inspectionResult, notes: inspectionNotes }),
+      inspectionResult === 'PASS'
+        ? `Kho ${rental.unitCode} đạt kiểm tra và sẵn sàng cho thuê lại.`
+        : `Kho ${rental.unitCode} không đạt kiểm tra và chuyển sang bảo trì.`,
+      'Không ghi nhận được kết quả.',
+    )
   }
 
   return (
@@ -267,11 +212,10 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
         <section className="mt-space-xl">
           <h3 className="text-subsection text-text-main">Bàn giao kho & Check-in</h3>
 
-          {rentalLoading ? (
-            <LoadingBlock label="Đang tải hợp đồng…" />
-          ) : rental ? (
-            <>
-              <RentalSummary rental={rental} />
+          <RentalGate loading={rentalLoading} rental={rental}>
+            {(activeRental) => (
+              <>
+              <RentalSummary rental={activeRental} />
 
               {handoverEligibility && (
                 <EligibilityBanner eligibility={handoverEligibility} allowedText="Đủ điều kiện bàn giao: hợp đồng chờ nhận kho và đã thanh toán đầy đủ." />
@@ -330,20 +274,19 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
                 </div>
               )}
 
-              {task.status === 'DONE' && rental.checkedInAt && (
+              {task.status === 'DONE' && activeRental.checkedInAt && (
                 <dl className="mt-space-md">
-                  <SpecRow label="Nhận kho lúc" value={formatDateTime(rental.checkedInAt)} />
+                  <SpecRow label="Nhận kho lúc" value={formatDateTime(activeRental.checkedInAt)} />
                   <SpecRow
                     label="Phương thức truy cập"
-                    value={rental.accessMethod ? ACCESS_METHOD_LABELS[rental.accessMethod] : '—'}
+                    value={activeRental.accessMethod ? ACCESS_METHOD_LABELS[activeRental.accessMethod] : '—'}
                   />
-                  <SpecRow label="Tình trạng" value={rental.handoverCondition ?? '—'} />
+                  <SpecRow label="Tình trạng" value={activeRental.handoverCondition ?? '—'} />
                 </dl>
               )}
-            </>
-          ) : (
-            <p className="mt-space-sm text-label-help text-text-muted">Không có hợp đồng gắn với công việc.</p>
-          )}
+              </>
+            )}
+          </RentalGate>
         </section>
       )}
 
@@ -351,11 +294,10 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
         <section className="mt-space-xl">
           <h3 className="text-subsection text-text-main">Trả kho & Check-out</h3>
 
-          {rentalLoading ? (
-            <LoadingBlock label="Đang tải hợp đồng…" />
-          ) : rental ? (
-            <>
-              <RentalSummary rental={rental} />
+          <RentalGate loading={rentalLoading} rental={rental}>
+            {(activeRental) => (
+              <>
+              <RentalSummary rental={activeRental} />
 
               {returnEligibility && (
                 <EligibilityBanner
@@ -399,16 +341,15 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
                 </div>
               )}
 
-              {task.status === 'DONE' && rental.returnedAt && (
+              {task.status === 'DONE' && activeRental.returnedAt && (
                 <dl className="mt-space-md">
-                  <SpecRow label="Trả kho lúc" value={formatDateTime(rental.returnedAt)} />
-                  <SpecRow label="Tình trạng" value={rental.returnCondition ?? '—'} />
+                  <SpecRow label="Trả kho lúc" value={formatDateTime(activeRental.returnedAt)} />
+                  <SpecRow label="Tình trạng" value={activeRental.returnCondition ?? '—'} />
                 </dl>
               )}
-            </>
-          ) : (
-            <p className="mt-space-sm text-label-help text-text-muted">Không có hợp đồng gắn với công việc.</p>
-          )}
+              </>
+            )}
+          </RentalGate>
         </section>
       )}
 
@@ -416,11 +357,10 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
         <section className="mt-space-xl">
           <h3 className="text-subsection text-text-main">Kết quả kiểm tra kho</h3>
 
-          {rentalLoading ? (
-            <LoadingBlock label="Đang tải hợp đồng…" />
-          ) : rental ? (
-            <>
-              <RentalSummary rental={rental} />
+          <RentalGate loading={rentalLoading} rental={rental}>
+            {(activeRental) => (
+              <>
+              <RentalSummary rental={activeRental} />
 
               {task.status === 'ASSIGNED' && (
                 <Button className="mt-space-md" disabled={busy} onClick={() => void handleStart()}>
@@ -473,10 +413,9 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
                   </Button>
                 </div>
               )}
-            </>
-          ) : (
-            <p className="mt-space-sm text-label-help text-text-muted">Không có hợp đồng gắn với công việc.</p>
-          )}
+              </>
+            )}
+          </RentalGate>
         </section>
       )}
 
@@ -543,6 +482,28 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
       )}
     </Drawer>
   )
+}
+
+function RentalGate({
+  loading,
+  rental,
+  children,
+}: {
+  loading: boolean
+  rental: Rental | null
+  children: (rental: Rental) => ReactNode
+}) {
+  if (loading) {
+    return <LoadingBlock label="Đang tải hợp đồng…" />
+  }
+  if (!rental) {
+    return (
+      <p className="mt-space-sm text-label-help text-text-muted">
+        Không có hợp đồng gắn với công việc.
+      </p>
+    )
+  }
+  return <>{children(rental)}</>
 }
 
 function RentalSummary({ rental }: { rental: Rental }) {

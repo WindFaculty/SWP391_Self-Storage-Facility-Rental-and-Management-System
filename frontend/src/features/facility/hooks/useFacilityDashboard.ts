@@ -1,34 +1,27 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { getFacilityRevenueSeries } from '../../management/api/managementApi'
-import type { RevenuePoint } from '../../management/types'
-import { getFacilityDashboard, type FacilityDashboard } from '../api/dashboardApi'
+import { getFacilityDashboard } from '../api/dashboardApi'
 
 export function useFacilityDashboard(facilityId: number) {
-  const [dashboard, setDashboard] = useState<FacilityDashboard | null>(null)
-  const [revenuePoints, setRevenuePoints] = useState<RevenuePoint[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const dash = useQuery({
+    queryKey: ['ops', 'dashboard', facilityId],
+    queryFn: () => getFacilityDashboard(facilityId),
+  })
+  const revenue = useQuery({
+    queryKey: ['ops', 'dashboard-revenue', facilityId],
+    queryFn: () => getFacilityRevenueSeries(facilityId, 6),
+  })
 
   const reload = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [dashboardData, revenue] = await Promise.all([
-        getFacilityDashboard(facilityId),
-        getFacilityRevenueSeries(facilityId, 6),
-      ])
-      setDashboard(dashboardData)
-      setRevenuePoints(revenue)
-    } catch {
-      setError('Không tải được dữ liệu tổng quan. Vui lòng thử lại.')
-    } finally {
-      setLoading(false)
-    }
-  }, [facilityId])
+    await Promise.all([dash.refetch(), revenue.refetch()])
+  }, [dash.refetch, revenue.refetch])
 
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  return { dashboard, revenuePoints, loading, error, reload }
+  return {
+    dashboard: dash.data ?? null,
+    revenuePoints: revenue.data ?? [],
+    loading: dash.isPending || revenue.isPending,
+    error: dash.error || revenue.error ? 'Không tải được dữ liệu tổng quan. Vui lòng thử lại.' : null,
+    reload,
+  }
 }

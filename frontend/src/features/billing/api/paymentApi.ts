@@ -1,18 +1,14 @@
-import { apiClient, type ApiResponse } from '../../../api/client';
-import type { PaymentAttempt } from '../types';
+import { api } from '../../../api/api'
+import type { PaymentAttempt } from '../types'
 
 export interface VnPayUrlResponse {
-  paymentUrl: string;
+  paymentUrl: string
 }
 
 export const paymentApi = {
   createVnPayUrl: (invoiceId: string): Promise<VnPayUrlResponse> =>
-    apiClient
-      .post<ApiResponse<VnPayUrlResponse>>('/payments/vnpay/url', { invoiceId })
-      .then((res) => res.data),
+    api.post('/payments/vnpay/url', { invoiceId }),
 
   getAttempt: (reference: string): Promise<PaymentAttempt> =>
-    apiClient
-      .get<ApiResponse<PaymentAttempt>>(`/payments/attempts/${encodeURIComponent(reference)}`)
-      .then((res) => res.data),
-};
+    api.get(`/payments/attempts/${encodeURIComponent(reference)}`),
+}

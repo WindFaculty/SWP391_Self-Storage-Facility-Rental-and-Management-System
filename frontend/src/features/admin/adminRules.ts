@@ -1,5 +1,5 @@
 import type { ActivityLog, UserRole } from '../facility/types'
-import type { AdminUser, LogFilters, UserFilters, UserStatus } from './types'
+import type { AdminUser, LogFilters, UserStatus } from './types'
 
 export const USER_STATUS_LABELS: Record<UserStatus, string> = {
   ACTIVE: 'Đang hoạt động',
@@ -77,18 +77,6 @@ export function canToggleUserStatus(
     }
   }
   return { allowed: true }
-}
-
-export function filterUsers(users: AdminUser[], filters: UserFilters): AdminUser[] {
-  const search = filters.search.trim().toLowerCase()
-  return users
-    .filter((user) => (filters.role ? user.role === filters.role : true))
-    .filter((user) => (filters.facilityId ? user.facilityId === filters.facilityId : true))
-    .filter((user) => (filters.status ? user.status === filters.status : true))
-    .filter((user) =>
-      search ? `${user.fullName} ${user.email}`.toLowerCase().includes(search) : true,
-    )
-    .sort((a, b) => a.id - b.id)
 }
 
 export function filterLogs(logs: ActivityLog[], filters: LogFilters): ActivityLog[] {

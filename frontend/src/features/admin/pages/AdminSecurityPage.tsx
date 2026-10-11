@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { ROLE_LABELS, useSession } from '../../../app/providers/SessionProvider'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
@@ -6,15 +6,14 @@ import { Modal } from '../../../components/ui/Modal'
 import { Tabs } from '../../../components/ui/Tabs'
 import { formatDateTime, formatNumber } from '../../../lib/format'
 import type { UserRole } from '../../facility/types'
-import { createUser, setUserStatus, updateUser } from '../api/adminApi'
+import { setUserStatus } from '../api/adminApi'
 import {
   ACTION_LABELS,
   ACTION_OPTIONS,
   canToggleUserStatus,
   USER_STATUS_LABELS,
-  validateUserInput,
-  type UserInput,
 } from '../adminRules'
+import { UserFormModal } from '../components/UserFormModal'
 import { useActivityLogs, useUsers } from '../hooks/useAdmin'
 import type { AdminUser, LogFilters, UserFilters, UserStatus } from '../types'
 
@@ -27,9 +26,6 @@ const ROLE_OPTIONS: UserRole[] = [
   'BUSINESS_MANAGER',
   'ADMIN',
 ]
-
-const INPUT_CLASS =
-  'mt-space-xs w-full h-11 rounded-lg border border-border-hairline bg-surface px-space-md text-body-default text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring'
 
 export function AdminSecurityPage() {
   const { user: sessionUser, facilities } = useSession()
@@ -220,26 +216,15 @@ export function AdminSecurityPage() {
             </Button>
           </div>
 
-          <div className="mt-space-lg bg-surface rounded-xl border border-border-hairline overflow-hidden">
-            {error ? (
-              <div className="p-space-xl text-center">
-                <p role="alert" className="text-body-default text-danger">
-                  {error}
-                </p>
-                <Button variant="outline" className="mt-space-md" onClick={() => void reload()}>
-                  Thử lại
-                </Button>
-              </div>
-            ) : loading ? (
-              <div className="p-space-lg space-y-3" role="status">
-                <span className="sr-only">Đang tải danh sách tài khoản…</span>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="h-12 rounded-lg bg-surface-muted animate-pulse" />
-                ))}
-              </div>
-            ) : users.length === 0 ? (
-              <EmptyState icon="person_search" title="Không có tài khoản khớp bộ lọc." />
-            ) : (
+          <TablePanel
+            error={error}
+            loading={loading}
+            loadingLabel="Đang tải danh sách tài khoản…"
+            isEmpty={users.length === 0}
+            empty={<EmptyState icon="person_search" title="Không có tài khoản khớp bộ lọc." />}
+            onRetry={() => void reload()}
+          >
+            {(
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-ui-table">
                   <thead>
@@ -320,7 +305,7 @@ export function AdminSecurityPage() {
                 </table>
               </div>
             )}
-          </div>
+          </TablePanel>
         </>
       )}
 
@@ -364,26 +349,15 @@ export function AdminSecurityPage() {
             </select>
           </div>
 
-          <div className="mt-space-lg bg-surface rounded-xl border border-border-hairline overflow-hidden">
-            {logsError ? (
-              <div className="p-space-xl text-center">
-                <p role="alert" className="text-body-default text-danger">
-                  {logsError}
-                </p>
-                <Button variant="outline" className="mt-space-md" onClick={() => void reloadLogs()}>
-                  Thử lại
-                </Button>
-              </div>
-            ) : logsLoading ? (
-              <div className="p-space-lg space-y-3" role="status">
-                <span className="sr-only">Đang tải nhật ký…</span>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="h-12 rounded-lg bg-surface-muted animate-pulse" />
-                ))}
-              </div>
-            ) : logs.length === 0 ? (
-              <EmptyState icon="history" title="Không có bản ghi phù hợp." />
-            ) : (
+          <TablePanel
+            error={logsError}
+            loading={logsLoading}
+            loadingLabel="Đang tải nhật ký…"
+            isEmpty={logs.length === 0}
+            empty={<EmptyState icon="history" title="Không có bản ghi phù hợp." />}
+            onRetry={() => void reloadLogs()}
+          >
+            {(
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-ui-table">
                   <thead>
@@ -422,7 +396,7 @@ export function AdminSecurityPage() {
                 </table>
               </div>
             )}
-          </div>
+          </TablePanel>
         </>
       )}
 
@@ -473,159 +447,46 @@ export function AdminSecurityPage() {
   )
 }
 
-interface UserFormModalProps {
-  user?: AdminUser
-  facilities: Array<{ id: number; name: string }>
-  onClose: () => void
-  onSaved: (message: string) => Promise<void>
-}
-
-function UserFormModal({ user, facilities, onClose, onSaved }: UserFormModalProps) {
-  const [fullName, setFullName] = useState(user?.fullName ?? '')
-  const [email, setEmail] = useState(user?.email ?? '')
-  const [phone, setPhone] = useState(user?.phone ?? '')
-  const [role, setRole] = useState<UserRole>(user?.role ?? 'FACILITY_STAFF')
-  const [facilityId, setFacilityId] = useState<number | null>(user?.facilityId ?? null)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-
-  const needsFacility = role === 'FACILITY_STAFF' || role === 'FACILITY_MANAGER'
-
-  const handleSubmit = async () => {
-    const input: UserInput = {
-      fullName: fullName.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      role,
-      facilityId: needsFacility ? facilityId ?? (facilities[0]?.id ?? null) : null,
-    }
-    const validation = validateUserInput(input, [], user?.id ?? null)
-    setErrors(validation)
-    setSubmitError(null)
-    if (Object.keys(validation).length > 0) {
-      return
-    }
-    setSubmitting(true)
-    try {
-      if (user) {
-        await updateUser(user.id, input)
-        await onSaved(`Đã cập nhật tài khoản ${input.email}.`)
-      } else {
-        const created = await createUser(input)
-        await onSaved(`Đã tạo tài khoản #${created.id} (${created.email}).`)
-      }
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Không lưu được tài khoản.')
-      setSubmitting(false)
-    }
-  }
-
+function TablePanel({
+  error,
+  loading,
+  loadingLabel,
+  isEmpty,
+  empty,
+  onRetry,
+  children,
+}: {
+  error: string | null
+  loading: boolean
+  loadingLabel: string
+  isEmpty: boolean
+  empty: ReactNode
+  onRetry: () => void
+  children: ReactNode
+}) {
   return (
-    <Modal title={user ? `Sửa tài khoản #${user.id}` : 'Tạo tài khoản mới'} onClose={onClose}>
-      <div>
-        <label htmlFor="admin-fullname" className="text-label-help font-medium text-text-main">
-          Họ và tên *
-        </label>
-        <input
-          id="admin-fullname"
-          value={fullName}
-          onChange={(event) => setFullName(event.target.value)}
-          aria-invalid={Boolean(errors.fullName)}
-          className={INPUT_CLASS}
-        />
-        {errors.fullName && <p className="mt-1 text-label-help text-danger">{errors.fullName}</p>}
-      </div>
-
-      <div className="mt-space-lg">
-        <label htmlFor="admin-email" className="text-label-help font-medium text-text-main">
-          Email *
-        </label>
-        <input
-          id="admin-email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          aria-invalid={Boolean(errors.email)}
-          className={INPUT_CLASS}
-        />
-        {errors.email && <p className="mt-1 text-label-help text-danger">{errors.email}</p>}
-      </div>
-
-      <div className="mt-space-lg">
-        <label htmlFor="admin-phone" className="text-label-help font-medium text-text-main">
-          Số điện thoại
-        </label>
-        <input
-          id="admin-phone"
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          className={INPUT_CLASS}
-        />
-      </div>
-
-      <div className="mt-space-lg">
-        <label htmlFor="admin-role" className="text-label-help font-medium text-text-main">
-          Vai trò chính * (một tài khoản = một vai trò)
-        </label>
-        <select
-          id="admin-role"
-          value={role}
-          onChange={(event) => {
-            const nextRole = event.target.value as UserRole
-            setRole(nextRole)
-            if (nextRole !== 'FACILITY_STAFF' && nextRole !== 'FACILITY_MANAGER') {
-              setFacilityId(null)
-            }
-          }}
-          className={INPUT_CLASS}
-        >
-          {ROLE_OPTIONS.map((roleOption) => (
-            <option key={roleOption} value={roleOption}>
-              {ROLE_LABELS[roleOption]}
-            </option>
+    <div className="mt-space-lg bg-surface rounded-xl border border-border-hairline overflow-hidden">
+      {error ? (
+        <div className="p-space-xl text-center">
+          <p role="alert" className="text-body-default text-danger">
+            {error}
+          </p>
+          <Button variant="outline" className="mt-space-md" onClick={onRetry}>
+            Thử lại
+          </Button>
+        </div>
+      ) : loading ? (
+        <div className="p-space-lg space-y-3" role="status">
+          <span className="sr-only">{loadingLabel}</span>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="h-12 rounded-lg bg-surface-muted animate-pulse" />
           ))}
-        </select>
-      </div>
-
-      <div className="mt-space-lg">
-        <label htmlFor="admin-facility" className="text-label-help font-medium text-text-main">
-          Cơ sở phân công {needsFacility ? '*' : '(chỉ vai trò cơ sở)'}
-        </label>
-        <select
-          id="admin-facility"
-          value={facilityId ?? ''}
-          disabled={!needsFacility}
-          onChange={(event) => setFacilityId(event.target.value ? Number(event.target.value) : null)}
-          className={`${INPUT_CLASS} disabled:opacity-50`}
-        >
-          {needsFacility ? (
-            facilities.map((facility) => (
-              <option key={facility.id} value={facility.id}>
-                {facility.name}
-              </option>
-            ))
-          ) : (
-            <option value="">Không gán cơ sở</option>
-          )}
-        </select>
-        {errors.facilityId && <p className="mt-1 text-label-help text-danger">{errors.facilityId}</p>}
-      </div>
-
-      {submitError && (
-        <p role="alert" className="mt-space-md text-label-help text-danger">
-          {submitError}
-        </p>
+        </div>
+      ) : isEmpty ? (
+        empty
+      ) : (
+        children
       )}
-
-      <div className="mt-space-2xl flex justify-end gap-3">
-        <Button variant="outline" onClick={onClose} disabled={submitting}>
-          Hủy
-        </Button>
-        <Button disabled={submitting} onClick={() => void handleSubmit()}>
-          {submitting ? 'Đang lưu…' : user ? 'Lưu thay đổi' : 'Tạo tài khoản'}
-        </Button>
-      </div>
-    </Modal>
+    </div>
   )
 }
