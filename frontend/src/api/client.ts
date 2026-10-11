@@ -27,15 +27,23 @@ export class ApiError extends Error {
 }
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
-const ACCESS_TOKEN_KEY = 'storage_access_token';
-const REFRESH_TOKEN_KEY = 'storage_refresh_token';
-const USER_KEY = 'storage_user';
-
-const storage = typeof localStorage === 'undefined' ? null : localStorage;
+export const googleAuthorizationUrl = `${BASE_URL}/oauth2/authorization/google`;
 
 class ApiClient {
-  private accessToken = storage?.getItem(ACCESS_TOKEN_KEY) ?? null;
-  private refreshToken = storage?.getItem(REFRESH_TOKEN_KEY) ?? null;
+  private accessToken: string | null = null;
+  private refreshToken: string | null = null;
+  private cookieSession = false;
+  private refreshInFlight: Promise<void> | null = null;
+
+  constructor() {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('storage_access_token');
+      localStorage.removeItem('storage_refresh_token');
+      localStorage.removeItem('storage_user');
+    }
+  }
+
+  setCookieSession(active: boolean): void { this.cookieSession = active; }
 
   getToken(): string | null {
     return this.accessToken;
@@ -45,33 +53,37 @@ class ApiClient {
     return this.refreshToken;
   }
 
-  setToken(token: string | null): void {
-    this.accessToken = token;
-    if (!storage) return;
-    if (token) {
-      storage.setItem(ACCESS_TOKEN_KEY, token);
-    } else {
-      storage.removeItem(ACCESS_TOKEN_KEY);
-    }
-  }
-
-  setRefreshToken(token: string | null): void {
-    this.refreshToken = token;
-    if (!storage) return;
-    if (token) {
-      storage.setItem(REFRESH_TOKEN_KEY, token);
-    } else {
-      storage.removeItem(REFRESH_TOKEN_KEY);
-    }
-  }
-
+  setToken(token: string | null): void { this.accessToken = token; }
+  setRefreshToken(token: string | null): void { this.refreshToken = token; }
   clearTokens(): void {
-    this.setToken(null);
-    this.setRefreshToken(null);
-    storage?.removeItem(USER_KEY);
+    this.accessToken = null;
+    this.refreshToken = null;
+    this.cookieSession = false;
   }
 
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  private async csrfToken(): Promise<string> {
+    const response = await fetch(`${BASE_URL}/auth/cookie/csrf`, { credentials: 'include' });
+    if (!response.ok) throw new ApiError(response.status, 'Unable to verify session.');
+    const body = await response.json() as ApiResponse<{ token: string }>;
+    return body.data.token;
+  }
+
+  private refreshSession(): Promise<void> {
+    if (!this.refreshInFlight) {
+      this.refreshInFlight = (async () => {
+        const token = await this.csrfToken();
+        const response = await fetch(`${BASE_URL}/auth/cookie/refresh`, {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': token }, body: '{}',
+        });
+        if (!response.ok) throw new ApiError(response.status, 'Session expired. Please sign in again.');
+        this.cookieSession = true;
+      })().finally(() => { this.refreshInFlight = null; });
+    }
+    return this.refreshInFlight;
+  }
+
+  private async request<T>(endpoint: string, options: RequestInit = {}, retried = false): Promise<T> {
     const headers = new Headers(options.headers);
     if (!headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');
@@ -79,18 +91,31 @@ class ApiClient {
     if (this.accessToken) {
       headers.set('Authorization', `Bearer ${this.accessToken}`);
     }
+    if (!this.accessToken && (this.cookieSession || endpoint.startsWith('/auth/cookie/')) &&
+        !['GET', 'HEAD', 'OPTIONS'].includes(options.method ?? 'GET')) {
+      headers.set('X-XSRF-TOKEN', await this.csrfToken());
+    }
 
     const response = await fetch(`${BASE_URL}/${endpoint.replace(/^\/+/, '')}`, {
       ...options,
+      credentials: 'include',
       headers,
     });
     const body: unknown = await response.json().catch(() => null);
 
     if (!response.ok) {
       if (response.status === 401) {
+        if (!retried && !this.accessToken && (this.cookieSession || endpoint === '/auth/me')) {
+          let refreshed = false;
+          try {
+            await this.refreshSession();
+            refreshed = true;
+          } catch { /* The original authentication error remains authoritative. */ }
+          if (refreshed) return this.request<T>(endpoint, options, true);
+        }
         this.clearTokens();
-        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth')) {
-          window.location.assign('/auth');
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('auth:expired'));
         }
       }
       const payload = body as ApiErrorPayload | null;

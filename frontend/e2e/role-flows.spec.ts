@@ -11,6 +11,6 @@ for (const path of ['/facility/dashboard', '/facility/units', '/facility/rentals
 test('login validates empty credentials without a demo fallback', async ({ page }) => {
   await page.goto('/auth')
   await page.getByRole('button', { name: 'Đăng nhập hệ thống' }).click()
-  await expect(page.getByRole('alert')).toContainText('Email không đúng định dạng.')
+  await expect(page.getByRole('alert').filter({ hasText: 'Email không đúng định dạng.' })).toBeVisible()
   await expect(page).toHaveURL(/\/auth$/)
 })

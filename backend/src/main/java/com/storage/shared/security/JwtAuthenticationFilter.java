@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             } catch (Exception ex) {
                 SecurityContextHolder.clearContext();
-                log.debug("Ignoring unusable JWT: {}", ex.getMessage());
+                log.debug("Ignoring unusable JWT");
             }
         }
 
@@ -63,6 +63,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-        return null;
+        return AuthCookies.read(request, AuthCookies.ACCESS);
     }
 }

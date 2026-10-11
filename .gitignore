@@ -18,6 +18,7 @@ test-results/
 playwright-report/
 
 # Local secrets/environment
+client_secret*.json
 .env
 .env.*
 !.env.example

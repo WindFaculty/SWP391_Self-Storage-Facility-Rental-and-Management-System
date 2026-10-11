@@ -18,14 +18,14 @@ export function WorkspaceTopbar() {
   const location = useLocation()
   const [switcherOpen, setSwitcherOpen] = useState(false)
 
-  const meta = PAGE_META[location.pathname] ?? { title: 'Hệ thống', category: 'Khoảng Thở Ops' }
+  const meta = PAGE_META[location.pathname] ?? { title: 'Hệ thống', category: 'Kho Việt Ops' }
   const activeFacility = facilitiesInScope.find((facility) => facility.id === activeFacilityId)
 
   return (
     <header className="fixed top-0 left-[248px] right-0 h-[68px] bg-surface/95 backdrop-blur-md z-40 border-b border-border-hairline px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1.5 text-[12.5px] text-text-muted">
-          <span>Khoảng Thở Ops</span>
+          <span>Kho Việt Ops</span>
           <span>/</span>
           <span>{meta.category}</span>
           <span>/</span>

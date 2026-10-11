@@ -228,7 +228,7 @@ Component TSX không `any` · có loading/success/empty/filtered-empty/error/no-
 | 3 | Bộ icon: Material Symbols vs Lucide | Lucide theo design.md §5.8 | G0/W2 |
 | 4 | Bản mẫu không được version hóa — sửa/xóa là mất | Snapshot zip + SHA-256 lưu `.local-backups/` trước W2; mọi nội dung cần thiết đã ghi trong tài liệu này | FE1 — trước W2 |
 | 5 | Tailwind Play CDN + Google Fonts CDN | Chuyển build-time + self-host | W2 |
-| 6 | Tên thương hiệu "Khoảng Thở" trong toàn bộ UI | Là tên thiết kế; cần xác nhận tên chính thức của đồ án | Chủ dự án — W2 |
+| 6 | Tên thương hiệu "Kho Việt" trong toàn bộ UI | Là tên thiết kế; cần xác nhận tên chính thức của đồ án | Chủ dự án — W2 |
 | 7 | `/support` dùng chung Customer/Staff/Manager | Một feature `support`, tab theo role; chốt cách tách code FE1/FE2 | FE1+FE2 — W2 |
 
 ---

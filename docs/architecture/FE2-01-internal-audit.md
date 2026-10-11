@@ -34,7 +34,7 @@ Nguồn đối chiếu spec: `design.md` §4.2 (WorkspaceLayout), §5 (component
 
 ### 1.3. Topbar (`ManagementTopbar.jsx`)
 
-- Breadcrumb "Khoảng Thở Ops / {category} / {title}" (dòng 21–29).
+- Breadcrumb "Kho Việt Ops / {category} / {title}" (dòng 21–29).
 - Facility switcher: 4 cơ sở hardcoded "Cầu Giấy — Zone B / Q7 Riverside / Bình Thạnh / Đống Đa" (dòng 9–14) — không lọc theo facility assignment của user (liên quan D07).
 - Chuông thông báo: 3 notification hardcoded (dòng 109–122); không có model notification trong 13 bảng tối thiểu (§13).
 - Đồng hồ "08/10/2026 • Ca Sáng" hardcoded (dòng 84–87).

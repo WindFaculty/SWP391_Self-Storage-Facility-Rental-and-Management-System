@@ -58,4 +58,60 @@ describe('apiClient', () => {
 
     expect(apiClient.getToken()).toBeNull();
   });
+
+  it('includes credentials and sends the server CSRF token for cookie mutations', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(200, { data: { token: 'csrf-proof' } }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { user: {} } }));
+    vi.stubGlobal('fetch', fetchMock);
+    await apiClient.post('/auth/cookie/login', { email: 'customer@example.com', password: 'password' });
+    expect(fetchMock.mock.calls[0][0]).toContain('/auth/cookie/csrf');
+    const init = fetchMock.mock.calls[1][1] as RequestInit;
+    expect(init.credentials).toBe('include');
+    expect(new Headers(init.headers).get('X-XSRF-TOKEN')).toBe('csrf-proof');
+    expect(new Headers(init.headers).has('Authorization')).toBe(false);
+  });
+
+  it('restores an expired access cookie using refresh and retries the protected API once', async () => {
+    apiClient.setCookieSession(true);
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(401, {}))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { token: 'csrf-proof' } }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { user: {} } }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { id: 'customer' } }));
+    vi.stubGlobal('fetch', fetchMock);
+    expect(await apiClient.get('/rentals')).toEqual({ data: { id: 'customer' } });
+    expect(fetchMock.mock.calls.map(call => call[0])).toEqual([
+      '/api/v1/rentals', '/api/v1/auth/cookie/csrf', '/api/v1/auth/cookie/refresh', '/api/v1/rentals',
+    ]);
+    expect(apiClient.getToken()).toBeNull();
+  });
+
+  it('stops retrying when the refreshed session is still unauthorized', async () => {
+    apiClient.setCookieSession(true);
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(401, {}))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { token: 'csrf-proof' } }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: {} }))
+      .mockResolvedValueOnce(jsonResponse(401, {}));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(apiClient.get('/rentals')).rejects.toMatchObject({ status: 401 });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it('preserves the refreshed cookie session when the retried API returns forbidden', async () => {
+    apiClient.setCookieSession(true);
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(401, {}))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { token: 'csrf-proof' } }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: {} }))
+      .mockResolvedValueOnce(jsonResponse(403, { error: { code: 'FORBIDDEN', message: 'Access denied' } }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { token: 'next-proof' } }))
+      .mockResolvedValueOnce(jsonResponse(200, {}));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(apiClient.get('/admin/users')).rejects.toMatchObject({ status: 403, code: 'FORBIDDEN' });
+    await apiClient.post('/customer/action', {});
+    expect(fetchMock.mock.calls[4][0]).toBe('/api/v1/auth/cookie/csrf');
+    expect(new Headers(fetchMock.mock.calls[5][1].headers).get('X-XSRF-TOKEN')).toBe('next-proof');
+  });
 });

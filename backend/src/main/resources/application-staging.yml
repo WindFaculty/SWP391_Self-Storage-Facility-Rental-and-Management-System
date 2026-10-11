@@ -3,7 +3,14 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+server:
+  servlet:
+    session:
+      cookie:
+        secure: ${AUTH_COOKIE_SECURE:true}
 app:
+  auth:
+    cookie-secure: ${AUTH_COOKIE_SECURE:true}
   jwt:
     secret: ${JWT_SECRET}
 vnpay:

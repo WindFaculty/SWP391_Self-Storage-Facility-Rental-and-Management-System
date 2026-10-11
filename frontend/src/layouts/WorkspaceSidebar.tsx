@@ -106,7 +106,7 @@ export function WorkspaceSidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-[15px] font-bold tracking-tight leading-tight text-text-main uppercase">
-              Khoảng Thở
+              Kho Việt
             </span>
             <span className="text-[11px] text-text-muted font-medium tracking-wide">
               Hệ thống Vận hành Ops

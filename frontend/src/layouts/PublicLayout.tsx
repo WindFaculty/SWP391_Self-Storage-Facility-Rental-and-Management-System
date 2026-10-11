@@ -34,7 +34,7 @@ export const PublicLayout = () => {
             </span>
             <span className="flex flex-col leading-none">
               <span className="text-[17px] font-bold tracking-[0.14em] text-primary">
-                KHOẢNG THỞ
+                Kho Việt
               </span>
               <span className="text-[10px] font-medium uppercase tracking-widest text-text-muted">
                 Self Storage System
@@ -126,7 +126,7 @@ export const PublicLayout = () => {
 
       <footer className="border-t border-border-hairline bg-surface">
         <div className="page-container flex items-center justify-between px-4 py-6 text-badge text-text-muted sm:px-6 lg:px-10">
-          <span>© 2026 Khoảng Thở — Hệ thống cho thuê kho tự lưu trữ (SWP391)</span>
+          <span>© 2026 Kho Việt — Hệ thống cho thuê kho tự lưu trữ (SWP391)</span>
         </div>
       </footer>
     </div>

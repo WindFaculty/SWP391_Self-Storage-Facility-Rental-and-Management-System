@@ -49,14 +49,15 @@ test('authenticated workspace calls the real backend and shows its data', async 
     }),
   }).then((r) => r.json());
 
-  await page.addInitScript(
-    ([tokenValue, facilityId]) => {
-      localStorage.setItem('storage_access_token', tokenValue);
-      localStorage.setItem('storage_refresh_token', 'unused');
-      localStorage.setItem('storage_user', JSON.stringify({ id: 1, email: 'admin@e2e.invalid', fullName: 'E2E Admin', role: 'ADMIN', facilityId: Number(facilityId) }));
-    },
-    [adminToken, created.data.id],
-  );
+  // Authenticate the actual browser cookie jar, without injecting tokens or roles.
+  const csrf = await page.request.get('/api/v1/auth/cookie/csrf');
+  expect(csrf.ok()).toBe(true);
+  const csrfBody = await csrf.json();
+  const login = await page.request.post('/api/v1/auth/cookie/login', {
+    headers: { 'X-XSRF-TOKEN': csrfBody.data.token },
+    data: { email: `admin-${stamp}@example.com`, password: 'secret-pass-123' },
+  });
+  expect(login.ok()).toBe(true);
 
   const calls: string[] = [];
   page.on('response', (response) => {

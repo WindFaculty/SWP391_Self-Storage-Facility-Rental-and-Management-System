@@ -138,7 +138,7 @@ export const HomePage = () => {
             ) : unitTypes.length === 0 ? (
               <p className="text-body text-text-muted">Hệ thống chưa cấu hình loại kho nào.</p>
             ) : (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {unitTypes.map((unitType) => (
                   <UnitTypeCard
                     key={unitType.id}

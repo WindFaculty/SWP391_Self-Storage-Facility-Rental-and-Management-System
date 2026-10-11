@@ -39,6 +39,12 @@ public class AuthController {
         return ApiResponse.success(authService.login(request));
     }
 
+    @PostMapping("/social/{provider}")
+    public ApiResponse<AuthResponse> socialLogin(@org.springframework.web.bind.annotation.PathVariable String provider,
+            @Valid @RequestBody com.storage.account.dto.SocialLoginRequest request) {
+        return ApiResponse.success(authService.socialLogin(provider, request.token()));
+    }
+
     @PostMapping("/refresh")
     public ApiResponse<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         return ApiResponse.success(authService.refresh(request));

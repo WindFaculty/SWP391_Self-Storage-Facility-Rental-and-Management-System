@@ -4,93 +4,49 @@ import { authApi } from './api/authApi';
 import { AuthContext } from './auth-context';
 import type { AuthUser, LoginRequest, RegisterRequest } from './types';
 
-const USER_KEY = 'storage_user';
-
-const readStoredUser = (): AuthUser | null => {
-  if (typeof localStorage === 'undefined') return null;
-  try {
-    const raw = localStorage.getItem(USER_KEY);
-    return raw ? (JSON.parse(raw) as AuthUser) : null;
-  } catch {
-    return null;
-  }
-};
-
-const storeUser = (user: AuthUser | null): void => {
-  if (typeof localStorage === 'undefined') return;
-  if (user) {
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(USER_KEY);
-  }
-};
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AuthUser | null>(readStoredUser);
-  const [isLoading, setIsLoading] = useState(() => Boolean(apiClient.getToken()));
-
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [logoutError, setLogoutError] = useState('');
   useEffect(() => {
-    if (!apiClient.getToken()) return;
     let cancelled = false;
-
-    authApi
-      .me()
-      .then((me) => {
-        if (cancelled) return;
-        setUser(me);
-        storeUser(me);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        apiClient.clearTokens();
-        storeUser(null);
-        setUser(null);
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    const expired = () => setUser(null);
+    window.addEventListener('auth:expired', expired);
+    void authApi.me().then(me => {
+      if (!cancelled) { apiClient.setCookieSession(true); setUser(me); }
+    }).catch(() => {
+      if (!cancelled) { apiClient.clearTokens(); setUser(null); }
+    }).finally(() => { if (!cancelled) setIsLoading(false); });
+    return () => { cancelled = true; window.removeEventListener('auth:expired', expired); };
   }, []);
-
+  const acceptSession = async (): Promise<AuthUser> => {
+    apiClient.setCookieSession(true);
+    const me = await authApi.me();
+    setUser(me);
+    return me;
+  };
   const login = async (payload: LoginRequest): Promise<AuthUser> => {
-    const { accessToken, refreshToken, user: loggedIn } = await authApi.login(payload);
-    apiClient.setToken(accessToken);
-    apiClient.setRefreshToken(refreshToken);
-    storeUser(loggedIn);
-    setUser(loggedIn);
-    return loggedIn;
+    await authApi.cookieLogin(payload);
+    return acceptSession();
   };
-
   const register = async (payload: RegisterRequest): Promise<AuthUser> => {
-    const { accessToken, refreshToken, user: created } = await authApi.register(payload);
-    apiClient.setToken(accessToken);
-    apiClient.setRefreshToken(refreshToken);
-    storeUser(created);
-    setUser(created);
-    return created;
+    await authApi.cookieRegister(payload);
+    return acceptSession();
   };
-
   const logout = (): void => {
-    apiClient.clearTokens();
-    storeUser(null);
-    setUser(null);
+    setLogoutError('');
+    void authApi.logout().then(() => {
+      apiClient.clearTokens(); setUser(null);
+    }).catch(() => setLogoutError('Không thể đăng xuất. Vui lòng thử lại.'));
   };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: Boolean(user && apiClient.getToken()),
-        isLoading,
-        login,
-        register,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const socialLogin = async (provider: 'google' | 'facebook', token: string): Promise<AuthUser> => {
+    if (provider !== 'facebook') throw new Error('Use Continue with Google to sign in.');
+    await authApi.cookieFacebookLogin(token);
+    return acceptSession();
+  };
+  return <AuthContext.Provider value={{ user, isAuthenticated: Boolean(user), isLoading,
+    login, register, socialLogin, logout }}>
+    {logoutError && <p role="alert" className="fixed bottom-4 right-4 z-50 rounded-md bg-surface p-4 text-danger shadow-raised">{logoutError}</p>}
+    {children}
+  </AuthContext.Provider>;
 };

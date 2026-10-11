@@ -1,17 +1,32 @@
 import { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Boxes } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import { LoginForm } from '../components/LoginForm';
 import { RegisterForm } from '../components/RegisterForm';
 import { getDefaultRouteForRole } from '../roles';
 import { useAuth } from '../useAuth';
+import { SocialLogin } from '../components/SocialLogin';
+import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 
 type AuthTab = 'login' | 'register';
 
 export const AuthPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const [searchParams] = useSearchParams();
+  const oauthError = searchParams.get('oauth_error');
+  const oauthMessage = oauthError === 'email_conflict'
+    ? 'Email này đã có tài khoản. Hãy đăng nhập bằng phương thức hiện có; Google chưa được liên kết.'
+    : oauthError === 'account_disabled'
+      ? 'Tài khoản không khả dụng. Vui lòng liên hệ hỗ trợ.'
+      : oauthError ? 'Đăng nhập Google đã hủy hoặc thất bại. Vui lòng thử lại.' : '';
   const [tab, setTab] = useState<AuthTab>('login');
+
+  if (isLoading) {
+    return <div className="flex min-h-screen items-center justify-center bg-background">
+      <LoadingSpinner text="Đang xác minh phiên đăng nhập…" />
+    </div>;
+  }
 
   if (isAuthenticated && user) {
     return <Navigate to={getDefaultRouteForRole(user.role)} replace />;
@@ -47,7 +62,7 @@ export const AuthPage = () => {
                 </span>
                 <div className="flex flex-col leading-none">
                   <span className="text-[18px] font-semibold tracking-tight text-text-main">
-                    KHOẢNG THỞ
+                    Kho Việt
                   </span>
                   <span className="mt-1 text-[10px] font-medium uppercase tracking-widest text-text-muted">
                     Smart Spatial Storage
@@ -88,10 +103,12 @@ export const AuthPage = () => {
             </header>
 
             <div className="my-auto">
+              {oauthMessage && <p role="alert" className="mb-4 text-label text-danger">{oauthMessage}</p>}
               {tab === 'login' ? <LoginForm /> : <RegisterForm />}
+              <SocialLogin />
             </div>
 
-            <footer className="text-badge text-text-muted">Khoảng Thở — SWP391</footer>
+            <footer className="text-badge text-text-muted">Kho Việt — SWP391</footer>
           </section>
 
           <section className="relative hidden overflow-hidden bg-forest-900 lg:flex lg:w-[55%] lg:flex-col lg:justify-end">

@@ -153,7 +153,7 @@ export const RegisterForm = () => {
           required
         />
         <span className="text-table text-text-muted">
-          Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật dữ liệu lưu trữ của Khoảng Thở.
+          Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật dữ liệu lưu trữ của Kho Việt.
         </span>
       </label>
 
