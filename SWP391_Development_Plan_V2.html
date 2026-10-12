@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SWP391 — Development Plan V2 (Cập nhật thực thi) | Self-Storage Facility Rental & Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-subtle: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent-be1: #2563eb;
+      --accent-be2: #7c3aed;
+      --accent-be3: #0891b2;
+      --accent-fe1: #059669;
+      --accent-fe2: #d97706;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --info: #0284c7;
+      --info-light: #f0f9ff;
+      --code-bg: #f1f5f9;
+      --code-text: #0f172a;
+      --sidebar-width: 290px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #0b0f19;
+      --bg-card: #111827;
+      --bg-card-subtle: #1e293b;
+      --border-color: #1f2937;
+      --border-hover: #374151;
+      --text-main: #f3f4f6;
+      --text-muted: #cbd5e1;
+      --text-subtle: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --primary-light: #1e293b;
+      --danger-light: #450a0a;
+      --warning-light: #451a03;
+      --success-light: #052e16;
+      --info-light: #082f49;
+      --code-bg: #1e293b;
+      --code-text: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+      --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.65;
+      font-size: 15px;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* Container & Layout */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .sidebar-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .sidebar-sub {
+      font-size: 12px;
+      color: var(--text-subtle);
+      margin-top: 4px;
+    }
+
+    .sidebar-search-box {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-search-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card-subtle);
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .sidebar-search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 14px 10px;
+      overflow-y: auto;
+    }
+
+    .nav-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-subtle);
+      padding: 8px 10px 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      line-height: 1.4;
+    }
+
+    .nav-item:hover {
+      background-color: var(--bg-card-subtle);
+      color: var(--text-main);
+    }
+
+    .nav-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-action:hover {
+      background: var(--bg-card-subtle);
+      color: var(--text-main);
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 32px 40px 80px;
+      max-width: calc(100% - var(--sidebar-width));
+    }
+
+    .content-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Hero / Document Header */
+    .doc-hero {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px 36px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doc-hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #2563eb, #7c3aed, #059669);
+    }
+
+    .doc-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .doc-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .doc-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    [data-theme="dark"] .doc-status-pill {
+      background: #450a0a;
+      color: #fca5a5;
+      border-color: #7f1d1d;
+    }
+
+    .doc-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-subtle);
+    }
+
+    .meta-value {
+      font-size: 13.5px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* Content Sections */
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 30px 32px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+      scroll-margin-top: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Tables */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin: 16px 0 20px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    thead {
+      background: var(--bg-card-subtle);
+    }
+
+    th {
+      padding: 12px 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-muted);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: var(--bg-card-subtle);
+    }
+
+    /* Badges & Tags */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    .badge-id {
+      background: var(--bg-card-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .badge-be1 { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .badge-be2 { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+    .badge-be3 { background: #ecfeff; color: #0e7490; border: 1px solid #a5f3fc; }
+    .badge-fe1 { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .badge-fe2 { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+
+    [data-theme="dark"] .badge-be1 { background: #1e3a8a; color: #93c5fd; border-color: #1e40af; }
+    [data-theme="dark"] .badge-be2 { background: #4c1d95; color: #c4b5fd; border-color: #5b21b6; }
+    [data-theme="dark"] .badge-be3 { background: #164e63; color: #67e8f9; border-color: #155e75; }
+    [data-theme="dark"] .badge-fe1 { background: #064e3b; color: #6ee7b7; border-color: #065f46; }
+    [data-theme="dark"] .badge-fe2 { background: #78350f; color: #fcd34d; border-color: #92400e; }
+
+    .badge-gate {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+    }
+
+    .badge-gate-critical {
+      background: #fee2e2;
+      color: #991b1b;
+      font-weight: 700;
+      border: 1px solid #fca5a5;
+    }
+
+    [data-theme="dark"] .badge-gate-critical {
+      background: #7f1d1d;
+      color: #fecaca;
+      border-color: #991b1b;
+    }
+
+    .badge-p0 {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #f87171;
+      font-weight: 700;
+    }
+
+    .badge-p1 {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+      font-weight: 700;
+    }
+
+    .badge-p2 {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #7dd3fc;
+      font-weight: 700;
+    }
+
+    .badge-done {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .badge-done { background: #064e3b; color: #86efac; border-color: #047857; }
+
+    .badge-wip {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fbbf24;
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .badge-wip { background: #78350f; color: #fcd34d; border-color: #92400e; }
+
+    .badge-blocked {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .badge-blocked { background: #7f1d1d; color: #fecaca; border-color: #991b1b; }
+
+    /* Progress bar */
+    .progress-track {
+      height: 10px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #16a34a, #059669);
+      border-radius: 9999px;
+    }
+
+    .doc-status-pill.ok {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    [data-theme="dark"] .doc-status-pill.ok {
+      background: #052e16;
+      color: #86efac;
+      border-color: #14532d;
+    }
+
+    /* Callout & Alerts */
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin: 16px 0;
+      display: flex;
+      gap: 14px;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+
+    .callout-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .callout-content {
+      flex: 1;
+    }
+
+    .callout-content strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .callout-warning {
+      background: var(--warning-light);
+      border: 1px solid #fde68a;
+      color: #92400e;
+    }
+
+    [data-theme="dark"] .callout-warning {
+      background: #451a03;
+      border-color: #78350f;
+      color: #fde68a;
+    }
+
+    .callout-danger {
+      background: var(--danger-light);
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    [data-theme="dark"] .callout-danger {
+      background: #450a0a;
+      border-color: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .callout-info {
+      background: var(--info-light);
+      border: 1px solid #bae6fd;
+      color: #0369a1;
+    }
+
+    [data-theme="dark"] .callout-info {
+      background: #082f49;
+      border-color: #075985;
+      color: #7dd3fc;
+    }
+
+    .callout-success {
+      background: var(--success-light);
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    [data-theme="dark"] .callout-success {
+      background: #052e16;
+      border-color: #14532d;
+      color: #86efac;
+    }
+
+    /* Lists */
+    ol, ul {
+      padding-left: 20px;
+      margin-bottom: 14px;
+      color: var(--text-muted);
+    }
+
+    li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .feature-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+    }
+
+    .feature-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .feature-card-num {
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .feature-card p {
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    /* Code & Pre */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      background-color: var(--code-bg);
+      color: var(--code-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Links */
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    .doc-footer {
+      text-align: center;
+      padding: 30px;
+      color: var(--text-subtle);
+      font-size: 13px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 40px;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+        max-width: 100%;
+        padding: 20px 16px 60px;
+      }
+
+      .mobile-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        z-index: 90;
+      }
+    }
+
+    @media (min-width: 993px) {
+      .mobile-topbar {
+        display: none;
+      }
+    }
+
+    /* Print Stylesheet */
+    @media print {
+      .sidebar, .mobile-topbar, .sidebar-footer, .btn-action, .sidebar-search-box {
+        display: none !important;
+      }
+
+      .main-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .section-card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+        margin-bottom: 20px;
+      }
+
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Topbar -->
+  <div class="mobile-topbar">
+    <div style="font-weight: 700; font-size: 14px;">SWP391 Development Plan V2</div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn-action" onclick="toggleTheme()">🌓 Theme</button>
+      <button class="btn-action" onclick="toggleSidebar()">☰ Menu</button>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-logo">
+          <div class="sidebar-logo-icon">SP</div>
+          <div>SWP391 Plan</div>
+        </a>
+        <div class="sidebar-sub">Self-Storage Facility Management</div>
+      </div>
+
+      <div class="sidebar-search-box">
+        <input type="text" id="searchInput" class="sidebar-search-input" placeholder="Tìm kiếm nội dung (Ctrl+K)..." oninput="filterContent()">
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group-title">Mục Lục Tài Liệu</div>
+        <a href="#sec-decided" class="nav-item">
+          <span>1. Đã chốt (Decided)</span>
+          <span class="nav-badge badge-gate">14 mục</span>
+        </a>
+        <a href="#sec-tech-stack" class="nav-item">
+          <span>2. Tech Stack</span>
+          <span class="nav-badge badge-done">Đã áp dụng</span>
+        </a>
+        <a href="#sec-ownership" class="nav-item">
+          <span>3. Quyền sở hữu Module</span>
+          <span class="nav-badge badge-be1">5 Devs</span>
+        </a>
+        <a href="#sec-doc" class="nav-item">
+          <span>4. Sản phẩm cuối cùng</span>
+          <span class="nav-badge badge-wip">5/6 xong</span>
+        </a>
+        <a href="#sec-roadmap" class="nav-item">
+          <span>5. Lộ trình 10 tuần</span>
+          <span class="nav-badge badge-wip">W1–W7 xong</span>
+        </a>
+        <a href="#sec-backlog" class="nav-item">
+          <span>6. Backlog mã công việc</span>
+          <span class="nav-badge badge-done">33/33</span>
+        </a>
+        <a href="#sec-invariants" class="nav-item">
+          <span>7. Bất biến kỹ thuật</span>
+          <span class="nav-badge badge-done">Đã hiện thực</span>
+        </a>
+        <a href="#sec-testing" class="nav-item">
+          <span>8. Test Plan & Acceptance</span>
+          <span class="nav-badge badge-done">181 test</span>
+        </a>
+        <a href="#sec-decisions" class="nav-item">
+          <span>9. Decision Register</span>
+          <span class="nav-badge badge-wip">10 chốt · 11 mở</span>
+        </a>
+        <a href="#sec-team-management" class="nav-item">
+          <span>10. Cơ chế quản lý nhóm</span>
+        </a>
+        <a href="#sec-precode-gate" class="nav-item">
+          <span>11. Gate trước khi viết code</span>
+          <span class="nav-badge badge-wip">G0/G1</span>
+        </a>
+        <a href="#sec-next-steps" class="nav-item">
+          <span>12. Việc tiếp theo</span>
+          <span class="nav-badge badge-p0">4 việc</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-action" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌓 Giao diện</button>
+        <button class="btn-action" onclick="window.print()" title="In hoặc Xuất PDF">🖨 In / PDF</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <div class="content-container">
+
+        <!-- Header / Hero Section -->
+        <header class="doc-hero">
+          <div class="doc-title-row">
+            <h1 class="doc-title">SWP391 — DEVELOPMENT PLAN V2</h1>
+            <span class="doc-status-pill ok">✅ Đang thực thi — 33/33 hạng mục đã merge</span>
+          </div>
+          <div class="doc-subtitle">Self-Storage Facility Rental & Management System · <em>Bản cập nhật theo lịch sử Git thực tế</em></div>
+
+          <div style="margin: 4px 0 20px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+              <span>Tiến độ backlog: 33 / 33 hạng mục (100%)</span>
+              <span>Còn lại: W8–W10 — deploy staging, hardening, UAT</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width: 78%;"></div></div>
+            <div style="margin-top: 6px; font-size: 11.5px; color: var(--text-subtle);">
+              78% = 33/33 hạng mục code đã merge (W1–W7) · 22% = hạ tầng, vận hành, UAT (W8–W10) chưa hoàn tất.
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Baseline Git Commit (Kế hoạch)</span>
+              <span class="meta-value"><code>db73845</code> — 2026-10-09</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Commit Hiện Tại (Đối Chiếu)</span>
+              <span class="meta-value"><code>6819376</code> — 2026-10-12 · <code>main</code></span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Ngày Lập / Cập Nhật</span>
+              <span class="meta-value">Lập 2026-10-10 · Cập nhật 2026-10-12</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Quy Mô Nhóm</span>
+              <span class="meta-value"><strong>5 thành viên</strong> (BE1, BE2, BE3, FE1, FE2)</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Số Commit Thực Thi</span>
+              <span class="meta-value"><strong>55 commit</strong> từ baseline (2026-10-09 → 2026-10-12)</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Trạng Thái Kiểm Thử</span>
+              <span class="meta-value" style="color: var(--success); font-weight: 700;">BE 79/79 ✅ · FE 93/93 ✅ · Playwright 9/9 ✅ · CI xanh</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- SECTION 1 -->
+        <section id="sec-decided" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">1</span>
+              ĐÃ CHỐT (DECIDED)
+            </h2>
+            <span class="badge badge-gate">Baseline Chốt</span>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-icon">📌</span>
+            <div class="callout-content">
+              <strong>Cách đọc tài liệu này:</strong>
+              C01–C10 là quyết định chốt tại thời điểm lập kế hoạch. C11–C14 là các quyết định <em>đã được chốt trong lúc triển khai</em> và ghi lại tại đây để kế hoạch khớp với mã nguồn thực tế. Trạng thái mỗi hạng mục ở §6 được đối chiếu trực tiếp với commit Git.
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 80px;">ID</th>
+                  <th style="width: 250px;">Quyết định</th>
+                  <th>Giá trị</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-id">C01</span></td>
+                  <td><strong>Backend language</strong></td>
+                  <td><code>Java 25</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C02</span></td>
+                  <td><strong>Frontend language</strong></td>
+                  <td><code>TypeScript</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C03</span></td>
+                  <td><strong>Backend architecture</strong></td>
+                  <td>Spring Boot Modular Monolith</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C04</span></td>
+                  <td><strong>Frontend architecture</strong></td>
+                  <td>React + Vite theo feature</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C05</span></td>
+                  <td><strong>Database</strong></td>
+                  <td>MySQL/InnoDB, chuyển đổi từ PostgreSQL reference</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C06</span></td>
+                  <td><strong>Gateway thanh toán</strong></td>
+                  <td>VNPay</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C07</span></td>
+                  <td><strong>Cấp kho</strong></td>
+                  <td>Gán đơn vị kho vật lý cụ thể <strong>ngay tại thời điểm tạo hold</strong>, không chờ check-in</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C08</span></td>
+                  <td><strong>Triển khai</strong></td>
+                  <td>Cloudflare Pages cho frontend; EC2 cho backend và MySQL</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C09</span></td>
+                  <td><strong>Stitch source of truth (local)</strong></td>
+                  <td><code>D:\FAll26\SWP391\tranxuankhoa\stitch_self_storage_editorial_homepage_system</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C10</span></td>
+                  <td><strong>Team</strong></td>
+                  <td>2 frontend + 3 backend, >20 giờ/người/tuần</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C11</span></td>
+                  <td><strong>Tech stack chốt & đã dùng</strong></td>
+                  <td>Spring Boot <code>4.1.1</code> + Java <code>25</code> + Maven Wrapper + Flyway + MySQL 8.4; React <code>19</code> + Vite <code>8</code> + TypeScript <code>7</code> + Tailwind <code>4</code> + TanStack Query <code>5</code> (chi tiết ở §2)</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C12</span></td>
+                  <td><strong>Đăng nhập xã hội (mở rộng)</strong></td>
+                  <td>Email/password <strong>＋</strong> Google OAuth2 Authorization Code (OIDC) qua Spring Security OAuth2 Client; token ứng dụng phát trong <strong>HttpOnly cookie</strong> + CSRF. Bổ sung ngoài kế hoạch — commit <code>17f1be1</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C13</span></td>
+                  <td><strong>Nguồn schema thực thi</strong></td>
+                  <td>Flyway <code>V001…V010</code> trong <code>backend/src/main/resources/db/migration</code>; đã loại bỏ bảng <code>payments</code> legacy (<code>V007</code>) và đặt lại tên migration theo <code>V{NNN}</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">C14</span></td>
+                  <td><strong>Không còn mock</strong></td>
+                  <td>Frontend đã xoá toàn bộ dữ liệu/store giả, chỉ dùng HTTP thật (<code>7ddada2</code>, <code>6819376</code>)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-warning">
+            <span class="callout-icon">💡</span>
+            <div class="callout-content">
+              <strong>Cập nhật về C07 (quyết định đã lấp trong code):</strong>
+              C07 chốt thời điểm gán kho cụ thể — <strong>đã hiện thực</strong>. <code>POST /api/v1/rentals/holds</code> nhận <code>facilityId</code> + <code>unitTypeId</code> + <code>rentalMonths</code> (không có <code>unitId</code>); backend tự cấp kho trong transaction và từ chối nếu cơ sở không <code>ACTIVE</code> (<code>RentalService.createHold</code>). D01 vì thế đã được giải quyết theo hướng đề xuất mặc định.
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2 -->
+        <section id="sec-tech-stack" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">2</span>
+              TECH STACK — ĐÃ ÁP DỤNG (ĐỐI CHIẾU TỪ MÃ NGUỒN)
+            </h2>
+            <span class="badge badge-done">Đã Dùng Thực Tế</span>
+          </div>
+
+          <div class="callout callout-success">
+            <span class="callout-icon">✅</span>
+            <div class="callout-content">
+              <strong>Trạng thái đổi từ "PROPOSED" → "FROZEN":</strong>
+              Toàn bộ hạng mục dưới đây đã được xác nhận và <em>đang chạy trong mã nguồn thật</em>. Phiên bản ghi trong bảng đọc trực tiếp từ <code>backend/pom.xml</code>, <code>frontend/package.json</code> và <code>.github/workflows/ci.yml</code> tại commit <code>6819376</code>.
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 170px;">Thành phần</th>
+                  <th style="width: 240px;">Đang dùng</th>
+                  <th>Giải thích / điều kiện</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Spring Boot</strong></td>
+                  <td><code>4.1.1</code> (spring-boot-starter-parent)</td>
+                  <td>Đã xác nhận tương thích Java 25; đang chạy ở local, test và CI</td>
+                </tr>
+                <tr>
+                  <td><strong>Java</strong></td>
+                  <td><code>25</code></td>
+                  <td>CI dùng Temurin 25; local dùng JDK 25</td>
+                </tr>
+                <tr>
+                  <td><strong>Build</strong></td>
+                  <td>Maven + Maven Wrapper (<code>./mvnw</code>)</td>
+                  <td>CI gọi <code>./mvnw -B verify</code>; tái lập build giống nhau mọi máy</td>
+                </tr>
+                <tr>
+                  <td><strong>Data Access</strong></td>
+                  <td>Spring Data JPA / Hibernate</td>
+                  <td>Repository theo module (<code>account</code>, <code>facility</code>, <code>rental</code>, <code>payment</code>, <code>support</code>, <code>management</code>, <code>ops</code>, <code>shared</code>)</td>
+                </tr>
+                <tr>
+                  <td><strong>Migration</strong></td>
+                  <td>Flyway + MySQL — <code>V001…V010</code></td>
+                  <td>Nguồn thực thi duy nhất tại <code>backend/src/main/resources/db/migration</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Schema policy</strong></td>
+                  <td><code>ddl-auto=validate</code> ở runtime</td>
+                  <td>Không dùng <code>update</code>/<code>create</code> để thay migration</td>
+                </tr>
+                <tr>
+                  <td><strong>Auth</strong></td>
+                  <td>Spring Security + JWT (jjwt <code>0.12.6</code>) + Spring Session cookie</td>
+                  <td>Access 30 phút / refresh 7 ngày, xoay vòng + thu hồi; HttpOnly cookie + CSRF cho trình duyệt; Google OAuth2 client. Xem ADR-0001</td>
+                </tr>
+                <tr>
+                  <td><strong>Contract</strong></td>
+                  <td>OpenAPI 3 + Swagger UI, REST <code>/api/v1</code></td>
+                  <td>Swagger UI tại <code>/api/v1/swagger-ui.html</code></td>
+                </tr>
+                <tr>
+                  <td><strong>FE framework</strong></td>
+                  <td>React <code>19</code> + TypeScript <code>7</code> + Vite <code>8</code></td>
+                  <td>TypeScript ở chế độ <code>strict</code>, <code>tsc --noEmit</code> chặn build</td>
+                </tr>
+                <tr>
+                  <td><strong>Styling</strong></td>
+                  <td>Tailwind CSS <code>4</code> + Lucide React</td>
+                  <td>Design token kế thừa từ Stitch audit (FE1-01)</td>
+                </tr>
+                <tr>
+                  <td><strong>FE data layer</strong></td>
+                  <td>TanStack Query <code>5</code> + typed API client</td>
+                  <td>Đã gộp các lớp truy cập API trùng lặp trong <code>6819376</code></td>
+                </tr>
+                <tr>
+                  <td><strong>FE routes</strong></td>
+                  <td>React Router <code>7</code></td>
+                  <td>Route guard chỉ phục vụ UX; backend vẫn bắt buộc enforce permission</td>
+                </tr>
+                <tr>
+                  <td><strong>Testing BE</strong></td>
+                  <td>JUnit 5, Spring Boot Test, Testcontainers MySQL <code>8.4</code></td>
+                  <td>Không dùng H2; CI chạy test thật trên MySQL container</td>
+                </tr>
+                <tr>
+                  <td><strong>Testing FE</strong></td>
+                  <td>Vitest <code>5</code>, Testing Library, Playwright <code>1.64</code></td>
+                  <td>93 unit/integration + 9 browser role-flow</td>
+                </tr>
+                <tr>
+                  <td><strong>Lint / Quality FE</strong></td>
+                  <td>oxlint + <code>tsc --noEmit</code></td>
+                  <td>CI chạy lint trước test</td>
+                </tr>
+                <tr>
+                  <td><strong>CI</strong></td>
+                  <td>GitHub Actions — <code>.github/workflows/ci.yml</code></td>
+                  <td>Hai job song song: backend (JDK 25 + Maven verify) và frontend (lint → test → build → Playwright)</td>
+                </tr>
+                <tr>
+                  <td><strong>Runtime</strong></td>
+                  <td>Docker Compose (<code>infra/docker/</code>) + script <code>run.ps1</code></td>
+                  <td>DB dùng user non-root; secrets qua biến môi trường, không commit <code>.env</code></td>
+                </tr>
+                <tr>
+                  <td><strong>VNPay</strong></td>
+                  <td>Sandbox PAY — URL builder HMAC-SHA512, IPN, return, query/reconcile</td>
+                  <td>Credentials qua env; callback cần HTTPS public khi demo live</td>
+                </tr>
+                <tr>
+                  <td><strong>Deploy</strong></td>
+                  <td><span class="badge badge-wip">CHƯA HOÀN TẤN</span> EC2 + Cloudflare Pages</td>
+                  <td>Đã có <code>infra/docker/docker-compose.yml</code>, <code>infra/ec2/backup-mysql.sh</code>; <code>infra/cloudflare/</code> còn trống — xem W8</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-icon">🔗</span>
+            <div class="callout-content">
+              <strong>Nguồn kiểm chứng kỹ thuật:</strong>
+              <div style="margin-top: 4px; display: flex; flex-direction: column; gap: 4px;">
+                <a href="https://docs.spring.io/spring-boot/system-requirements.html" target="_blank" rel="noopener">Spring Boot System Requirements</a>
+                <a href="https://sandbox.vnpayment.vn/apis/docs/thanh-toan-pay/pay.html" target="_blank" rel="noopener">VNPay Sandbox Pay API Documentation</a>
+                <a href="https://sandbox.vnpayment.vn/apis/docs/truy-van-hoan-tien/querydr%26refund.html" target="_blank" rel="noopener">VNPay QueryDR & Refund API Documentation</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3 -->
+        <section id="sec-ownership" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">3</span>
+              QUYỀN SỞ HỮU MODULE (OWNERSHIP)
+            </h2>
+            <span class="badge badge-gate">Phân Vai 5 Người</span>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+<th style="width: 150px;">Thành viên</th>
+                  <th style="width: 280px;">Ownership chính</th>
+                  <th>Module / File</th>
+                  <th style="width: 200px;">Người phối hợp</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-be1">BE1</span><br><strong>Bùi Văn Tình</strong></td>
+                  <td><strong>Backend lead, schema conventions, Account/Facility/Security, CI + EC2</strong></td>
+                  <td><code>account/</code>, <code>facility/</code>, <code>shared/security</code>, migrations nền, <code>infra/</code></td>
+                  <td>BE2/BE3 review migration theo module</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-be2">BE2</span><br><strong>Hồ Xuân Thanh</strong></td>
+                  <td><strong>Rental lifecycle:</strong> hold, reservation, booking concurrency, handover, renewal, return, staff tasks</td>
+                  <td><code>rental/</code> + task model</td>
+                  <td>BE3 về thanh toán, FE2 vận hành</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-be3">BE3</span><br><strong>Lê Trí Thiện</strong></td>
+                  <td><strong>Invoice, Payment VNPay, deposit/refund, Support, Policy, Reports</strong></td>
+                  <td><code>payment/</code>, <code>support/</code>, <code>management/</code></td>
+                  <td>BE2 về thay đổi rental status</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-fe1">FE1</span><br><strong>Trần Xuân Khoa</strong></td>
+                  <td><strong>Customer app, Stitch design system, auth UI, catalog, booking, billing, customer rental/support</strong></td>
+                  <td><code>frontend/src/features/{auth,catalog,reservation,rental,billing,support}</code> và <code>styles/</code></td>
+                  <td>BE1 / BE2 / BE3</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-fe2">FE2</span><br><strong>Bùi Tuấn Thanh</strong></td>
+                  <td><strong>Internal app, role layouts, staff, facility manager, business manager, admin</strong></td>
+                  <td><code>frontend/src/features/{staff,facility,management,admin}</code></td>
+                  <td>BE1 / BE2 / BE3</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-success">
+            <span class="callout-icon">🤝</span>
+            <div class="callout-content">
+              <strong>Quy trình merge đã áp dụng và đang hiệu lực:</strong>
+              Mỗi thành viên làm đúng hạng mục được gán trên <em>nhánh riêng</em> (<code>bui-van-tinh</code>, <code>ho-xuan-thanh</code>, <code>le-tri-thien</code>, <code>bui-tuan-thanh</code>, <code>tran-xuan-khoa</code>), rồi merge vào <code>main</code>. Các commit merge đều đánh dấu rõ hạng mục (<code>BE1-05</code>, <code>FE2-03</code>…) nên có thể truy vết đối chiếu trực tiếp với §6.
+            </div>
+          </div>
+
+          <div class="callout callout-warning">
+            <span class="callout-icon">📌</span>
+            <div class="callout-content">
+              <strong>Quy tắc phối hợp:</strong>
+              API contract do backend owner duy trì và FE consumer review. BE1 giữ quyền review kiến trúc/migration, nhưng mỗi BE tự viết và test migration module mình. FE1 duy trì primitives/tokens; FE2 dùng lại cùng UI kit. Mỗi PR tối thiểu một reviewer khác người viết.
+              <br><em>Việc này đã dẫn tới <code>e5b0ab9</code> — phải giải quyết xung đột schema giữa baseline BE1 và billing/support của BE3 khi merge. Bài học: migration chung phải được thống nhất tên cột/bảng <em>trước</em> khi merge, không sửa sau.</em>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 4 -->
+        <section id="sec-doc" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">4</span>
+              SẢN PHẨM CUỐI CÙNG / DEFINITION OF COMPLETE
+            </h2>
+            <span class="badge badge-gate">DoD</span>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-icon">📍</span>
+            <div class="callout-content">
+              <strong>Phạm vi đã xác nhận qua test tự động (2026-10-11):</strong>
+              Ba suite E2E backend phủ đủ các vai trò dưới đây và chạy xanh với MySQL 8.4 thật. Phần còn thiếu nằm ở hạ tầng triển khai, không nằm ở nghiệp vụ.
+            </div>
+          </div>
+
+          <div class="cards-grid">
+            <div class="feature-card">
+              <div class="feature-card-header">
+                <span class="feature-card-num">1</span>
+                Khách hàng (Customer)
+                <span class="badge badge-done" style="margin-left: auto;">Xong</span>
+              </div>
+              <p>Đăng ký, đăng nhập, xem cơ sở/loại kho, kiểm tra tồn kho theo thời gian, đặt kho, thanh toán VNPay, xem hợp đồng/chu kỳ thuê, gia hạn, trả kho/yêu cầu trả, mở ticket.</p>
+              <p style="margin-top: 6px; font-size: 12px; color: var(--text-subtle);">Mở rộng: đăng nhập Google. <code>CustomerFlowE2ETests</code> — 6/6 pass.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-header">
+                <span class="feature-card-num">2</span>
+                Nhân viên cơ sở (Facility Staff)
+                <span class="badge badge-done" style="margin-left: auto;">Xong</span>
+              </div>
+              <p>Lịch bàn giao/trả kho, check-in/handover, xử lý ticket và công việc, kiểm tra điều kiện kho.</p>
+              <p style="margin-top: 6px; font-size: 12px; color: var(--text-subtle);"><code>FacilityOpsE2ETests</code> — 4/4 pass.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-header">
+                <span class="feature-card-num">3</span>
+                Quản lý cơ sở (Facility Manager)
+                <span class="badge badge-done" style="margin-left: auto;">Xong</span>
+              </div>
+              <p>Quản lý kho/cơ sở được giao, xác nhận công việc, quản lý availability và kiểm tra vận hành.</p>
+              <p style="margin-top: 6px; font-size: 12px; color: var(--text-subtle);"><code>RbacAndScopeTests</code> — chặn truy cập chéo cơ sở đã pass.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-header">
+                <span class="feature-card-num">4</span>
+                Quản lý kinh doanh (Business Manager)
+                <span class="badge badge-done" style="margin-left: auto;">Xong</span>
+              </div>
+              <p>Thiết lập chính sách phí/giá/phần trăm cọc, theo dõi hóa đơn/giao dịch/báo cáo.</p>
+              <p style="margin-top: 6px; font-size: 12px; color: var(--text-subtle);"><code>BusinessPolicyServiceTest</code> + <code>ReportServiceTest</code> — 8/8 pass.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-header">
+                <span class="feature-card-num">5</span>
+                Quản trị viên (Admin)
+                <span class="badge badge-done" style="margin-left: auto;">Xong</span>
+              </div>
+              <p>Quản lý tài khoản, role và facility assignment; xem audit logs.</p>
+              <p style="margin-top: 6px; font-size: 12px; color: var(--text-subtle);"><code>AdminAndAuditTests</code> — 3/3 pass.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-header">
+                <span class="feature-card-num">6</span>
+                Hạ tầng & Hệ thống
+                <span class="badge badge-wip" style="margin-left: auto;">Dở dang</span>
+              </div>
+              <p>Migrations chạy từ DB rỗng ✅ · API docs/Swagger ✅ · test tự động ✅ · CI GitHub Actions ✅ · backup script ✅ · run.ps1 local ✅.</p>
+              <p style="margin-top: 6px; font-size: 12px; color: var(--danger); font-weight: 600;">Còn thiếu: staging HTTPS trên EC2, Cloudflare Pages, diễn tập restore, tài liệu vận hành.</p>
+            </div>
+          </div>
+
+          <div class="callout callout-danger">
+            <span class="callout-icon">🚫</span>
+            <div class="callout-content">
+              <strong>Không mặc định thuộc phạm vi:</strong>
+              Production merchant VNPay, SMS/email, hợp đồng PDF có chữ ký số, hóa đơn VAT điện tử, ứng dụng mobile, cổng nhân viên nhiều cơ sở, thông báo real-time; chỉ thêm sau khi duyệt scope.
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5 -->
+        <section id="sec-roadmap" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">5</span>
+              LỘ TRÌNH 10 TUẦN — TRẠNG THÁI THỰC TẾ
+            </h2>
+            <span class="badge badge-wip">W1–W7 Xong · W8–W10 Còn Lại</span>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-icon">📅</span>
+            <div class="callout-content">
+              <strong>Mốc thời gian thực tế:</strong>
+              Kế hoạch được lập 2026-10-10 và triển khai <em>rất nhanh</em> — toàn bộ W1–W7 (33/33 hạng mục) hoàn thành trong <strong>3 ngày</strong> (2026-10-10 → 2026-10-12), nhờ mô hình 5 nhánh song song. Cột "Gate" bên dưới ghi trạng thái <em>đã đạt</em> hay <em>còn thiếu</em> tại commit <code>6819376</code>.
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Tuần</th>
+                  <th style="width: 30%;">Backend trọng tâm</th>
+                  <th style="width: 30%;">Frontend trọng tâm</th>
+                  <th>Gate / Kết quả</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>W1</strong><br><span class="badge badge-done">Xong</span></td>
+                  <td>BE1 ERD MySQL + OpenAPI conventions + quyền; BE2 state machine/locking; BE3 invoice/VNPay contracts</td>
+                  <td>FE1 audit Stitch/tokens/assets; FE2 route/role map và dữ liệu dashboard</td>
+                  <td><span class="badge badge-done">G0 Đạt</span> ERD v1, API v1, quyền role, quyết định nghiệp vụ đã hiện thực trong schema và code</td>
+                </tr>
+                <tr>
+                  <td><strong>W2</strong><br><span class="badge badge-done">Xong</span></td>
+                  <td>BE1 Spring Boot/Java25/MySQL/Flyway/JWT/Auth; BE2 entities/availability; BE3 invoice/payment schemas + sandbox handshake</td>
+                  <td>FE1 Vite+TS/import Stitch, auth/catalog shell; FE2 internal shell, guards</td>
+                  <td><span class="badge badge-done">M1 Đạt</span> Build BE/FE, MySQL migrate, login, facility catalog</td>
+                </tr>
+                <tr>
+                  <td><strong>W3</strong><br><span class="badge badge-done">Xong</span></td>
+                  <td>BE1 facility/unit CRUD & scope; BE2 hold + overlap lock + expiry; BE3 invoice creation, VNPay payment attempt</td>
+                  <td>FE1 search/detail/select date/hold; FE2 inventory management</td>
+                  <td><span class="badge badge-done">M2a Đạt</span> Atomic hold với per-unit lock; race-condition suite pass</td>
+                </tr>
+                <tr>
+                  <td><strong>W4</strong><br><span class="badge badge-done">Xong</span></td>
+                  <td>BE1 Auth hardening; BE2 cancel/expiry/release; BE3 VNPay URL/IPN/return/query + idempotency</td>
+                  <td>FE1 VNPay checkout/results/my reservations; FE2 booking/finance status views</td>
+                  <td><span class="badge badge-done">M2b Đạt</span> HTTP thật + IPN ký HMAC → rental <code>RESERVED</code></td>
+                </tr>
+                <tr>
+                  <td><strong>W5</strong><br><span class="badge badge-done">Xong</span></td>
+                  <td>BE1 staff assignment/security; BE2 check-in/handover/appointment; BE3 support ticket/task hooks</td>
+                  <td>FE1 rental detail; FE2 daily task list, check-in/handover</td>
+                  <td><span class="badge badge-done">M3a Đạt</span> Handover records + staff task model</td>
+                </tr>
+                <tr>
+                  <td><strong>W6</strong><br><span class="badge badge-done">Xong</span></td>
+                  <td>BE1 audit/permission regression; BE2 renewal/check-out/inspection/overdue; BE3 renewal/extra invoices, refunds</td>
+                  <td>FE1 renew/return/support/payment history; FE2 return/inspection/support</td>
+                  <td><span class="badge badge-done">M3b Đạt</span> Thuê → gia hạn → trả → kiểm tra kho chạy xanh</td>
+                </tr>
+                <tr>
+                  <td><strong>W7</strong><br><span class="badge badge-done">Xong</span></td>
+                  <td>BE1 Admin users/facilities; BE2 exception flows; BE3 fee policy/report dashboards</td>
+                  <td>FE1 responsive/UX validation; FE2 manager/business/admin dashboards</td>
+                  <td><span class="badge badge-done">M4 Đạt</span> Đủ 5 role, policy và báo cáo — <code>ManagementAdminE2ETests</code> 4/4</td>
+                </tr>
+                <tr>
+                  <td><strong>W8</strong><br><span class="badge badge-wip">Đang làm</span></td>
+                  <td>EC2/Docker/HTTPS/security; tích hợp các nhánh, sửa xung đột schema, đối soát payment</td>
+                  <td>Cloudflare Pages/staging; E2E internal đầy đủ</td>
+                  <td><span class="badge badge-wip">M5 Dở dang</span> Đã có compose + backup script; <strong>thiếu</strong> hạ tầng EC2/Cloudflare thật (<code>infra/cloudflare/</code> còn trống)</td>
+                </tr>
+                <tr>
+                  <td><strong>W9</strong><br><span class="badge badge-wip">Đang làm</span></td>
+                  <td>Security/load/concurrency tests, backup-restore, hardening</td>
+                  <td>Cross-browser/regression/accessibility/visual QA</td>
+                  <td><span class="badge badge-wip">M6 Dở dang</span> 79 test BE + 93 test FE xanh; <strong>thiếu</strong> test tải, chạy đua thực tế, restore thật</td>
+                </tr>
+                <tr>
+                  <td><strong>W10</strong><br><span class="badge badge-blocked">Chưa tới</span></td>
+                  <td>Tài liệu vận hành, seed demo, xử lý bug, rehearsal</td>
+                  <td>User guides, acceptance evidence, demo 5 roles</td>
+                  <td><span class="badge badge-blocked">G6 Chưa tới</span> UAT, bàn giao và dự phòng</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-warning">
+            <span class="callout-icon">⛓️</span>
+            <div class="callout-content">
+              <strong>Phụ thuộc đường găng:</strong>
+              Requirements &amp; policy &rarr; ERD + API &rarr; Inventory &rarr; Atomic Hold &rarr; Invoice/Payment &rarr; VNPay IPN &rarr; Rental Activation &rarr; Handover &rarr; Renewal/Return &rarr; UAT.
+              <br><em>Chuỗi này đã đi hết từ Hold đến Return. Đường găng còn lại duy nhất là <strong>UAT</strong>, phụ thuộc môi trường staging HTTPS thật — không có nó thì demo VNPay live không thể chạy.</em>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 6 -->
+        <section id="sec-backlog" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">6</span>
+              BACKLOG CÓ MÃ CÔNG VIỆC
+            </h2>
+            <span class="badge badge-done">33/33 Hoàn Thành</span>
+          </div>
+
+          <div class="callout callout-success">
+            <span class="callout-icon">✅</span>
+            <div class="callout-content">
+              <strong>Toàn bộ 33 hạng mục đã có commit tương ứng trên <code>main</code>.</strong>
+              Mỗi hạng mục dưới đây ghi rõ mã commit để tra ngược bằng <code>git show &lt;mã&gt;</code>. Không còn hạng mục nào ở trạng thái "chưa làm".
+            </div>
+          </div>
+
+          <!-- BE1 -->
+          <h3><span class="badge badge-be1">BE1</span> Account / Facility / Foundation</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 100px;">Mã việc</th>
+                  <th>Công việc</th>
+                  <th style="width: 110px;">Gate</th>
+                  <th style="width: 130px;">Trạng thái / Commit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-id">BE1-01</span></td>
+                  <td>Thiết lập Java 25, Spring Boot, Maven Wrapper, profile local/test/staging</td>
+                  <td><span class="badge badge-gate">W2</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>99719b9</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE1-02</span></td>
+                  <td>ERD MySQL, Flyway conventions và seed có kiểm soát</td>
+                  <td><span class="badge badge-gate">W1–W2</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>c35c213</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE1-03</span></td>
+                  <td>Auth, password hashing, JWT, refresh/logout theo ADR</td>
+                  <td><span class="badge badge-gate">W2–W4</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>351ab67</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE1-04</span></td>
+                  <td>RBAC + object ownership + facility scope tests</td>
+                  <td><span class="badge badge-gate">W2–W6</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>db0392c</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE1-05</span></td>
+                  <td>Facility, UnitType, StorageUnit CRUD/query</td>
+                  <td><span class="badge badge-gate">W3</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>61e7d3c</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE1-06</span></td>
+                  <td>OpenAPI, CI pipelines, code quality baseline</td>
+                  <td><span class="badge badge-gate">W2–W4</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>28edc8d</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE1-07</span></td>
+                  <td>Admin, audit log và secure deployments/backup</td>
+                  <td><span class="badge badge-gate">W7–W9</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>3731d2b</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- BE2 -->
+          <h3><span class="badge badge-be2">BE2</span> Rental and Operations</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 100px;">Mã việc</th>
+                  <th>Công việc</th>
+                  <th style="width: 110px;">Gate</th>
+                  <th style="width: 130px;">Trạng thái / Commit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-id">BE2-01</span></td>
+                  <td>Rental state machine, timeline <code>[start_date, end_date)</code>, snapshot giá</td>
+                  <td><span class="badge badge-gate">W1</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>626f9cc</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE2-02</span></td>
+                  <td>Kiểm tra availability từ lịch thuê + trạng thái vật lý</td>
+                  <td><span class="badge badge-gate">W2–W3</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>22fbf27</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE2-03</span></td>
+                  <td>Atomic hold: lock storage unit, detect overlap, create pending rental</td>
+                  <td><span class="badge badge-gate">W3</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>6b1330b</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE2-04</span></td>
+                  <td>Hold timeout, cancel, conflict handling, late payment resolution API</td>
+                  <td><span class="badge badge-gate">W4</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>6e0fb31</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE2-05</span></td>
+                  <td>Check-in, handover, access handoff records, staff tasks</td>
+                  <td><span class="badge badge-gate">W5</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>7a4535e</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE2-06</span></td>
+                  <td>Renewal, overlap check, overdue, check-out, inspection</td>
+                  <td><span class="badge badge-gate">W6</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>f5c124e</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE2-07</span></td>
+                  <td>Race-condition, invalid state transitions, cross-facility tests</td>
+                  <td><span class="badge badge-gate">W3–W9</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>bd5b5e4</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- BE3 -->
+          <h3><span class="badge badge-be3">BE3</span> Payment / Support / Management</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 100px;">Mã việc</th>
+                  <th>Công việc</th>
+                  <th style="width: 110px;">Gate</th>
+                  <th style="width: 130px;">Trạng thái / Commit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-id">BE3-01</span></td>
+                  <td>Fee policy, deposit/rent invoice model, payment attempt lifecycle</td>
+                  <td><span class="badge badge-gate">W1–W3</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>a65ed12</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE3-02</span></td>
+                  <td>VNPay sandbox + checksum/HMAC + redirect URL</td>
+                  <td><span class="badge badge-gate">W3–W4</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>d123744</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE3-03</span></td>
+                  <td>IPN idempotency, amount verification, late/duplicate callbacks, query/reconcile</td>
+                  <td><span class="badge badge-gate">W4–W8</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>00e160a</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE3-04</span></td>
+                  <td>Renewal/extra fee invoice, payment history, payment audit</td>
+                  <td><span class="badge badge-gate">W4–W6</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>e597d3f</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE3-05</span></td>
+                  <td>Refund workflow theo quyết định (manual or API), no fake refund success</td>
+                  <td><span class="badge badge-gate">W6</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>6df2af6</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE3-06</span></td>
+                  <td>Tickets, assignments, staff support workflow</td>
+                  <td><span class="badge badge-gate">W5–W6</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>4175f11</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">BE3-07</span></td>
+                  <td>Business policies, dashboard and reports, security tests</td>
+                  <td><span class="badge badge-gate">W7–W9</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>fd7c983</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- FE1 -->
+          <h3><span class="badge badge-fe1">FE1</span> Customer Experience</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 100px;">Mã việc</th>
+                  <th>Công việc</th>
+                  <th style="width: 110px;">Gate</th>
+                  <th style="width: 130px;">Trạng thái / Commit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-id">FE1-01</span></td>
+                  <td>Audit Stitch, asset manifest, design tokens, TS migration strategy</td>
+                  <td><span class="badge badge-gate">W1</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>7a11f27</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE1-02</span></td>
+                  <td>SPA routing, shared UI components, typed API client, auth UI</td>
+                  <td><span class="badge badge-gate">W2</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>43f94a1</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE1-03</span></td>
+                  <td>Homepage, catalog, availability, facility/unit detail</td>
+                  <td><span class="badge badge-gate">W2–W3</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>0540c60</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE1-04</span></td>
+                  <td>Hold/booking, VNPay redirect/result, reservation list</td>
+                  <td><span class="badge badge-gate">W3–W4</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>b5a3df6</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE1-05</span></td>
+                  <td>My Rentals, renewal, return request, payments, support</td>
+                  <td><span class="badge badge-gate">W5–W6</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>8baced1</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE1-06</span></td>
+                  <td>Responsive, loading/error/empty states, tests, Cloudflare deploy</td>
+                  <td><span class="badge badge-gate">W7–W9</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>f254731</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- FE2 -->
+          <h3><span class="badge badge-fe2">FE2</span> Internal Experience</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 100px;">Mã việc</th>
+                  <th>Công việc</th>
+                  <th style="width: 110px;">Gate</th>
+                  <th style="width: 130px;">Trạng thái / Commit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-id">FE2-01</span></td>
+                  <td>Audit Stitch internal screens, route matrix, internal layout</td>
+                  <td><span class="badge badge-gate">W1–W2</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>d7f587b</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE2-02</span></td>
+                  <td>Facility/unit management, scoped inventory views</td>
+                  <td><span class="badge badge-gate">W3</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>ef2de59</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE2-03</span></td>
+                  <td>Booking/task/appointment dashboard, handover/check-in</td>
+                  <td><span class="badge badge-gate">W4–W5</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>d03028a</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE2-04</span></td>
+                  <td>Check-out, inspection, support and task completion</td>
+                  <td><span class="badge badge-gate">W6</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>3560ede</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE2-05</span></td>
+                  <td>Facility manager / business manager / admin dashboards</td>
+                  <td><span class="badge badge-gate">W7</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>137dd8f</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-id">FE2-06</span></td>
+                  <td>Access-control UX, E2E role flows, visual/regression QA</td>
+                  <td><span class="badge badge-gate">W7–W9</span></td>
+                  <td><span class="badge badge-done">Xong</span> <code>339a9b9</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SECTION 7 -->
+        <section id="sec-invariants" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">7</span>
+              CÁC BẤT BIẾN KỸ THUẬT PHẢI TUÂN THỦ
+            </h2>
+            <span class="badge badge-done">Đã Hiện Thực + Có Test</span>
+          </div>
+
+          <div class="callout callout-success">
+            <span class="callout-icon">✅</span>
+            <div class="callout-content">
+              <strong>Các bất biến dưới đây không còn là quy tắc trên giấy — chúng đã được mã hoá trong code và kiểm chứng bằng test.</strong>
+              Mỗi mục ghi kèm nơi thực thi và bộ test bảo vệ nó.
+            </div>
+          </div>
+
+          <h3>7.1 Rental &amp; Inventory</h3>
+          <ul>
+            <li>Kho vật lý được gán và khóa lịch ngay khi tạo <code>PENDING_PAYMENT</code> hold (C07), dù khách chỉ chọn loại kho.
+              <br><em>✓ <code>RentalService.createHold</code> → <code>assignUnit</code> trong cùng transaction; <code>RentalHoldTests</code>.</em></li>
+            <li>Ngày thuê dùng khoảng nửa mở <code>[start_date, end_date)</code>, <code>end_date</code> không bao gồm ngày kết thúc.
+              <br><em>✓ <code>startDate.plusMonths(rentalMonths)</code> — lịch tháng, không phải 30 ngày cố định (xem D02).</em></li>
+            <li>Tính khả dụng là hàm theo <code>unit_id</code>, ngày bắt đầu/kết thúc, rental state và trạng thái vật lý. <strong>Không suy luận chỉ từ <code>storage_units.status</code>.</strong>
+              <br><em>✓ <code>CatalogService</code> lọc theo lịch thuê <code>ACTIVE/OVERDUE/RETURN_REQUESTED</code> + trạng thái vật lý.</em></li>
+            <li>MySQL không hỗ trợ exclusion constraint. <strong>Mọi thao tác create-hold, cancel, expiry, renew phải đi qua transaction và <code>SELECT ... FOR UPDATE</code> trên đơn vị kho.</strong>
+              <br><em>✓ Per-unit lock trong <code>assignUnit</code>/<code>assertUnitFree</code>; bộ test race-condition <code>bd5b5e4</code> chứng minh chỉ một giao dịch thắng.</em></li>
+            <li>Test đồng thời cùng đơn vị kho/khoảng thời gian: chỉ một giao dịch cấp kho được thành công.
+              <br><em>✓ Đã xác nhận trong <code>CustomerFlowE2ETests</code>: hai khách đặt chồng thời gian nhận kho khác nhau.</em></li>
+            <li>Khi trả kho: chuyển qua kiểm tra; chỉ sau khi pass inspection mới cho thuê lại.
+              <br><em>✓ <code>BE2-06</code> — check-out, inspection, giải phóng kho.</em></li>
+            <li><span class="badge badge-done">Đã sửa</span> Cơ sở <code>INACTIVE</code> không được nhận đặt thuê mới, và hold hết hạn phải ngừng chặn kho.
+              <br><em>✓ Hai lỗi mức cao phát hiện 2026-10-11 đã được vá: kiểm tra trạng thái cơ sở trong <code>createHold</code> và <code>expireStaleHolds()</code> được gọi trong cả <code>availability</code> và <code>assignUnit</code>. Hai test tái hiện lỗi nay đã pass.</em></li>
+          </ul>
+
+          <h3>7.2 VNPay</h3>
+          <ul>
+            <li>Chỉ backend tạo URL thanh toán, quản lý <code>vnp_TmnCode</code> / <code>vnp_HashSecret</code> bằng secrets; frontend không chứa secret.
+              <br><em>✓ Biến môi trường được truyền qua compose; không nằm trong Git.</em></li>
+            <li>Tạo <code>payment_attempt</code> có mã tham chiếu riêng, duy nhất, lưu amount snapshot, invoice/rental id và trạng thái.
+              <br><em>✓ <code>BE3-01</code> + index duy nhất một thanh toán thành công trên hóa đơn (có test DB).</em></li>
+            <li>VNPay quy định amount truyền đi bằng số tiền VND nhân 100.
+              <br><em>✓ Kiểm tra số tiền ở tầng service, có unit test.</em></li>
+            <li><code>ReturnUrl</code> dành cho trình duyệt/hiển thị; <strong>không tự xác nhận giao dịch chỉ vì browser quay lại</strong>. Server IPN mới là kênh chủ đạo, có thêm cơ chế query/reconcile.
+              <br><em>✓ <code>VnPayIpnService</code> là nguồn cập nhật; <code>VnPayEndpointsTests</code> kiểm tra callback.</em></li>
+            <li>Validate checksum, merchant code, order reference, số tiền, trạng thái gateway, idempotency trước khi thay đổi invoice/rental. Duplicate IPN không tạo thêm <code>SUCCESS</code>.
+              <br><em>✓ 7 unit test IPN + ca E2E <code>realHttpCheckoutAndSignedIpnConfirmRentalIdempotently</code> — callback lặp trả <code>RspCode 02</code>.</em></li>
+            <li>Nếu IPN thành công đến sau khi hold đã hết hạn, không tự cấp lại kho đang có thể được giữ bởi người khác. Đưa payment vào trạng thái cần đối soát.
+              <br><em>✓ <code>V008</code> thêm trạng thái <code>invoice_expired</code> và cờ return-requested để xử lý trường hợp này.</em></li>
+            <li>EC2 phải đang chạy, HTTPS callback phải public khi demo thanh toán live với sandbox.
+              <br><em><span class="badge badge-blocked">Chưa có</span> Đây là ràng buộc chưa được thỏa — xem W8.</em></li>
+          </ul>
+
+          <h3>7.3 Data / Authorization</h3>
+          <ul>
+            <li>Giữ SQL PostgreSQL tham chiếu trong <code>sql/</code> để đối chiếu; migration MySQL mới là nguồn chạy runtime.
+              <br><em>✓ <code>V001…V010</code> là nguồn duy nhất; <code>V007</code> đã loại bảng legacy.</em></li>
+            <li>Ghi tiền với kiểu <code>DECIMAL</code>, không dùng float/double; chọn UTC cho instant, zone <code>Asia/Ho_Chi_Minh</code> khi trình bày.
+              <br><em>✓ <code>BigDecimal</code> xuyên suốt invoice/attempt; mốc thời gian lưu UTC (<code>ZoneOffset.UTC</code>).</em></li>
+            <li>Backend kiểm tra role, ownership, assigned facility, trạng thái entity tại mỗi command.
+              <br><em>✓ <code>RbacAndScopeTests</code> + guard trong mọi controller; frontend route guard chỉ là UX.</em></li>
+            <li>Mỗi module cần migration + test + OpenAPI changes trong cùng PR khi thay model.
+              <br><em>✓ Thực tế đã lệch ở lần merge <code>e5b0ab9</code> — phải dành thời gian sửa xung đột schema, nên đây là quy tắc nên giữ.</em></li>
+          </ul>
+        </section>
+
+        <!-- SECTION 8 -->
+        <section id="sec-testing" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">8</span>
+              TEST PLAN / ACCEPTANCE GATES
+            </h2>
+            <span class="badge badge-done">79 BE · 93 FE · 9 E2E</span>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-icon">🧪</span>
+            <div class="callout-content">
+              <strong>Kết quả chạy thật (2026-10-12, commit <code>6819376</code>):</strong>
+              Backend <strong>79/79 pass</strong> (19 suite, MySQL 8.4 qua Testcontainers) · Frontend <strong>93/93 pass</strong> (21 file Vitest) · Playwright role-flow <strong>9/9 pass</strong> · oxlint không có error · <code>tsc --noEmit</code> sạch.
+              <br><em>Đây là trạng thái sau khi vá 2 lỗi mức cao phát hiện ở lần chạy 2026-10-11 (xem <code>docs/api/e2e-test-report-2026-10-11.md</code>).</em>
+            </div>
+          </div>
+
+          <ol>
+            <li><strong>Authentication:</strong> register/login/logout/refresh; session validation; customer không thể đọc rentals của khách khác.
+              <br><span class="badge badge-done">Pass</span> <code>AuthFlowTests</code>, <code>GoogleLoginTests</code> (10 ca)</li>
+            <li><strong>RBAC:</strong> role Facility Staff/Manager ở cơ sở A bị từ chối khi truy cập cơ sở B; Business Manager/Admin theo ma trận quyền.
+              <br><span class="badge badge-done">Pass</span> <code>RbacAndScopeTests</code>, <code>ManagementAdminE2ETests</code></li>
+            <li><strong>Booking:</strong> hai giao dịch cùng kho/cùng khoảng ngày chỉ một thành công; hai khoảng không giao nhau được cho phép nếu trạng thái vật lý hợp lệ.
+              <br><span class="badge badge-done">Pass</span> Ca E2E hai khách đặt chồng thời gian nhận kho khác nhau</li>
+            <li><strong>Hold timeout:</strong> giữ chỗ hết hạn không chắn lịch; xử lý an toàn nếu callback đến trễ.
+              <br><span class="badge badge-done">Đã sửa</span> Ban đầu <em>fail</em>, nay <code>expireStaleHolds()</code> được gọi ở cả <code>availability</code> và <code>assignUnit</code></li>
+            <li><strong>VNPay:</strong> payment success/fail, duplicate IPN, forged checksum, amount mismatch, browser return trước IPN, query reconcile.
+              <br><span class="badge badge-done">Pass</span> 7 unit test IPN + 3 test endpoint + ca HTTP/IPN thật; callback lặp trả <code>RspCode 02</code></li>
+            <li><strong>Handover:</strong> từ <code>RESERVED</code> + đủ điều kiện sang <code>ACTIVE</code>; không check-in khi chưa đáp ứng payment policy.
+              <br><span class="badge badge-done">Pass</span> <code>FacilityOpsE2ETests</code> (4/4)</li>
+            <li><strong>Renewal:</strong> từ chối gia hạn khi xung đột lịch; hóa đơn và gia hạn thay đổi đồng bộ sau khi thanh toán thành công.
+              <br><span class="badge badge-done">Pass</span> Có trong luồng vận hành E2E</li>
+            <li><strong>Return:</strong> ghi condition, inspection, phí cuối kỳ, tiền cọc theo policy; chỉ chuyển kho về available khi kiểm tra xong.
+              <br><span class="badge badge-done">Pass</span> Luồng yêu cầu trả → nhận kho → kiểm tra → giải phóng kho</li>
+            <li><strong>Support:</strong> tạo ticket &rarr; gán nhân viên đúng facility &rarr; thực hiện task &rarr; đóng; log/audit.
+              <br><span class="badge badge-done">Pass</span> <code>SupportTicketServiceTest</code> + E2E luồng hỗ trợ</li>
+            <li><strong>Operations:</strong> Flyway fresh DB; CORS; backup; test staging sau restart EC2.
+              <br><span class="badge badge-wip">Một phần</span> Migration từ DB rỗng + seed: <em>Pass</em>. Docker restart, staging sau restart EC2: <em>chưa chạy</em> — cần hạ tầng W8</li>
+            <li><strong>Cơ sở INACTIVE:</strong> cơ sở ngừng hoạt động phải từ chối đặt thuê mới.
+              <br><span class="badge badge-done">Đã sửa</span> Ban đầu trả HTTP 200, nay kiểm tra trạng thái trong <code>createHold</code></li>
+            <li><strong>Phân quyền FE:</strong> guard 8 route workspace, validation login, chuyển hướng theo role.
+              <br><span class="badge badge-done">Pass</span> <code>role-flows.spec.ts</code> 9/9 trong CI</li>
+          </ol>
+
+          <div class="callout callout-danger">
+            <span class="callout-icon">⚠️</span>
+            <div class="callout-content">
+              <strong>Phạm vi test chưa phủ — không được coi là đã kiểm chứng:</strong>
+              Chưa chạy UI trình duyệt với backend thật, VNPay sandbox bên ngoài, tải cao, cuộc đua nhiều request đồng thời ở mức production, E2E hoàn tiền tới cổng thanh toán, và chưa bao phủ 100% mọi endpoint/nhánh dữ liệu.
+              <br><em>Các ca pass chứng minh logic đúng trên MySQL thật, không chứng minh hệ thống chịu được tải hoặc đã sẵn sàng vận hành.</em>
+            </div>
+          </div>
+
+          <div class="callout callout-warning">
+            <span class="callout-icon">🏆</span>
+            <div class="callout-content">
+              <strong>Release gate — trạng thái hiện tại: <span style="color: var(--danger);">CHƯA ĐẠT</span></strong>
+              Điều kiện còn thiếu: (1) CI xanh trên nhánh chính — <em>đã có cấu hình, cần xác nhận lần chạy thật</em>; (2) staging HTTPS + IPN end-to-end ngoài mạng — <em>thiếu</em>; (3) walkthrough cho đủ 5 role trên môi trường thật — <em>thiếu</em>.
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 9 -->
+        <section id="sec-decisions" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">9</span>
+              DECISION REGISTER — ĐÃ GIẢI QUYẾT TRONG CODE
+            </h2>
+            <span class="badge badge-wip">10 Đã Chốt · 11 Còn Mở</span>
+          </div>
+
+          <div class="callout callout-warning">
+            <span class="callout-icon">⚠️</span>
+            <div class="callout-content">
+              <strong>Cảnh báo quan trọng:</strong>
+              10 quyết định dưới đây đã được <em>hiện thực trong mã nguồn</em> nhưng <strong>chưa được chủ dự án phê duyệt chính thức</strong>. Chúng trở thành mặc định kỹ thuật (de facto), chưa phải quyết định đã ký. Việc phê duyệt vẫn cần làm — xem §12.
+              <br><em>Đặc biệt: ADR-0001 vẫn ghi trạng thái <code>Proposed</code>. Code đã đi trước tài liệu; cần cập nhật hoặc phê duyệt ngược lại.</em>
+            </div>
+          </div>
+
+          <!-- Đã chốt trong code -->
+          <h3><span class="badge badge-done">ĐÃ CHỐT</span> QUYẾT ĐỊNH ĐÃ ĐƯỢC HIỆN THỰC</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 70px;">ID</th>
+                  <th style="width: 26%;">Câu hỏi</th>
+                  <th style="width: 40%;">Quyết định đã áp dụng</th>
+                  <th>Nơi thực thi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-done">D01</span></td>
+                  <td>Khách chọn kho cụ thể hay chỉ chọn loại kho?</td>
+                  <td>Chỉ chọn <code>facilityId</code> + <code>unitTypeId</code>; backend tự gán kho trong transaction</td>
+                  <td><code>HoldRequest</code>, <code>RentalService.createHold</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D02</span></td>
+                  <td>Kỳ thuê/giá: tháng lịch, 30 ngày, hay theo ngày?</td>
+                  <td>Theo <strong>tháng lịch</strong>, khoảng nửa mở <code>[start, end)</code>, tối thiểu 1 tháng. Quy tắc ngày 29–31 được xử lý tự nhiên bởi <code>plusMonths</code></td>
+                  <td><code>startDate.plusMonths(rentalMonths)</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D03</span></td>
+                  <td>Cọc + tiền thuê: chung hay tách invoice?</td>
+                  <td><strong>Một hóa đơn tổng hợp</strong> gồm tiền thuê + tiền cọc, thanh toán một lần</td>
+                  <td><code>Invoice.create(..., rent.add(deposit))</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D04</span></td>
+                  <td>Quy tắc cọc, hủy, quá hạn, hoàn cọc?</td>
+                  <td>Business Manager cấu hình qua <code>/management/policy</code> + <code>/management/fee-types</code>; hoàn tiền là <strong>quy trình thủ công có audit</strong>, không giả lập thành công tự động</td>
+                  <td><code>BE3-05</code>, <code>BusinessPolicyService</code>, <code>RefundService</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D05</span></td>
+                  <td>Gia hạn tự động hay cần duyệt?</td>
+                  <td>Khách tự yêu cầu gia hạn, có kiểm tra lịch trùng; hóa đơn gia hạn phát sinh, rental chuyển <code>ACTIVE</code> sau khi thanh toán</td>
+                  <td><code>RentalService.requestRenewal</code>, bảng <code>rental_renewals</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D06</span></td>
+                  <td>Cần hợp đồng pháp lý/PDF hay bản ghi thuê?</td>
+                  <td><strong>Bản ghi thuê + snapshot điều khoản</strong>, không có PDF/chữ ký số</td>
+                  <td>Snapshot giá tại thời điểm tạo hold (<code>pricePerMonth</code>)</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D07</span></td>
+                  <td>Nhân viên thuộc một hay nhiều cơ sở?</td>
+                  <td><strong>Một facility assignment / người</strong>; cơ sở lưu trên user và được ép trong mọi lệnh</td>
+                  <td><code>RbacAndScopeTests</code>, guard facility scope</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D09</span></td>
+                  <td>Thời gian giữ chỗ chưa thanh toán?</td>
+                  <td><strong>15 phút</strong>; timeout tự động giải phóng kho qua <code>expireStaleHolds()</code></td>
+                  <td><code>HOLD_WINDOW</code>, <code>expirePendingInvoices</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D11</span></td>
+                  <td>Giá/loại kho toàn hệ thống hay theo cơ sở?</td>
+                  <td>UnitType dùng chung; <strong>giá gắn trên từng storage unit</strong>, chụp snapshot khi thuê</td>
+                  <td><code>StorageUnit.monthlyPrice</code>, <code>Rental.pricePerMonth</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D12</span></td>
+                  <td>Auth: email/password hay Google, OTP, quên mật khẩu?</td>
+                  <td><strong>Email/password + Google OAuth2</strong> — <em>đã mở rộng so với kế hoạch gốc</em>. Token ứng dụng phát trong HttpOnly cookie + CSRF cho trình duyệt; bearer API cũ vẫn tương thích. Chưa có quên mật khẩu</td>
+                  <td><code>351ab67</code>, <code>17f1be1</code>, <code>V009/V010</code>, <code>docs/social-login.md</code></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-done">D13</span></td>
+                  <td>Vai trò nào được thu phí, hoàn tiền, xem doanh thu?</td>
+                  <td>Ma trận quyền 5 vai trò đã hiện thực và kiểm thử bằng <code>RbacAndScopeTests</code> + E2E admin</td>
+                  <td><code>shared/security</code>, <code>role-route rules</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Còn mở -->
+
+          <!-- P0 -->
+          <h3><span class="badge badge-p0">P0</span> VẪN CHƯA CHỐT — CHẶN BÀN GIAO</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 70px;">ID</th>
+                  <th style="width: 34%;">Câu hỏi cần chủ dự án xác nhận</th>
+                  <th style="width: 38%;">Trạng thái / giả định đang dùng</th>
+                  <th>Tác động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-p0">D08</span></td>
+                  <td>VNPay sandbox đã có <code>TMN_CODE</code>, <code>HASH_SECRET</code> và merchant quyền hoàn tiền chưa?</td>
+                  <td><span class="badge badge-wip">Chưa xác nhận</span> Code đã sẵn sàng chạy sandbox; <strong>refund là thủ công có audit</strong> vì chưa được cấp API hoàn tiền</td>
+                  <td>Chặn demo thanh toán live</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p0">D10</span></td>
+                  <td>Kho chưa kiểm tra sau return, hỏng, maintenance có thể bán lịch tương lai không?</td>
+                  <td><span class="badge badge-done">Đã xử lý</span> Chỉ cho thuê lại sau khi inspection đạt; trạng thái kho được hợp nhất sau <code>77f9789</code></td>
+                  <td>Đã đóng về mặt kỹ thuật, cần xác nhận về mặt nghiệp vụ</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p0">D14</span></td>
+                  <td>MySQL/OS/EC2 instance/DNS và staging domain?</td>
+                  <td><span class="badge badge-blocked">Chưa có</span> Đã có compose + backup script; <code>infra/cloudflare/</code> còn trống; nhánh <code>deploy/aws-ec2-cloudflare</code> chưa merge</td>
+                  <td><strong>Chặn W8–W10</strong></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p0">D21</span></td>
+                  <td>Deadline bảo vệ, ngày freeze feature, ngày demo chính thức?</td>
+                  <td><span class="badge badge-blocked">Chưa có</span> Kế hoạch dùng W1–W10 tương đối, chưa gắn ngày tuyệt đối</td>
+                  <td>Chặn UAT và bàn giao</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- P1 -->
+          <h3><span class="badge badge-p1">P1</span> CẦN CHỐT, CHƯA ẢNH HƯỞNG CODE</h3>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 70px;">ID</th>
+                  <th style="width: 35%;">Câu hỏi</th>
+                  <th style="width: 38%;">Trạng thái / giả định đang dùng</th>
+                  <th>Mức ưu tiên</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-p1">D15</span></td>
+                  <td>Có yêu cầu notification email/SMS, lịch hẹn, báo cáo export, ảnh tình trạng kho không?</td>
+                  <td>Chưa triển khai; báo cáo trả số liệu qua API, chưa có export</td>
+                  <td>Thấp — chỉ thêm nếu SRS yêu cầu</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p1">D16</span></td>
+                  <td>VNPay cần demo sandbox hay giao dịch thật khi bảo vệ?</td>
+                  <td><span class="badge badge-wip">Chờ trả lời</span> Toàn bộ code và test hiện chạy trên <strong>sandbox</strong></td>
+                  <td>Cao nếu giảng viên yêu cầu giao dịch thật</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p1">D17</span></td>
+                  <td>Các ảnh, fonts, dependency, license trong Stitch có thể copy vào repo không?</td>
+                  <td>Đã audit manifest ở <code>docs/architecture/fe1-01-stitch-audit.md</code> và chuyển sang design token TypeScript thay vì sao chép asset</td>
+                  <td>Đã xử lý ở mức kỹ thuật</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p1">D18</span></td>
+                  <td>Demo cần duy trì EC2 24/7 hay cho phép bật/tắt?</td>
+                  <td>Chưa có EC2 nên chưa áp dụng; khi có sẽ cần chiến lược đối soát khi restart</td>
+                  <td>Phụ thuộc D14</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p1">D19</span></td>
+                  <td>Hóa đơn VAT, refund tự động, hợp đồng PDF, image storage, notification có bắt buộc không?</td>
+                  <td>Đã loại khỏi scope; refund tự động <em>không</em> làm (thủ công có audit)</td>
+                  <td>Thấp</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-p1">D20</span></td>
+                  <td>Dashboard report nào cần số liệu thực, phân quyền xem dữ liệu, bộ lọc, export?</td>
+                  <td>Đã có báo cáo theo kỳ/cơ sở qua <code>/management/reports</code> và <code>/revenue</code>; chưa có export</td>
+                  <td>Thấp — xác nhận để tránh làm lại</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-success">
+            <span class="callout-icon">📝</span>
+            <div class="callout-content">
+              <strong>Việc cần làm cho Decision Register:</strong>
+              Chuyển 10 quyết định đã hiện thực ở bảng trên sang trạng thái <code>ACCEPTED</code> kèm ngày phê duyệt, và cập nhật <code>ADR-0001</code> từ <code>Proposed</code> sang <code>Accepted</code>. Hiện tại tài liệu và code đang lệch nhau — đây là rủi ro lớn nhất còn lại của dự án.
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 10 -->
+        <section id="sec-team-management" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">10</span>
+              CƠ CHẾ QUẢN LÝ NHÓM
+            </h2>
+            <span class="badge badge-done">Đang Áp Dụng</span>
+          </div>
+
+          <ul>
+            <li>Một board có cột <code>Backlog &rarr; Ready &rarr; In Progress &rarr; PR Review &rarr; QA &rarr; Done</code>.</li>
+            <li>Mỗi task: ID, owner, mục tiêu, API/schema dependency, acceptance criteria, test evidence, estimate, PR link.
+              <br><em>✓ Đã thực hành: mỗi commit đều mang mã hạng mục <code>BE1-05</code>, <code>FE2-03</code>… theo đúng quy ước này.</em></li>
+            <li>Họp đồng bộ ngắn 2–3 lần/tuần, báo blocker trong ngày; demo tích hợp cuối tuần.</li>
+            <li>Không tạo PR xung đột trên cùng module mà không thông báo owner. Schema changes phải thông báo FE/BE consumers và version API.
+              <br><em>⚠ Đã vi phạm một lần và tốn công sửa: <code>e5b0ab9</code> phải hòa giải xung đột schema BE1 ↔ BE3.</em></li>
+            <li>Các migration đã merge không được sửa lịch sử; tạo migration mới để thay đổi.
+              <br><em>✓ Đã làm: <code>V004</code>, <code>V005</code>, <code>V007</code>–<code>V010</code> đều là migration bổ sung, không sửa file cũ.</em></li>
+            <li>Tạo staging sớm trước tuần W8 nếu có thể; môi trường local dùng Docker MySQL cùng version staging.
+              <br><em>✓ Local đã dùng MySQL 8.4 qua Docker (<code>compose.local.yml</code>) khớp test và CI. ⚠ Staging chưa tạo.</em></li>
+            <li>Backup trước thay đổi nguy hiểm, không commit <code>.env</code>, VNPay secret, AWS credentials, key hay artifacts.
+              <br><em>✓ Có <code>infra/ec2/backup-mysql.sh</code> và <code>.env.example</code>; repo không chứa secret. ⚠ Chưa diễn tập restore.</em></li>
+            <li><strong>W1:</strong> BE1 lập registry ADR; mỗi quyết định P0 được ghi <code>ACCEPTED</code> với chủ dự án/ngày phê duyệt.
+              <br><em><span class="badge badge-blocked">Chưa hoàn thành</span> ADR-0001 vẫn <code>Proposed</code> và phần lớn P0 chốt trong code chưa được đánh dấu <code>ACCEPTED</code>.</em></li>
+          </ul>
+        </section>
+
+        <!-- SECTION 11 -->
+        <section id="sec-precode-gate" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">11</span>
+              GATE TRƯỚC KHI VIẾT CODE — ĐÃ MỞ
+            </h2>
+            <span class="badge badge-done">G0/G1 Đã Vượt Qua</span>
+          </div>
+
+          <div class="callout callout-success">
+            <span class="callout-icon">🔓</span>
+            <div class="callout-content">
+              <strong>Cổng G0 đã mở.</strong>
+              Nhóm đã triển khai đồng thời mà không dừng chờ phê duyệt — đây là quyết định đã được thực tế áp dụng (các nhánh chạy song song, merge ngày 2026-10-10). Các mục dưới đây được ghi lại theo <em>thực tế</em>, không phải theo kế hoạch ban đầu.
+            </div>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-icon">🔍</span>
+            <div class="callout-content">
+              <strong>Cho phép nghiên cứu/audit:</strong>
+              Đọc và inventory Stitch, đánh giá schema, tạo mô tả nghiệp vụ, phát triển mock thiết kế không làm thay đổi project runtime.
+              <br><em>✓ Hoàn thành: <code>7a11f27</code> (FE1-01), <code>d7f587b</code> (FE2-01).</em>
+            </div>
+          </div>
+
+          <div class="callout callout-danger">
+            <span class="callout-icon">⛔</span>
+            <div class="callout-content">
+              <strong>Vẫn không được phép:</strong>
+              Triển khai VNPay production; tạo resource AWS tốn tiền khi chưa được phê duyệt; commit secret; deploy staging khi chưa có phê duyệt D14.
+              <br><em>Không còn áp dụng: mục "không tự động xóa/ghi đè frontend/backend/sql" và "không tạo migration" — đã thực hiện qua nhánh riêng và PR có review.</em>
+            </div>
+          </div>
+
+          <ul>
+            <li><strong>G0 hoàn thành khi:</strong> D01–D07 đã trả lời, D13 permission draft được duyệt, tech stack baseline được xác nhận và API/ERD v1 khớp nhau.
+              <br><em><span class="badge badge-wip">Đạt về kỹ thuật</span> Tất cả đã có trong schema và code. <span class="badge badge-blocked">Thiếu về hành chính</span> Chưa được chủ dự án ký xác nhận.</em></li>
+            <li><strong>G1 hoàn thành khi:</strong> sandbox VNPay credentials tồn tại và callback staging công khai có thể kiểm thử (hoặc ghi nhận blocked nếu credentials chưa sẵn).
+              <br><em><span class="badge badge-blocked">Chưa đạt</span> Code IPN sẵn sàng và đã test bằng chữ ký HMAC giả lập, nhưng chưa có credentials thật và chưa có staging HTTPS để VNPay gọi ngược.</em></li>
+            <li><strong>G2 hoàn thành khi:</strong> có ngày release/demo và giải pháp cho các quyết định P1 đang ảnh hưởng sprint.
+              <br><em><span class="badge badge-blocked">Chưa đạt</span> Phụ thuộc D14 và D21.</em></li>
+          </ul>
+        </section>
+
+        <!-- SECTION 12 -->
+        <section id="sec-next-steps" class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="section-number">12</span>
+              VIỆC TIẾP THEO
+            </h2>
+            <span class="badge badge-p0">4 Việc Chặn Bàn Giao</span>
+          </div>
+
+          <div class="callout callout-danger">
+            <span class="callout-icon">🚨</span>
+            <div class="callout-content">
+              <strong>Bốn việc đang chặn bàn giao, theo thứ tự ưu tiên:</strong>
+              Toàn bộ 33 hạng mục đã xong. Phần còn lại <em>không phải viết thêm tính năng</em> mà là khép lại hạ tầng và giấy tờ.
+            </div>
+          </div>
+
+          <ol>
+            <li><strong>Chốt D14 — hạ tầng deploy (chặn nhiều nhất).</strong>
+              Dựng EC2 + Docker Compose + reverse proxy HTTPS cho backend, MySQL trên EBS, Cloudflare Pages cho frontend. Hiện <code>infra/docker/</code> và <code>infra/ec2/backup-mysql.sh</code> đã sẵn sàng; <code>infra/cloudflare/</code> còn trống và nhánh <code>deploy/aws-ec2-cloudflare</code> chưa merge.
+              <br><em>→ <code>BE1</code> chủ trì, cần phê duyệt chi phí AWS.</em></li>
+            <li><strong>Xác nhận D08/D16 — VNPay sandbox.</strong>
+              Lấy <code>TMN_CODE</code> + <code>HASH_SECRET</code>, đăng ký callback URL HTTPS trên sandbox, chạy thử một giao dịch thật end-to-end (URL → sandbox → IPN → rental <code>RESERVED</code>).
+              <br><em>→ <code>BE3</code> + <code>BE2</code>. Không có bước này thì không demo được thanh toán.</em></li>
+            <li><strong>Đóng Decision Register.</strong>
+              Chủ dự án phê duyệt 10 quyết định đã hiện thực (D01–D07, D09, D11–D13), chuyển chúng sang <code>ACCEPTED</code> kèm ngày; cập nhật <code>ADR-0001</code> từ <code>Proposed</code> sang <code>Accepted</code>.
+              <br><em>→ Chủ dự án + <code>BE1</code>. Đây là rủi ro lớn nhất hiện tại: code và tài liệu đang lệch nhau.</em></li>
+            <li><strong>W9–W10 — hardening và UAT.</strong>
+              Diễn tập backup/restore thật, test tải và chạy đua đồng thời, kiểm tra sau restart EC2, walkthrough đủ 5 role trên staging, viết tài liệu vận hành và user guide.
+              <br><em>→ Cả 5 người. Phụ thuộc việc 1.</em></li>
+          </ol>
+
+          <div class="callout callout-warning">
+            <span class="callout-icon">💡</span>
+            <div class="callout-content">
+              <strong>Gợi ý thực tế:</strong>
+              Việc 3 (chốt tài liệu) không tốn nhiều giờ code và làm giảm rủi ro bị hỏi "quyết định này ai chốt, ký ở đâu" khi bảo vệ. Nên làm <em>trước</em> việc 1 vì nó độc lập với hạ tầng.
+            </div>
+          </div>
+        </section>
+
+        <!-- Document Footer -->
+        <footer class="doc-footer">
+          <div>Tài liệu phát triển dự án SWP391 — Phiên bản V2 (đã cập nhật theo lịch sử Git)</div>
+          <div style="margin-top: 6px;">Baseline: <code>db73845</code> (2026-10-09) · Đối chiếu: <code>6819376</code> trên <code>main</code> (2026-10-12) · Lập 2026-10-10 · Cập nhật 2026-10-12</div>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', targetTheme);
+      localStorage.setItem('swp391-theme', targetTheme);
+    }
+
+    // Initialize saved theme or system preference
+    (function initTheme() {
+      const savedTheme = localStorage.getItem('swp391-theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+
+    // Sidebar toggle for mobile
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    // Close sidebar when clicking nav item on mobile
+    document.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 992) {
+          document.getElementById('sidebar').classList.remove('open');
+        }
+      });
+    });
+
+    // Active link highlighting on scroll
+    const sections = document.querySelectorAll('section');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 120) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === `#${current}`) {
+          item.classList.add('active');
+        }
+      });
+    });
+
+    // Content Search / Filter
+    function filterContent() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.section-card');
+
+      if (!query) {
+        cards.forEach(card => card.style.display = '');
+        return;
+      }
+
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(query)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Ctrl + K shortcut to focus search
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('searchInput');
+        searchInput.focus();
+        searchInput.select();
+      }
+    });
+  </script>
+</body>
+</html>
