@@ -14,7 +14,14 @@ export const usePaymentAttempt = (reference: string) =>
     retry: false,
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      if (status === 'SUCCESS' || status === 'FAILED' || status === 'RECONCILING') return false;
+      if (
+        status === 'SUCCESS' ||
+        status === 'FAILED' ||
+        status === 'REFUNDED' ||
+        status === 'RECONCILING'
+      ) {
+        return false;
+      }
       return query.state.dataUpdateCount > 10 ? false : 3000;
     },
   });

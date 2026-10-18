@@ -58,6 +58,9 @@ public class VnPayIpnService {
     }
 
     private static boolean amountMatches(String vnpAmount, PaymentAttempt attempt) {
+        if (!StringUtils.hasText(vnpAmount) || attempt.getAmount() == null) {
+            return false;
+        }
         try {
             return new BigInteger(vnpAmount)
                     .equals(attempt.getAmount().movePointRight(2).toBigIntegerExact());

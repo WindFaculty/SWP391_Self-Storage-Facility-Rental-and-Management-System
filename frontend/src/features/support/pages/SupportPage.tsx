@@ -9,15 +9,18 @@ import { Select } from '../../../components/ui/Select';
 import { SkeletonList } from '../../../components/ui/Skeleton';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
 import { formatDateTime } from '../../../lib/format';
-import { TICKET_PRIORITY_LABELS, TICKET_STATUS_DISPLAY } from '../../../lib/statusMappings';
+import { TICKET_CATEGORY_LABELS, TICKET_STATUS_DISPLAY } from '../../../lib/statusMappings';
 import { useMyRentals } from '../../rental/hooks/useRentals';
 import { useCreateTicket, useMyTickets } from '../hooks/useSupport';
-import type { TicketPriority } from '../types';
+import type { SupportTicketCategory } from '../types';
 
-const PRIORITY_OPTIONS: { value: TicketPriority; label: string }[] = [
-  { value: 'LOW', label: 'Thấp' },
-  { value: 'MEDIUM', label: 'Trung bình' },
-  { value: 'HIGH', label: 'Cao' },
+const CATEGORY_OPTIONS: { value: SupportTicketCategory; label: string }[] = [
+  { value: 'UNIT', label: TICKET_CATEGORY_LABELS.UNIT },
+  { value: 'LOCK', label: TICKET_CATEGORY_LABELS.LOCK },
+  { value: 'ACCESS', label: TICKET_CATEGORY_LABELS.ACCESS },
+  { value: 'PAYMENT', label: TICKET_CATEGORY_LABELS.PAYMENT },
+  { value: 'ITEMS', label: TICKET_CATEGORY_LABELS.ITEMS },
+  { value: 'OTHER', label: TICKET_CATEGORY_LABELS.OTHER },
 ];
 
 export const SupportPage = () => {
@@ -26,9 +29,9 @@ export const SupportPage = () => {
   const createTicket = useCreateTicket();
   const [showForm, setShowForm] = useState(false);
   const [rentalId, setRentalId] = useState('');
-  const [subject, setSubject] = useState('');
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<TicketPriority>('MEDIUM');
+  const [category, setCategory] = useState<SupportTicketCategory>('OTHER');
   const [error, setError] = useState<string | null>(null);
 
   const rentals = rentalsQuery.data ?? [];
@@ -37,7 +40,7 @@ export const SupportPage = () => {
   );
 
   const rentalOptions = [
-    { value: '', label: 'Không gắn với đơn thuê cụ thể' },
+    { value: '', label: 'Chọn đơn thuê' },
     ...rentals.map((rental) => ({
       value: rental.id,
       label: `${rental.facilityName ?? 'Cơ sở'} · ${rental.unitCode ?? rental.unitTypeName ?? 'Kho'}`,
@@ -46,15 +49,31 @@ export const SupportPage = () => {
 
   const resetForm = () => {
     setRentalId('');
-    setSubject('');
+    setTitle('');
     setDescription('');
-    setPriority('MEDIUM');
+    setCategory('OTHER');
     setError(null);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!subject.trim()) {
+    if (!rentalId) {
+      setError('Vui lòng chọn đơn thuê liên quan đến yêu cầu.');
+      return;
+    }
+    const selectedRental = rentals.find((rental) => rental.id === rentalId);
+    if (!selectedRental) {
+      setError('Không tìm thấy đơn thuê đã chọn. Vui lòng tải lại trang.');
+      return;
+    }
+    const facilityId = Number(selectedRental.facilityId);
+    const selectedRentalId = Number(selectedRental.id);
+    if (facilityId <= 0 || selectedRentalId <= 0 ||
+        !Number.isSafeInteger(facilityId) || !Number.isSafeInteger(selectedRentalId)) {
+      setError('Thông tin cơ sở hoặc đơn thuê không hợp lệ. Vui lòng tải lại trang.');
+      return;
+    }
+    if (!title.trim()) {
       setError('Vui lòng nhập chủ đề yêu cầu.');
       return;
     }
@@ -66,10 +85,11 @@ export const SupportPage = () => {
     setError(null);
     createTicket.mutate(
       {
-        subject: subject.trim(),
+        facilityId,
+        rentalId: selectedRentalId,
+        category,
+        title: title.trim(),
         description: description.trim(),
-        rentalId: rentalId || undefined,
-        priority,
       },
       {
         onSuccess: () => {
@@ -118,17 +138,19 @@ export const SupportPage = () => {
           ) : null}
 
           <Select
-            label="Đơn thuê liên quan (không bắt buộc)"
+            label="Đơn thuê liên quan"
             options={rentalOptions}
             value={rentalId}
             onChange={(event) => setRentalId(event.target.value)}
+            required
           />
 
           <Input
             label="Chủ đề"
-            value={subject}
-            onChange={(event) => setSubject(event.target.value)}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
             placeholder="Ví dụ: Cửa kho khó mở"
+            maxLength={200}
             required
           />
 
@@ -146,12 +168,13 @@ export const SupportPage = () => {
             />
           </div>
 
-          <div className="max-w-[240px]">
+          <div className="max-w-[320px]">
             <Select
-              label="Mức độ ưu tiên"
-              options={PRIORITY_OPTIONS}
-              value={priority}
-              onChange={(event) => setPriority(event.target.value as TicketPriority)}
+              label="Loại yêu cầu"
+              options={CATEGORY_OPTIONS}
+              value={category}
+              onChange={(event) => setCategory(event.target.value as SupportTicketCategory)}
+              required
             />
           </div>
 
@@ -191,20 +214,22 @@ export const SupportPage = () => {
           <div className="flex flex-col gap-4">
             {tickets.map((ticket) => {
               const status = TICKET_STATUS_DISPLAY[ticket.status];
-              const relatedRental = rentals.find((rental) => rental.id === ticket.rentalId);
+              const relatedRental = rentals.find(
+                (rental) => ticket.rentalId != null && String(rental.id) === String(ticket.rentalId),
+              );
               return (
                 <article
                   key={ticket.id}
                   className="flex flex-col gap-2 rounded-lg border border-border-hairline bg-surface p-5"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <h2 className="text-subsection text-text-main">{ticket.subject}</h2>
+                    <h2 className="text-subsection text-text-main">{ticket.title}</h2>
                     <StatusLabel label={status.label} tone={status.tone} />
                   </div>
                   <p className="text-table text-text-muted">{ticket.description}</p>
                   <div className="flex flex-wrap gap-x-6 gap-y-1 text-badge text-text-muted">
                     <span>Gửi lúc: {formatDateTime(ticket.createdAt)}</span>
-                    <span>Ưu tiên: {TICKET_PRIORITY_LABELS[ticket.priority]}</span>
+                    <span>Loại: {TICKET_CATEGORY_LABELS[ticket.category]}</span>
                     {relatedRental ? (
                       <span>
                         Đơn thuê: {relatedRental.facilityName ?? 'Cơ sở'} ·{' '}

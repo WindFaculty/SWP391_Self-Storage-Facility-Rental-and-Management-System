@@ -28,8 +28,8 @@ export const FacilityDetailPage = () => {
 
   const countsByType = new Map<string, number>();
   for (const row of availabilityQuery.data ?? []) {
-    if (row.facilityId === facilityId) {
-      countsByType.set(row.unitTypeId, row.availableCount);
+    if (String(row.facilityId) === String(facilityId)) {
+      countsByType.set(String(row.unitTypeId), row.availableCount);
     }
   }
 
@@ -147,7 +147,7 @@ export const FacilityDetailPage = () => {
                 key={unitType.id}
                 unitType={unitType}
                 availableCount={
-                  availabilityQuery.isSuccess ? (countsByType.get(unitType.id) ?? 0) : undefined
+                  availabilityQuery.isSuccess ? (countsByType.get(String(unitType.id)) ?? 0) : undefined
                 }
                 onSelect={() =>
                   navigate(

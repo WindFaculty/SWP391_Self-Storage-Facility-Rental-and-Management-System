@@ -6,10 +6,11 @@ import com.storage.payment.entity.Invoice;
 import com.storage.payment.entity.PaymentAttempt;
 import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
-import com.storage.rental.entity.Rental;
-import com.storage.rental.repository.RentalRepository;
+import com.storage.shared.exception.BusinessException;
 import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.exception.NotFoundException;
+import com.storage.rental.entity.Rental;
+import com.storage.rental.repository.RentalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +78,9 @@ public class CustomerBillingService {
     @Transactional
     public String createVnPayUrl(Long customerId, Long invoiceId,
                                  jakarta.servlet.http.HttpServletRequest httpRequest) {
+        if (!vnPayService.isConfigured()) {
+            throw new BusinessException(ErrorCode.PAYMENT_GATEWAY_UNAVAILABLE);
+        }
         Invoice invoice = invoices.findById(invoiceId)
                 .filter(candidate -> ownsRental(customerId, candidate.getRentalId()))
                 .orElseThrow(() -> new NotFoundException(ErrorCode.INVOICE_NOT_FOUND));

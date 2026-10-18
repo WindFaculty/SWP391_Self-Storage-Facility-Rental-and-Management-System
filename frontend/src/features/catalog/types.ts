@@ -1,7 +1,7 @@
 export type FacilityStatus = 'ACTIVE' | 'INACTIVE';
 
 export interface Facility {
-  id: string;
+  id: string | number;
   name: string;
   address: string | null;
   phone: string | null;
@@ -10,7 +10,7 @@ export interface Facility {
 }
 
 export interface UnitType {
-  id: string;
+  id: string | number;
   name: string;
   sizeM2: number;
   description: string | null;
@@ -19,8 +19,8 @@ export interface UnitType {
 }
 
 export interface FacilityUnitTypeAvailability {
-  facilityId: string;
-  unitTypeId: string;
+  facilityId: string | number;
+  unitTypeId: string | number;
   availableCount: number;
   totalCount: number;
 }

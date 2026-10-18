@@ -2,12 +2,16 @@ package com.storage.payment.controller;
 
 import com.storage.payment.service.VnPayIpnService;
 import com.storage.payment.service.VnPayService;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/payments/vnpay")
@@ -15,10 +19,14 @@ public class VnPayController {
 
     private final VnPayIpnService vnPayIpnService;
     private final VnPayService vnPayService;
+    private final String frontendReturnUrl;
 
-    public VnPayController(VnPayIpnService vnPayIpnService, VnPayService vnPayService) {
+    public VnPayController(VnPayIpnService vnPayIpnService, VnPayService vnPayService,
+                           @Value("${vnpay.frontend-return-url:http://localhost:5173/payment/result}")
+                           String frontendReturnUrl) {
         this.vnPayIpnService = vnPayIpnService;
         this.vnPayService = vnPayService;
+        this.frontendReturnUrl = frontendReturnUrl;
     }
 
     @GetMapping("/ipn")
@@ -27,19 +35,29 @@ public class VnPayController {
     }
 
     @GetMapping("/return")
-    public Map<String, String> returnUrl(@RequestParam Map<String, String> params) {
-        Map<String, String> result = new LinkedHashMap<>();
-        result.put("txnRef", value(params, "vnp_TxnRef"));
-        result.put("responseCode", value(params, "vnp_ResponseCode"));
-        result.put("transactionStatus", value(params, "vnp_TransactionStatus"));
-        result.put("amount", value(params, "vnp_Amount"));
-        result.put("payDate", value(params, "vnp_PayDate"));
-        result.put("checksumVerified", String.valueOf(vnPayService.verifyChecksum(params)));
-        return result;
-    }
+    public ResponseEntity<Void> returnUrl(@RequestParam Map<String, String> params) {
+        boolean verified = vnPayService.verifyChecksum(params);
+        UriComponentsBuilder redirect = UriComponentsBuilder.fromUriString(frontendReturnUrl);
 
-    private static String value(Map<String, String> params, String key) {
-        String value = params.get(key);
-        return value == null ? "" : value;
+        String txnRef = params.get("vnp_TxnRef");
+        if (StringUtils.hasText(txnRef)) {
+            redirect.queryParam("vnp_TxnRef", txnRef);
+        }
+        if (verified) {
+            String responseCode = params.get("vnp_ResponseCode");
+            String transactionStatus = params.get("vnp_TransactionStatus");
+            if (StringUtils.hasText(responseCode)) {
+                redirect.queryParam("vnp_ResponseCode", responseCode);
+            }
+            if (StringUtils.hasText(transactionStatus)) {
+                redirect.queryParam("vnp_TransactionStatus", transactionStatus);
+            }
+        } else {
+            redirect.queryParam("returnVerified", false);
+        }
+
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(redirect.build().encode().toUri())
+                .build();
     }
 }

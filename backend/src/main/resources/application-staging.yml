@@ -18,6 +18,7 @@ vnpay:
   hash-secret: ${VNPAY_HASH_SECRET}
   pay-url: ${VNPAY_PAY_URL}
   return-url: ${VNPAY_RETURN_URL}
+  frontend-return-url: ${VNPAY_FRONTEND_RETURN_URL}
 logging:
   level:
     com.storage: INFO

@@ -1,21 +1,25 @@
 export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
 
-export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type SupportTicketCategory = 'UNIT' | 'LOCK' | 'ACCESS' | 'PAYMENT' | 'ITEMS' | 'OTHER';
 
 export interface SupportTicket {
-  id: string;
-  subject: string;
+  id: number | string;
+  customerId: number | string;
+  facilityId: number | string;
+  rentalId: number | string | null;
+  assignedStaffId: number | string | null;
+  category: SupportTicketCategory;
+  title: string;
   description: string;
   status: TicketStatus;
-  priority: TicketPriority;
-  rentalId?: string | null;
   createdAt: string;
-  updatedAt?: string | null;
+  resolvedAt: string | null;
 }
 
 export interface CreateTicketRequest {
-  subject: string;
+  facilityId: number;
+  rentalId: number;
+  category: SupportTicketCategory;
+  title: string;
   description: string;
-  rentalId?: string;
-  priority?: TicketPriority;
 }

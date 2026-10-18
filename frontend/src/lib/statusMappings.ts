@@ -1,7 +1,7 @@
 import type { StatusTone } from '../components/ui/StatusLabel';
 import type { InvoiceStatus, InvoiceType, PaymentAttemptStatus } from '../features/billing/types';
 import type { RentalStatus } from '../features/rental/types';
-import type { TicketPriority, TicketStatus } from '../features/support/types';
+import type { SupportTicketCategory, TicketStatus } from '../features/support/types';
 
 export interface StatusDisplay {
   label: string;
@@ -37,6 +37,7 @@ export const PAYMENT_ATTEMPT_STATUS_DISPLAY: Record<PaymentAttemptStatus, Status
   PENDING: { label: 'Đang chờ xác nhận', tone: 'info' },
   SUCCESS: { label: 'Đã xác nhận thanh toán', tone: 'success' },
   FAILED: { label: 'Thanh toán thất bại', tone: 'danger' },
+  REFUNDED: { label: 'Đã hoàn tiền', tone: 'neutral' },
   RECONCILING: { label: 'Cần đối soát', tone: 'warning' },
 };
 
@@ -47,8 +48,11 @@ export const TICKET_STATUS_DISPLAY: Record<TicketStatus, StatusDisplay> = {
   CLOSED: { label: 'Đã đóng', tone: 'neutral' },
 };
 
-export const TICKET_PRIORITY_LABELS: Record<TicketPriority, string> = {
-  LOW: 'Thấp',
-  MEDIUM: 'Trung bình',
-  HIGH: 'Cao',
+export const TICKET_CATEGORY_LABELS: Record<SupportTicketCategory, string> = {
+  UNIT: 'Kho lưu trữ',
+  LOCK: 'Khóa',
+  ACCESS: 'Ra vào',
+  PAYMENT: 'Thanh toán',
+  ITEMS: 'Hàng hóa',
+  OTHER: 'Khác',
 };

@@ -29,6 +29,10 @@ public enum ErrorCode {
 
     EMAIL_ALREADY_EXISTS("EMAIL_ALREADY_EXISTS", "Email đã tồn tại trong hệ thống", HttpStatus.CONFLICT),
 
+    PAYMENT_GATEWAY_UNAVAILABLE(
+            "PAYMENT_GATEWAY_UNAVAILABLE", "Cổng thanh toán VNPay chưa được cấu hình đầy đủ",
+            HttpStatus.SERVICE_UNAVAILABLE),
+
     INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "Lỗi xử lý máy chủ nội bộ", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;

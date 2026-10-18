@@ -65,9 +65,10 @@ export const FacilityListPage = () => {
 
   const availableByFacility = new Map<string, number>();
   for (const row of availabilityRows) {
+    const key = String(row.facilityId);
     availableByFacility.set(
-      row.facilityId,
-      (availableByFacility.get(row.facilityId) ?? 0) + row.availableCount,
+      key,
+      (availableByFacility.get(key) ?? 0) + row.availableCount,
     );
   }
 
@@ -75,12 +76,12 @@ export const FacilityListPage = () => {
     if (filters.q && !facility.name.toLowerCase().includes(filters.q.trim().toLowerCase())) {
       return false;
     }
-    if (filters.facilityId && facility.id !== filters.facilityId) return false;
+    if (filters.facilityId && String(facility.id) !== String(filters.facilityId)) return false;
     if (filters.unitTypeId) {
       return availabilityRows.some(
         (row) =>
-          row.facilityId === facility.id &&
-          row.unitTypeId === filters.unitTypeId &&
+          String(row.facilityId) === String(facility.id) &&
+          String(row.unitTypeId) === String(filters.unitTypeId) &&
           row.availableCount > 0,
       );
     }
@@ -169,7 +170,7 @@ export const FacilityListPage = () => {
                 facility={facility}
                 availableCount={
                   availabilityQuery.isSuccess
-                    ? (availableByFacility.get(facility.id) ?? 0)
+                    ? (availableByFacility.get(String(facility.id)) ?? 0)
                     : undefined
                 }
                 availabilityLoading={availabilityQuery.isPending}

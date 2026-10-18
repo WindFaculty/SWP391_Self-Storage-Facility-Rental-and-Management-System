@@ -35,6 +35,7 @@ services:
       VNPAY_HASH_SECRET: ${VNPAY_HASH_SECRET:-local-dev-hash-secret-change-me}
       VNPAY_PAY_URL: ${VNPAY_PAY_URL:-https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
       VNPAY_RETURN_URL: ${VNPAY_RETURN_URL:-http://localhost:8080/api/v1/payments/vnpay/return}
+      VNPAY_FRONTEND_RETURN_URL: ${VNPAY_FRONTEND_RETURN_URL:-http://localhost:5173/payment/result}
     ports:
       - "8080:8080"
     depends_on:

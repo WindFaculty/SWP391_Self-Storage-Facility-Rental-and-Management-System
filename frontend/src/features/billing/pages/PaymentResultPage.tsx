@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Clock, RotateCcw, XCircle } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ErrorState } from '../../../components/ui/ErrorState';
@@ -14,6 +14,9 @@ export const PaymentResultPage = () => {
   const [searchParams] = useSearchParams();
   const reference = searchParams.get('vnp_TxnRef') ?? '';
   const responseCode = searchParams.get('vnp_ResponseCode');
+  const transactionStatus = searchParams.get('vnp_TransactionStatus');
+  const returnVerificationFailed = searchParams.get('returnVerified') === 'false';
+  const gatewayReportedSuccess = responseCode === '00' && transactionStatus === '00';
   const attemptQuery = usePaymentAttempt(reference);
 
   if (!reference) {
@@ -38,14 +41,17 @@ export const PaymentResultPage = () => {
         Mã giao dịch: <strong className="text-text-main">{reference}</strong>
       </p>
 
-      {responseCode ? (
+      {returnVerificationFailed ? (
+        <p className="mt-4 rounded-md border border-warning/30 bg-warning-bg/60 px-4 py-3 text-table text-text-muted">
+          Không thể xác minh phản hồi quay lại từ VNPay. Trạng thái bên dưới được lấy từ máy chủ.
+        </p>
+      ) : responseCode ? (
         <p className="mt-4 rounded-md border border-border-hairline bg-surface-muted/60 px-4 py-3 text-table text-text-muted">
           VNPay báo:{' '}
-          <strong className={responseCode === '00' ? 'text-success' : 'text-danger'}>
-            {responseCode === '00' ? 'giao dịch thành công' : 'giao dịch không thành công'}
+          <strong className={gatewayReportedSuccess ? 'text-success' : 'text-danger'}>
+            {gatewayReportedSuccess ? 'giao dịch thành công' : 'giao dịch không thành công'}
           </strong>
-          . Đây chỉ là tín hiệu từ trình duyệt — trạng thái cuối cùng do hệ thống xác nhận qua
-          máy chủ.
+          . Trạng thái cuối cùng bên dưới do hệ thống xác nhận qua IPN.
         </p>
       ) : null}
 
@@ -69,6 +75,8 @@ export const PaymentResultPage = () => {
               <CheckCircle2 className="size-10 text-success" aria-hidden="true" />
             ) : attempt.status === 'FAILED' ? (
               <XCircle className="size-10 text-danger" aria-hidden="true" />
+            ) : attempt.status === 'REFUNDED' ? (
+              <RotateCcw className="size-10 text-text-muted" aria-hidden="true" />
             ) : attempt.status === 'RECONCILING' ? (
               <AlertTriangle className="size-10 text-warning" aria-hidden="true" />
             ) : (
@@ -100,14 +108,27 @@ export const PaymentResultPage = () => {
                 Bạn có thể thử thanh toán lại trong Kho của tôi nếu đơn giữ chỗ còn hiệu lực.
               </p>
             ) : null}
+
+            {attempt.status === 'REFUNDED' ? (
+              <p className="max-w-md text-table text-text-muted">
+                Khoản thanh toán này đã được hoàn tiền.
+              </p>
+            ) : null}
           </div>
         ) : null}
       </div>
 
       <div className="mt-6 flex justify-center">
-        <Button variant="outline" onClick={() => navigate('/my-rentals')}>
-          Về Kho của tôi
-        </Button>
+        <div className="flex flex-wrap justify-center gap-3">
+          {attempt?.status === 'PENDING' ? (
+            <Button isLoading={attemptQuery.isFetching} onClick={() => attemptQuery.refetch()}>
+              Kiểm tra trạng thái
+            </Button>
+          ) : null}
+          <Button variant="outline" onClick={() => navigate('/my-rentals')}>
+            Về Kho của tôi
+          </Button>
+        </div>
       </div>
     </section>
   );

@@ -17,7 +17,7 @@ export interface Invoice extends InvoiceSummary {
   issuedAt?: string | null;
 }
 
-export type PaymentAttemptStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'RECONCILING';
+export type PaymentAttemptStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED' | 'RECONCILING';
 
 export interface PaymentAttempt {
   reference: string;

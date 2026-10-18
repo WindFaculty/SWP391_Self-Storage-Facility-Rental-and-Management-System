@@ -31,6 +31,6 @@ class LocalSeedTests {
         Integer units = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM storage_units", Integer.class);
         assertThat(facilities).isEqualTo(1);
-        assertThat(units).isEqualTo(3);
+        assertThat(units).isEqualTo(15);
     }
 }

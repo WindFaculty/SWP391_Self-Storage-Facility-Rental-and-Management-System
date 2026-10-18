@@ -43,8 +43,17 @@ public class VnPayService {
         this.properties = properties;
     }
 
+    public boolean isConfigured() {
+        return properties.tmnCode().matches("[A-Za-z0-9]{8}")
+                && StringUtils.hasText(properties.hashSecret())
+                && !properties.hashSecret().toLowerCase(Locale.ROOT).contains("change-me");
+    }
+
     public String createPaymentUrl(PaymentAttempt attempt, String clientIp, Instant createdAt,
                                    Instant expiresAt) {
+        if (!isConfigured()) {
+            throw new IllegalStateException("VNPay merchant credentials are not configured");
+        }
         if (attempt == null || attempt.getStatus() != PaymentAttempt.Status.PENDING) {
             throw new IllegalStateException("only a PENDING payment attempt can be sent to VNPay");
         }
@@ -90,7 +99,8 @@ public class VnPayService {
 
     public boolean verifyChecksum(Map<String, String> params) {
         String received = params.get("vnp_SecureHash");
-        if (!StringUtils.hasText(received)) {
+        if (!StringUtils.hasText(received)
+                || !properties.tmnCode().equals(params.get("vnp_TmnCode"))) {
             return false;
         }
         Map<String, String> fields = new TreeMap<>(params);

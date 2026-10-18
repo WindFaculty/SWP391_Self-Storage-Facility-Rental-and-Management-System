@@ -102,6 +102,9 @@ try {
     if (-not $env:VNPAY_RETURN_URL) {
         Set-RunEnvironment 'VNPAY_RETURN_URL' 'http://localhost:8088/api/v1/payments/vnpay/return'
     }
+    if (-not $env:VNPAY_FRONTEND_RETURN_URL) {
+        Set-RunEnvironment 'VNPAY_FRONTEND_RETURN_URL' 'http://localhost:5173/payment/result'
+    }
 
     Write-Host 'Starting backend and frontend...'
     $processes += Start-DevServer 'backend' $backendDirectory 'mvnw.cmd spring-boot:run'

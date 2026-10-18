@@ -38,12 +38,12 @@ export const CatalogFilters = ({
 }: CatalogFiltersProps) => {
   const facilityOptions = [
     { value: '', label: 'Tất cả cơ sở' },
-    ...facilities.map((facility) => ({ value: facility.id, label: facility.name })),
+    ...facilities.map((facility) => ({ value: String(facility.id), label: facility.name })),
   ];
 
   const unitTypeOptions = [
     { value: '', label: 'Tất cả loại kho' },
-    ...unitTypes.map((unitType) => ({ value: unitType.id, label: unitType.name })),
+    ...unitTypes.map((unitType) => ({ value: String(unitType.id), label: unitType.name })),
   ];
 
   const monthOptions = MONTH_OPTIONS.map((months) => ({

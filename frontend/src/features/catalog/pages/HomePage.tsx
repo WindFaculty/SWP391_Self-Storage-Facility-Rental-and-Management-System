@@ -68,7 +68,7 @@ export const HomePage = () => {
     navigate(`/facilities?${params.toString()}`);
   };
 
-  const handleUnitTypeSelect = (unitTypeId: string) => {
+  const handleUnitTypeSelect = (unitTypeId: string | number) => {
     navigate(`/facilities?type=${unitTypeId}&start=${todayIso()}&months=1`);
   };
 
