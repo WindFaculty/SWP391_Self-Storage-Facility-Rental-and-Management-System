@@ -1,0 +1,151 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: SWP391 backend staging on one EC2 instance with persistent encrypted EBS storage.
+
+Parameters:
+  DefaultVpcId:
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-0323569d1b2d4e282
+    Description: Existing default VPC in ap-southeast-1.
+  InstanceType:
+    Type: String
+    Default: t3.medium
+    AllowedValues:
+      - t3.medium
+      - t3.large
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
+Resources:
+  BackendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Public HTTPS reverse proxy for SWP391 staging; no SSH or database ingress.
+      VpcId: !Ref DefaultVpcId
+      SecurityGroupIngress:
+        - Description: HTTP for ACME validation and HTTPS redirect.
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - Description: Public HTTPS API.
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: swp391-backend-staging
+
+  BackendInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Tags:
+        - Key: Name
+          Value: swp391-backend-staging
+
+  BackendInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref BackendInstanceRole
+
+  BackendElasticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: swp391-backend-staging
+
+  BackendInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref BackendInstanceProfile
+      SecurityGroupIds:
+        - !Ref BackendSecurityGroup
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: required
+        HttpPutResponseHopLimit: 2
+      CreditSpecification:
+        CpuCredits: standard
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 30
+            VolumeType: gp3
+            Encrypted: true
+            DeleteOnTermination: false
+      UserData:
+        Fn::Base64:
+          Fn::Sub:
+            - |
+              #!/bin/bash
+              set -Eeuo pipefail
+              exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
+              PUBLIC_IPV4="${PublicIpv4}"
+              dnf install -y docker git curl openssl
+              systemctl enable --now docker
+              systemctl enable --now amazon-ssm-agent || true
+              install -d -m 0755 /usr/local/lib/docker/cli-plugins
+              curl -fsSL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+              chmod 0755 /usr/local/lib/docker/cli-plugins/docker-compose
+              install -d -m 0755 /opt/storage
+              git clone --depth 1 https://github.com/WindFaculty/SWP391_Self-Storage-Facility-Rental-and-Management-System.git /opt/storage/repo
+              bash /opt/storage/repo/infra/ec2/bootstrap.sh "$PUBLIC_IPV4"
+            - PublicIpv4: !GetAtt BackendElasticIp.PublicIp
+      Tags:
+        - Key: Name
+          Value: swp391-backend-staging
+
+  BackendElasticIpAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref BackendInstance
+      AllocationId: !GetAtt BackendElasticIp.AllocationId
+
+Outputs:
+  InstanceId:
+    Description: EC2 instance ID. Use Systems Manager Session Manager; SSH is disabled.
+    Value: !Ref BackendInstance
+  PublicIpv4:
+    Description: Static public IPv4 address.
+    Value: !GetAtt BackendElasticIp.PublicIp
+  ApiHost:
+    Description: HTTPS API hostname using sslip.io DNS for this staging address.
+    Value:
+      Fn::Join:
+        - ""
+        - - Fn::Join:
+              - "-"
+              - Fn::Split:
+                  - "."
+                  - !GetAtt BackendElasticIp.PublicIp
+          - ".sslip.io"
+  ApiBaseUrl:
+    Description: Base URL for VITE_API_BASE_URL.
+    Value:
+      Fn::Join:
+        - ""
+        - - "https://"
+          - Fn::Join:
+              - "-"
+              - Fn::Split:
+                  - "."
+                  - !GetAtt BackendElasticIp.PublicIp
+          - ".sslip.io/api/v1"

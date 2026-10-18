@@ -63,9 +63,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<ClientRegistrationRepository> clients,
                                                    GoogleOAuthHandlers google,
-                                                   @Value("${app.auth.cookie-secure:false}") boolean secure) throws Exception {
+                                                   @Value("${app.auth.cookie-secure:false}") boolean secure,
+                                                   @Value("${app.auth.cookie-same-site:Lax}") String sameSite) throws Exception {
         CookieCsrfTokenRepository csrfRepository = new CookieCsrfTokenRepository();
-        csrfRepository.setCookieCustomizer(cookie -> cookie.httpOnly(true).secure(secure).sameSite("Lax"));
+        csrfRepository.setCookieCustomizer(cookie -> cookie.httpOnly(true).secure(secure).sameSite(sameSite));
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.csrfTokenRepository(csrfRepository)

@@ -28,6 +28,7 @@ spring:
 app:
   auth:
     cookie-secure: ${AUTH_COOKIE_SECURE:false}
+    cookie-same-site: ${AUTH_COOKIE_SAME_SITE:Lax}
   google:
     enabled: ${GOOGLE_LOGIN_ENABLED:false}
     client-id: ${GOOGLE_CLIENT_ID:}

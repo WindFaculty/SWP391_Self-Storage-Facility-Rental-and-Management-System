@@ -8,9 +8,11 @@ server:
     session:
       cookie:
         secure: ${AUTH_COOKIE_SECURE:true}
+        same-site: ${AUTH_COOKIE_SAME_SITE:None}
 app:
   auth:
     cookie-secure: ${AUTH_COOKIE_SECURE:true}
+    cookie-same-site: ${AUTH_COOKIE_SAME_SITE:None}
   jwt:
     secret: ${JWT_SECRET}
 vnpay:

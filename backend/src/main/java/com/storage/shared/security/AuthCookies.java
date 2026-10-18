@@ -13,10 +13,13 @@ public class AuthCookies {
     public static final String ACCESS = "storage_access_token", REFRESH = "storage_refresh_token";
     private final boolean secure;
     private final String path;
+    private final String sameSite;
     private final JwtTokenProvider jwt;
     public AuthCookies(@Value("${app.auth.cookie-secure:false}") boolean secure,
-                       @Value("${server.servlet.context-path:/api/v1}") String path, JwtTokenProvider jwt) {
-        this.secure = secure; this.path = path.isBlank() ? "/" : path; this.jwt = jwt;
+                       @Value("${server.servlet.context-path:/api/v1}") String path,
+                       @Value("${app.auth.cookie-same-site:Lax}") String sameSite,
+                       JwtTokenProvider jwt) {
+        this.secure = secure; this.path = path.isBlank() ? "/" : path; this.sameSite = sameSite; this.jwt = jwt;
     }
     public void write(HttpServletResponse response, AuthResponse auth) {
         add(response, ACCESS, auth.accessToken(), jwt.getAccessExpirationMs());
@@ -25,7 +28,7 @@ public class AuthCookies {
     public void clear(HttpServletResponse response) { add(response, ACCESS, "", 0); add(response, REFRESH, "", 0); }
     private void add(HttpServletResponse response, String name, String value, long duration) {
         response.addHeader(HttpHeaders.SET_COOKIE, ResponseCookie.from(name, value).httpOnly(true).secure(secure)
-                .path(path).sameSite("Lax").maxAge(Duration.ofMillis(duration)).build().toString());
+                .path(path).sameSite(sameSite).maxAge(Duration.ofMillis(duration)).build().toString());
     }
     public static String read(HttpServletRequest request, String name) {
         if (request.getCookies() != null) for (Cookie cookie : request.getCookies())

@@ -1,0 +1,85 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    command: ["--innodb-buffer-pool-size=256M"]
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?set MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_APP_USER:?set MYSQL_APP_USER}
+      MYSQL_PASSWORD: ${MYSQL_APP_PASSWORD:?set MYSQL_APP_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    mem_limit: 768m
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      SPRING_PROFILES_ACTIVE: staging
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?connectionTimeZone=UTC
+      DB_USERNAME: ${MYSQL_APP_USER}
+      DB_PASSWORD: ${MYSQL_APP_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      AUTH_COOKIE_SECURE: "true"
+      AUTH_COOKIE_SAME_SITE: None
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?set CORS_ALLOWED_ORIGINS}
+      GOOGLE_LOGIN_ENABLED: "false"
+      GOOGLE_CLIENT_ID: ""
+      GOOGLE_CLIENT_SECRET: ""
+      GOOGLE_REDIRECT_URI: https://${API_HOST}/api/v1/login/oauth2/code/google
+      GOOGLE_FRONTEND_URL: https://swp391-frontend.pages.dev
+      VNPAY_TMN_CODE: ${VNPAY_TMN_CODE:?set VNPAY_TMN_CODE}
+      VNPAY_HASH_SECRET: ${VNPAY_HASH_SECRET:?set VNPAY_HASH_SECRET}
+      VNPAY_PAY_URL: ${VNPAY_PAY_URL:?set VNPAY_PAY_URL}
+      VNPAY_RETURN_URL: ${VNPAY_RETURN_URL:?set VNPAY_RETURN_URL}
+      VNPAY_FRONTEND_RETURN_URL: ${VNPAY_FRONTEND_RETURN_URL:?set VNPAY_FRONTEND_RETURN_URL}
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=55.0
+    expose:
+      - "8080"
+    mem_limit: 1536m
+    depends_on:
+      mysql:
+        condition: service_healthy
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      API_HOST: ${API_HOST:?set API_HOST}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - backend
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  mysql-data:
+  caddy-data:
+  caddy-config:
