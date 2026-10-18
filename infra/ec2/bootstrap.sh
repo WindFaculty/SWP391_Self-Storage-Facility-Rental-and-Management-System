@@ -7,6 +7,10 @@ REPO_DIR="/opt/storage/repo"
 ENV_FILE="$REPO_DIR/infra/ec2/.env.staging"
 
 install -d -m 0755 "$(dirname "$ENV_FILE")"
+install -d -m 0755 /usr/local/lib/docker/cli-plugins
+BUILDX_VERSION="$(curl -fsSL https://api.github.com/repos/docker/buildx/releases/latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')"
+curl -fsSL "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-amd64" -o /usr/local/lib/docker/cli-plugins/docker-buildx
+chmod 0755 /usr/local/lib/docker/cli-plugins/docker-buildx
 umask 077
 MYSQL_ROOT_PASSWORD="$(openssl rand -hex 24)"
 MYSQL_APP_PASSWORD="$(openssl rand -hex 24)"
