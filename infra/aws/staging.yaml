@@ -83,7 +83,7 @@ Resources:
         HttpTokens: required
         HttpPutResponseHopLimit: 2
       CreditSpecification:
-        CpuCredits: standard
+        CPUCredits: standard
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
