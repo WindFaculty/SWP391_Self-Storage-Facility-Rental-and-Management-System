@@ -230,6 +230,7 @@ class CustomerFlowE2ETests {
         String reference = paymentParams.get("vnp_TxnRef");
         java.util.Map<String, String> callback = new java.util.TreeMap<>();
         callback.put("vnp_TxnRef", reference);
+        callback.put("vnp_TmnCode", paymentParams.get("vnp_TmnCode"));
         callback.put("vnp_Amount", paymentParams.get("vnp_Amount"));
         callback.put("vnp_ResponseCode", "00");
         callback.put("vnp_TransactionStatus", "00");
