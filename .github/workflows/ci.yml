@@ -80,7 +80,7 @@ jobs:
 
   deploy-pages:
     name: Deploy frontend to Cloudflare Pages
-    needs: [backend, frontend]
+    needs: [frontend]
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
