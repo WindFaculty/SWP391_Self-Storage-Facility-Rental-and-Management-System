@@ -99,7 +99,7 @@ Resources:
               set -Eeuo pipefail
               exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
               PUBLIC_IPV4="${PublicIpv4}"
-              dnf install -y docker git curl openssl
+              dnf install -y docker git openssl
               systemctl enable --now docker
               systemctl enable --now amazon-ssm-agent || true
               install -d -m 0755 /usr/local/lib/docker/cli-plugins
