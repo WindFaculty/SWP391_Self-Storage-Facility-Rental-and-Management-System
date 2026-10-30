@@ -2,7 +2,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/storage_local?createDatabaseIfNotExist=true&connectionTimeZone=UTC}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:12345}
   flyway:
     locations: classpath:db/migration/mysql,classpath:db/seed/local
 logging:

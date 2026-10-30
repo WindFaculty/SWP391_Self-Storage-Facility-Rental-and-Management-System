@@ -29,6 +29,7 @@ export function UserFormModal({ user, facilities, onClose, onSaved }: UserFormMo
   const [fullName, setFullName] = useState(user?.fullName ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
   const [phone, setPhone] = useState(user?.phone ?? '')
+  const [password, setPassword] = useState('')
   const [role, setRole] = useState<UserRole>(user?.role ?? 'FACILITY_STAFF')
   const [facilityId, setFacilityId] = useState<number | null>(user?.facilityId ?? null)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -42,6 +43,7 @@ export function UserFormModal({ user, facilities, onClose, onSaved }: UserFormMo
       fullName: fullName.trim(),
       email: email.trim(),
       phone: phone.trim(),
+      ...(!user ? { password } : {}),
       role,
       facilityId: needsFacility ? facilityId ?? (facilities[0]?.id ?? null) : null,
     }
@@ -96,6 +98,25 @@ export function UserFormModal({ user, facilities, onClose, onSaved }: UserFormMo
         />
         {errors.email && <p className="mt-1 text-label-help text-danger">{errors.email}</p>}
       </div>
+
+      {!user && (
+        <div className="mt-space-lg">
+          <label htmlFor="admin-password" className="text-label-help font-medium text-text-main">
+            Mật khẩu *
+          </label>
+          <input
+            id="admin-password"
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby={errors.password ? 'admin-password-error' : undefined}
+            className={INPUT_CLASS}
+          />
+          {errors.password && <p id="admin-password-error" className="mt-1 text-label-help text-danger">{errors.password}</p>}
+        </div>
+      )}
 
       <div className="mt-space-lg">
         <label htmlFor="admin-phone" className="text-label-help font-medium text-text-main">

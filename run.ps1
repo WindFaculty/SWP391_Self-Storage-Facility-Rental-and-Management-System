@@ -1,5 +1,5 @@
 # Run from any directory: powershell -ExecutionPolicy Bypass -File .\run.ps1
-# Requires Java 25+, Node.js/npm and MySQL or Docker Desktop.
+# Requires Java 25+, Node.js/npm and a running local MySQL server.
 # Database settings: backend/src/main/resources/application-local.yml or DB_* env vars.
 [CmdletBinding()]
 param([switch] $SmokeTest)
@@ -74,17 +74,6 @@ try {
         $googleLocalClient = $null
     }
 
-    if (-not $env:DB_URL -and -not (Get-NetTCPConnection -LocalPort 3306 -State Listen -ErrorAction SilentlyContinue)) {
-        if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-            throw 'MySQL is not listening on port 3306. Start MySQL or install and start Docker Desktop.'
-        }
-        Write-Host 'Starting local MySQL with Docker...'
-        & docker compose -p storage-local -f (Join-Path $projectRoot 'infra/docker/compose.local.yml') up -d --wait --wait-timeout 180
-        if ($LASTEXITCODE -ne 0) {
-            throw 'Could not start local MySQL. Make sure Docker Desktop is running.'
-        }
-    }
-
     if (-not (Test-Path -LiteralPath (Join-Path $frontendDirectory 'node_modules'))) {
         Write-Host 'Installing frontend dependencies...'
         Push-Location $frontendDirectory
@@ -156,7 +145,12 @@ try {
         $process.Refresh()
         if (-not $process.HasExited) {
             # Stop the shell and its Maven/Java or npm/Node child processes.
-            & taskkill.exe /PID $process.Id /T /F 2>&1 | Out-Null
+            try {
+                # Cleanup failures must not hide the original startup error.
+                & taskkill.exe /PID $process.Id /T /F 2>$null | Out-Null
+            } catch {
+                Write-Warning "Could not stop $($process.ServerName) (PID $($process.Id)): $($_.Exception.Message)"
+            }
         }
     }
     foreach ($name in $savedEnvironment.Keys) {

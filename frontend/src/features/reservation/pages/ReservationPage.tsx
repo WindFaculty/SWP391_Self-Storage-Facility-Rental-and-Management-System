@@ -166,7 +166,7 @@ export const ReservationPage = () => {
           </p>
         </div>
 
-        <div className="mt-8 rounded-lg border border-border-hairline bg-surface p-5">
+        <div className="mx-auto mt-8 w-full max-w-2xl rounded-lg border border-border-hairline bg-surface p-5">
           <SummaryRow label="Trạng thái đơn thuê">
             <StatusLabel label={rentalStatus.label} tone={rentalStatus.tone} />
           </SummaryRow>
@@ -205,7 +205,7 @@ export const ReservationPage = () => {
         </div>
 
         {error ? (
-          <p role="alert" className="mt-4 rounded-md border border-danger/20 bg-danger-bg px-3 py-2 text-label text-danger">
+          <p role="alert" className="mx-auto mt-4 w-full max-w-2xl rounded-md border border-danger/20 bg-danger-bg px-3 py-2 text-label text-danger">
             {error}
           </p>
         ) : null}

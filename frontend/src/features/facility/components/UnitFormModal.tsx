@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '../../../components/ui/Button'
 import { Modal } from '../../../components/ui/Modal'
-import { formatCurrency } from '../../../lib/format'
+import { formatArea } from '../../../lib/format'
 import { validateUnitInput } from '../unitRules'
 import type { StorageUnit, StorageUnitInput, UnitType } from '../types'
 
@@ -82,11 +82,15 @@ export function UnitFormModal({ unit, facilityId, unitTypes, onClose, onSubmit }
           >
             {unitTypes.map((unitType) => (
               <option key={unitType.id} value={unitType.id}>
-                {unitType.name} — {formatCurrency(unitType.minMonthlyPrice)} –{' '}
-                {formatCurrency(unitType.maxMonthlyPrice)}
+                {unitType.name}
               </option>
             ))}
           </select>
+          {selectedType && (
+            <p className="mt-1 text-label-help text-text-muted">
+              Diện tích: {formatArea(selectedType.sizeM2)}
+            </p>
+          )}
           {errors.unitTypeId && <p className="mt-1 text-label-help text-danger">{errors.unitTypeId}</p>}
         </div>
 
@@ -121,12 +125,6 @@ export function UnitFormModal({ unit, facilityId, unitTypes, onClose, onSubmit }
             aria-invalid={Boolean(errors.monthlyPrice)}
             className={INPUT_CLASS}
           />
-          {selectedType && (
-            <p className="mt-1 text-label-help text-text-muted">
-              Khoảng giá cho phép theo loại kho: {formatCurrency(selectedType.minMonthlyPrice)} –{' '}
-              {formatCurrency(selectedType.maxMonthlyPrice)}
-            </p>
-          )}
           {errors.monthlyPrice && <p className="mt-1 text-label-help text-danger">{errors.monthlyPrice}</p>}
         </div>
 

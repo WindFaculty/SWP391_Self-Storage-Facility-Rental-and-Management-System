@@ -8,7 +8,7 @@ Hệ thống cho thuê và quản lý kho tự lưu trữ (self-storage), phục
 |---|---|
 | Frontend | React 19 + TypeScript + Vite, Tailwind CSS 4, React Query, React Router |
 | Backend | Spring Boot 4.1, Java 25, Spring Security + JWT, Spring Data JPA, Flyway, MySQL |
-| Hạ tầng | Docker (MySQL local), NCC infra cho deploy (xem `infra/`) |
+| Hạ tầng | MySQL local, NCC infra cho deploy (xem `infra/`) |
 
 ## Tính năng theo vai trò
 
@@ -33,7 +33,7 @@ run.ps1     Script chạy cả backend + frontend cho local dev
 
 - Java 25+
 - Node.js + npm
-- MySQL 8 chạy ở port 3306, hoặc Docker Desktop (script sẽ tự khởi động MySQL bằng `infra/docker/compose.local.yml`)
+- MySQL 8 chạy trên máy (mặc định port 3306)
 
 ## Chạy local
 
@@ -41,7 +41,7 @@ run.ps1     Script chạy cả backend + frontend cho local dev
 powershell -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
-Script tự: kiểm tra port, khởi động MySQL (Docker) nếu cần, `npm ci` nếu thiếu `node_modules`, rồi chạy backend và frontend. Log ghi tại `.run/`.
+Script tự: kiểm tra port, `npm ci` nếu thiếu `node_modules`, rồi chạy backend và frontend. Log ghi tại `.run/`.
 
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8088/api/v1
@@ -49,7 +49,25 @@ Script tự: kiểm tra port, khởi động MySQL (Docker) nếu cần, `npm ci
 
 Kiểm tra nhanh mà không giữ server: `.\run.ps1 -SmokeTest`
 
-Cấu hình database: `backend/src/main/resources/application-local.yml` hoặc biến môi trường `DB_*`.
+Mặc định backend kết nối MySQL tại `localhost:3306`, database `storage_local`, tài khoản `root` và mật khẩu `12345`. Khởi động MySQL trước khi chạy ứng dụng. Nếu cần dùng thông tin khác, cấu hình bằng biến môi trường PowerShell:
+
+```powershell
+$env:DB_URL = 'jdbc:mysql://localhost:3306/storage_local?createDatabaseIfNotExist=true&connectionTimeZone=UTC'
+$env:DB_USERNAME = 'root'
+$env:DB_PASSWORD = 'mat-khau-mysql-cua-ban'
+```
+
+Có thể thay đổi các giá trị mặc định trong `backend/src/main/resources/application-local.yml`. Tài khoản cần quyền tạo database nếu `storage_local` chưa tồn tại; Flyway sẽ tạo các bảng và dữ liệu mẫu khi backend khởi động.
+
+Các tài khoản mẫu chỉ dành cho local, cùng mật khẩu `Demo12345!`:
+
+| Email | Vai trò |
+|---|---|
+| `customer@demo.local` | Khách hàng |
+| `manager@demo.local` | Quản lý cơ sở Demo HCM |
+| `admin@demo.local` | Quản trị viên |
+
+Seed không ghi đè tài khoản đã tồn tại cùng email.
 
 ## Test
 

@@ -27,6 +27,7 @@ export interface UserInput {
   fullName: string
   email: string
   phone: string
+  password?: string
   role: UserRole
   facilityId: number | null
 }
@@ -39,6 +40,13 @@ export function validateUserInput(
   editingId: number | null,
 ): Record<string, string> {
   const errors: Record<string, string> = {}
+  if (editingId === null) {
+    if (!input.password?.trim()) {
+      errors.password = 'Nhập mật khẩu.'
+    } else if (input.password.length < 8 || input.password.length > 100) {
+      errors.password = 'Mật khẩu phải có từ 8 đến 100 ký tự.'
+    }
+  }
   if (!input.fullName.trim()) {
     errors.fullName = 'Nhập họ và tên.'
   }

@@ -21,7 +21,7 @@ describe('validateUserInput', () => {
   it('requires a facility only for facility roles', () => {
     expect(
       validateUserInput(
-        { fullName: 'A', email: 'a@x.vn', phone: '', role: 'FACILITY_STAFF', facilityId: 1 },
+        { fullName: 'A', email: 'a@x.vn', phone: '', password: 'password123', role: 'FACILITY_STAFF', facilityId: 1 },
         [],
         null,
       ),
@@ -40,6 +40,14 @@ describe('validateUserInput', () => {
         null,
       ).facilityId,
     ).toBeTruthy()
+  })
+
+  it('requires a valid password only when creating a user', () => {
+    const input = { fullName: 'A', email: 'a@x.vn', phone: '', role: 'CUSTOMER' as const, facilityId: null }
+    expect(validateUserInput(input, [], null).password).toBeTruthy()
+    expect(validateUserInput({ ...input, password: 'short' }, [], null).password).toBeTruthy()
+    expect(validateUserInput({ ...input, password: 'password123' }, [], null).password).toBeUndefined()
+    expect(validateUserInput(input, [], 1).password).toBeUndefined()
   })
 
   it('rejects invalid and duplicate emails', () => {
