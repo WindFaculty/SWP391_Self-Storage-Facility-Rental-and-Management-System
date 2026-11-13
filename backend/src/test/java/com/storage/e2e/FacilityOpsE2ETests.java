@@ -491,14 +491,14 @@ class FacilityOpsE2ETests {
         Long unitId = createUnit("OVD-" + suffix, "1200000.00");
         String customerToken = registerCustomer("cust-ovd-" + suffix);
         LocalDate start = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")).plusDays(1);
-        MvcResult hold = mvc.perform(post("/rentals")
+        MvcResult hold = mvc.perform(post("/rentals/holds")
                         .header("Authorization", bearer(customerToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"facilityId":%d,"unitTypeId":%d,
-                                 "startDate":"%s","endDate":"%s"}
-                                """.formatted(facilityId, unitTypeId, start, start.plusMonths(2))))
-                .andExpect(status().isCreated())
+                                 "startDate":"%s","rentalMonths":2}
+                                """.formatted(facilityId, unitTypeId, start)))
+                .andExpect(status().isOk())
                 .andReturn();
         Long rentalId = readLong(hold, "$.data.rental.id");
         Long invoiceId = readLong(hold, "$.data.invoice.id");
@@ -568,7 +568,7 @@ class FacilityOpsE2ETests {
                         .header("Authorization", bearer(customerToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"additionalMonths\":1}"))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
         Long renewInvoiceId = readLong(renewal, "$.data.invoice.id");
         String renewRef = referenceOf(mvc.perform(post("/payments/vnpay/url")
@@ -588,7 +588,7 @@ class FacilityOpsE2ETests {
                         .header("Authorization", bearer(customerToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"requestedDate\":\"%s\"}".formatted(vnToday.plusDays(1))))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.rental.status").value("RETURN_REQUESTED"));
 
         Long returnAssigneeId = jdbc.queryForObject(
