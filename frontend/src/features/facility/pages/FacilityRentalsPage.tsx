@@ -341,7 +341,7 @@ export function FacilityRentalsPage() {
                       <td className="px-space-lg py-space-md font-medium text-text-main">#{rental.id}</td>
                       <td className="px-space-lg py-space-md">
                         <span className="block text-text-main">{rental.customerName}</span>
-                        <span className="block text-badge-caption text-text-muted">{rental.customerPhone}</span>
+                        <span className="block text-badge-caption text-text-muted">{rental.customerPhone ?? '—'}</span>
                       </td>
                       <td className="px-space-lg py-space-md">
                         <span className="block text-text-main">{rental.unitCode}</span>
@@ -415,7 +415,13 @@ export function FacilityRentalsPage() {
         <AssignTaskModal
           rental={assignFor}
           staff={staff}
-          defaultType={assignFor.status === 'RESERVED' ? 'HANDOVER' : 'UNIT_INSPECTION'}
+          defaultType={
+            assignFor.status === 'RESERVED'
+              ? 'HANDOVER'
+              : assignFor.status === 'RETURNED'
+                ? 'UNIT_INSPECTION'
+                : 'RETURN_INSPECTION'
+          }
           onClose={() => setAssignFor(null)}
           onSubmit={handleAssignSubmit}
         />

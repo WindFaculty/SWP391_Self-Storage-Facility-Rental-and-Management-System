@@ -5,9 +5,14 @@ import { Modal } from '../../../components/ui/Modal'
 import { Tabs } from '../../../components/ui/Tabs'
 import { formatArea, formatCurrency, formatDateTime } from '../../../lib/format'
 import { useUnitTypes } from '../../facility/hooks/useUnitTypes'
-import { updateBusinessPolicy, updateFeeType } from '../api/managementApi'
+import { createFeeType, updateBusinessPolicy, updateFeeType } from '../api/managementApi'
 import { usePolicyData } from '../hooks/useManagement'
-import { validatePolicy, type PolicyInput } from '../managementRules'
+import {
+  validateFeeTypeCreateInput,
+  validateFeeTypeInput,
+  validatePolicy,
+  type PolicyInput,
+} from '../managementRules'
 import type { FeeType } from '../types'
 
 type TabId = 'policy' | 'pricing' | 'fees'
@@ -68,6 +73,7 @@ export function OperationsPoliciesPage() {
   const [values, setValues] = useState<PolicyFormValues | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [showPreview, setShowPreview] = useState(false)
+  const [creatingFee, setCreatingFee] = useState(false)
   const [editingFee, setEditingFee] = useState<FeeType | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -281,48 +287,64 @@ export function OperationsPoliciesPage() {
 
           {tab === 'fees' && (
             <section className="mt-space-lg bg-surface rounded-xl border border-border-hairline overflow-hidden">
-              <div className="px-space-lg py-space-md border-b border-border-hairline">
+              <div className="px-space-lg py-space-md border-b border-border-hairline flex flex-wrap items-center justify-between gap-4">
                 <h2 className="text-subsection text-text-main">Biểu phí dịch vụ & phụ phí</h2>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setActionError(null)
+                    setCreatingFee(true)
+                  }}
+                >
+                  Thêm phụ phí
+                </Button>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-ui-table">
-                  <thead>
-                    <tr className="bg-surface-muted text-left text-text-muted">
-                      <th scope="col" className="px-space-lg py-space-md font-semibold">Mã</th>
-                      <th scope="col" className="px-space-lg py-space-md font-semibold">Tên phụ phí</th>
-                      <th scope="col" className="px-space-lg py-space-md font-semibold text-right">Mức phí</th>
-                      <th scope="col" className="px-space-lg py-space-md font-semibold">Trạng thái</th>
-                      <th scope="col" className="px-space-lg py-space-md font-semibold text-right">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {fees.map((fee) => (
-                      <tr key={fee.id} className="border-b border-border-subtle last:border-b-0">
-                        <td className="px-space-lg py-space-md font-medium text-text-main">{fee.code}</td>
-                        <td className="px-space-lg py-space-md">{fee.name}</td>
-                        <td className="px-space-lg py-space-md text-right tabular-nums">
-                          {fee.defaultAmount === 0 ? 'Miễn phí' : formatCurrency(fee.defaultAmount)}
-                        </td>
-                        <td className="px-space-lg py-space-md">
-                          {fee.active ? 'Đang áp dụng' : 'Tạm ngừng'}
-                        </td>
-                        <td className="px-space-lg py-space-md text-right">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActionError(null)
-                              setEditingFee(fee)
-                            }}
-                            className="text-label-help font-medium text-primary hover:underline"
-                          >
-                            Sửa
-                          </button>
-                        </td>
+              {fees.length === 0 ? (
+                <EmptyState
+                  title="Chưa có phụ phí"
+                  description="Thêm mới biểu phí dịch vụ hoặc phụ phí để áp dụng cho các đơn thuê."
+                />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-ui-table">
+                    <thead>
+                      <tr className="bg-surface-muted text-left text-text-muted">
+                        <th scope="col" className="px-space-lg py-space-md font-semibold">Mã</th>
+                        <th scope="col" className="px-space-lg py-space-md font-semibold">Tên phụ phí</th>
+                        <th scope="col" className="px-space-lg py-space-md font-semibold text-right">Mức phí</th>
+                        <th scope="col" className="px-space-lg py-space-md font-semibold">Trạng thái</th>
+                        <th scope="col" className="px-space-lg py-space-md font-semibold text-right">Thao tác</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {fees.map((fee) => (
+                        <tr key={fee.id} className="border-b border-border-subtle last:border-b-0">
+                          <td className="px-space-lg py-space-md font-medium text-text-main">{fee.code}</td>
+                          <td className="px-space-lg py-space-md">{fee.name}</td>
+                          <td className="px-space-lg py-space-md text-right tabular-nums">
+                            {fee.defaultAmount === 0 ? 'Miễn phí' : formatCurrency(fee.defaultAmount)}
+                          </td>
+                          <td className="px-space-lg py-space-md">
+                            {fee.active ? 'Đang áp dụng' : 'Tạm ngừng'}
+                          </td>
+                          <td className="px-space-lg py-space-md text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActionError(null)
+                                setEditingFee(fee)
+                              }}
+                              className="text-label-help font-medium text-primary hover:underline"
+                            >
+                              Sửa
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </section>
           )}
         </>
@@ -367,12 +389,36 @@ export function OperationsPoliciesPage() {
         </Modal>
       )}
 
+      {creatingFee && (
+        <FeeFormModal
+          fee={null}
+          existingCodes={fees.map((item) => item.code)}
+          onClose={() => setCreatingFee(false)}
+          onSubmit={async (input) => {
+            const created = await createFeeType({
+              code: input.code,
+              name: input.name,
+              defaultAmount: input.defaultAmount,
+              active: input.active,
+            })
+            setCreatingFee(false)
+            setNotice(`Đã thêm phụ phí ${created.code}.`)
+            await reload()
+          }}
+        />
+      )}
+
       {editingFee && (
-        <FeeEditModal
+        <FeeFormModal
           fee={editingFee}
+          existingCodes={fees.map((item) => item.code)}
           onClose={() => setEditingFee(null)}
           onSubmit={async (input) => {
-            await updateFeeType(editingFee.id, input)
+            await updateFeeType(editingFee.id, {
+              name: input.name,
+              defaultAmount: input.defaultAmount,
+              active: input.active,
+            })
             setEditingFee(null)
             setNotice(`Đã cập nhật phụ phí ${editingFee.code}.`)
             await reload()
@@ -383,33 +429,42 @@ export function OperationsPoliciesPage() {
   )
 }
 
-interface FeeEditModalProps {
-  fee: FeeType
+interface FeeFormModalProps {
+  fee: FeeType | null
+  existingCodes: string[]
   onClose: () => void
-  onSubmit: (input: { name: string; defaultAmount: number; active: boolean }) => Promise<void>
+  onSubmit: (input: { code: string; name: string; defaultAmount: number; active: boolean }) => Promise<void>
 }
 
-function FeeEditModal({ fee, onClose, onSubmit }: FeeEditModalProps) {
-  const [name, setName] = useState(fee.name)
-  const [amount, setAmount] = useState(String(fee.defaultAmount))
-  const [active, setActive] = useState(fee.active)
+function FeeFormModal({ fee, existingCodes, onClose, onSubmit }: FeeFormModalProps) {
+  const isEditing = fee !== null
+  const [code, setCode] = useState(fee?.code ?? '')
+  const [name, setName] = useState(fee?.name ?? '')
+  const [amount, setAmount] = useState(String(fee?.defaultAmount ?? 0))
+  const [active, setActive] = useState(fee?.active ?? true)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async () => {
-    if (!name.trim()) {
-      setError('Nhập tên phụ phí.')
-      return
-    }
     const parsedAmount = Number(amount)
-    if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
-      setError('Mức phí phải là số không âm.')
+    const normalizedCode = code.trim().toUpperCase()
+    const validationErrors = isEditing
+      ? validateFeeTypeInput({ name, defaultAmount: parsedAmount })
+      : validateFeeTypeCreateInput({ code: normalizedCode, name, defaultAmount: parsedAmount }, existingCodes)
+    const firstError = validationErrors.code ?? validationErrors.name ?? validationErrors.defaultAmount
+    if (firstError) {
+      setError(firstError)
       return
     }
     setSubmitting(true)
     setError(null)
     try {
-      await onSubmit({ name: name.trim(), defaultAmount: parsedAmount, active })
+      await onSubmit({
+        code: isEditing ? fee.code : normalizedCode,
+        name: name.trim(),
+        defaultAmount: parsedAmount,
+        active,
+      })
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'Không lưu được phụ phí.')
       setSubmitting(false)
@@ -417,7 +472,22 @@ function FeeEditModal({ fee, onClose, onSubmit }: FeeEditModalProps) {
   }
 
   return (
-    <Modal title={`Sửa phụ phí ${fee.code}`} onClose={onClose}>
+    <Modal title={isEditing ? `Sửa phụ phí ${fee.code}` : 'Thêm phụ phí mới'} onClose={onClose}>
+      {!isEditing && (
+        <div className="mb-space-lg">
+          <label htmlFor="fee-code" className="text-label-help font-medium text-text-main">
+            Mã phụ phí *
+          </label>
+          <input
+            id="fee-code"
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            placeholder="VD: CLEANING"
+            className={INPUT_CLASS}
+          />
+          <p className="mt-1 text-label-help text-text-muted">Chữ in hoa, số, _ hoặc - (2–40 ký tự).</p>
+        </div>
+      )}
       <div>
         <label htmlFor="fee-name" className="text-label-help font-medium text-text-main">
           Tên phụ phí *
@@ -465,7 +535,7 @@ function FeeEditModal({ fee, onClose, onSubmit }: FeeEditModalProps) {
           Hủy
         </Button>
         <Button disabled={submitting} onClick={() => void handleSubmit()}>
-          {submitting ? 'Đang lưu…' : 'Lưu thay đổi'}
+          {submitting ? 'Đang lưu…' : isEditing ? 'Lưu thay đổi' : 'Tạo phụ phí'}
         </Button>
       </div>
     </Modal>

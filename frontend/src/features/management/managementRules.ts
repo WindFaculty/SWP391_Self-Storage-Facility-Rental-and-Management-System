@@ -57,6 +57,22 @@ export function validateFeeTypeInput(input: { name: string; defaultAmount: numbe
   return errors
 }
 
+export function validateFeeTypeCreateInput(
+  input: { code: string; name: string; defaultAmount: number },
+  existingCodes: string[] = [],
+): Record<string, string> {
+  const errors = validateFeeTypeInput(input)
+  const code = input.code.trim().toUpperCase()
+  if (!code) {
+    errors.code = 'Nhập mã phụ phí.'
+  } else if (!/^[A-Z0-9_-]{2,40}$/.test(code)) {
+    errors.code = 'Mã phụ phí gồm 2–40 ký tự chữ, số, _ hoặc -.'
+  } else if (existingCodes.some((item) => item.trim().toUpperCase() === code)) {
+    errors.code = 'Mã phụ phí đã tồn tại.'
+  }
+  return errors
+}
+
 export function validateFacilityInput(
   input: { code: string; name: string; address: string },
   existing: Array<{ id: number; code: string }>,

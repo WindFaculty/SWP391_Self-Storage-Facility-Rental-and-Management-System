@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { rentalApi } from '../api/rentalApi';
-import type { HoldRequest, RenewalRequest, ReturnRequestPayload } from '../types';
+import type { EntityId, HoldRequest, RenewalRequest, ReturnRequestPayload } from '../types';
 
 export const useMyRentals = () =>
   useQuery({
@@ -21,7 +21,7 @@ export const useCreateHold = () => {
 export const useCancelRental = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (rentalId: string) => rentalApi.cancelRental(rentalId),
+    mutationFn: (rentalId: EntityId) => rentalApi.cancelRental(rentalId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rentals'] });
     },
@@ -31,7 +31,7 @@ export const useCancelRental = () => {
 export const useRenewRental = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ rentalId, payload }: { rentalId: string; payload: RenewalRequest }) =>
+    mutationFn: ({ rentalId, payload }: { rentalId: EntityId; payload: RenewalRequest }) =>
       rentalApi.renewRental(rentalId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rentals'] });
@@ -43,7 +43,7 @@ export const useRenewRental = () => {
 export const useRequestReturn = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ rentalId, payload }: { rentalId: string; payload: ReturnRequestPayload }) =>
+    mutationFn: ({ rentalId, payload }: { rentalId: EntityId; payload: ReturnRequestPayload }) =>
       rentalApi.requestReturn(rentalId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rentals'] });

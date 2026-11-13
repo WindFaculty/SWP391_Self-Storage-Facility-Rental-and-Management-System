@@ -3,6 +3,7 @@ package com.storage.management.controller;
 import com.storage.management.dto.ManagementDtos.FacilityInputRequest;
 import com.storage.management.dto.ManagementDtos.FacilityOverviewResponse;
 import com.storage.management.dto.ManagementDtos.FacilityStatusRequest;
+import com.storage.management.dto.ManagementDtos.FeeTypeCreateRequest;
 import com.storage.management.dto.ManagementDtos.FeeTypeResponse;
 import com.storage.management.dto.ManagementDtos.FeeTypeUpdateRequest;
 import com.storage.management.dto.ManagementDtos.PolicyRequest;
@@ -52,6 +53,13 @@ public class ManagementOpsController {
     @GetMapping("/fee-types")
     public ApiResponse<List<FeeTypeResponse>> feeTypes() {
         return ApiResponse.success(managementOpsService.feeTypes());
+    }
+
+    @PostMapping("/fee-types")
+    public ResponseEntity<ApiResponse<FeeTypeResponse>> createFeeType(
+            @Valid @RequestBody FeeTypeCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(managementOpsService.createFeeType(request)));
     }
 
     @PutMapping("/fee-types/{feeTypeId}")

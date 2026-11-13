@@ -10,6 +10,7 @@ const RENTAL_STATUS_DOT: Record<RentalStatus, string> = {
   PENDING_PAYMENT: 'bg-text-muted',
   RESERVED: 'bg-info',
   ACTIVE: 'bg-success',
+  RETURN_REQUESTED: 'bg-info',
   OVERDUE: 'bg-danger',
   RETURNED: 'bg-text-muted',
   CANCELLED: 'bg-text-muted',

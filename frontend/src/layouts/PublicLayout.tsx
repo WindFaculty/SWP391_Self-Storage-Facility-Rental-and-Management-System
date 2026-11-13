@@ -37,7 +37,7 @@ export const PublicLayout = () => {
                 Kho Việt
               </span>
               <span className="text-[10px] font-medium uppercase tracking-widest text-text-muted">
-                Self Storage System
+                Hệ thống kho tự quản
               </span>
             </span>
           </Link>

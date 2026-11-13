@@ -81,6 +81,9 @@ public final class OpsDtos {
                                   Long assignedStaffId, Instant scheduledAt, String notes) {
     }
 
+    public record CompleteTaskInput(String notes) {
+    }
+
     public record HandoverInput(AccessMethod accessMethod, String handoverCondition) {
     }
 

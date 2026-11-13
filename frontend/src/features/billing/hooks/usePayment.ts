@@ -3,7 +3,7 @@ import { paymentApi } from '../api/paymentApi';
 
 export const useCreateVnPayUrl = () =>
   useMutation({
-    mutationFn: (invoiceId: string) => paymentApi.createVnPayUrl(invoiceId),
+    mutationFn: (invoiceId: string | number) => paymentApi.createVnPayUrl(invoiceId),
   });
 
 export const usePaymentAttempt = (reference: string) =>

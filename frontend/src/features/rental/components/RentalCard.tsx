@@ -23,10 +23,10 @@ export const RentalCard = ({ rental, onOpenDetail, onRenew, onReturn }: RentalCa
 
   const status = RENTAL_STATUS_DISPLAY[rental.status];
   const isPending = rental.status === 'PENDING_PAYMENT';
-  const canRenew = rental.status === 'ACTIVE';
+  const canRenew = rental.status === 'ACTIVE' || rental.status === 'OVERDUE';
   const canReturn = rental.status === 'ACTIVE' || rental.status === 'OVERDUE';
 
-  const handlePay = (invoiceId: string) => {
+  const handlePay = (invoiceId: string | number) => {
     setActionError(null);
     createVnPayUrl.mutate(invoiceId, {
       onSuccess: ({ paymentUrl }) => window.location.assign(paymentUrl),
@@ -102,7 +102,7 @@ export const RentalCard = ({ rental, onOpenDetail, onRenew, onReturn }: RentalCa
           <Button
             size="sm"
             isLoading={createVnPayUrl.isPending}
-            onClick={() => handlePay(rental.invoiceId as string)}
+            onClick={() => handlePay(String(rental.invoiceId))}
           >
             Thanh toán
           </Button>

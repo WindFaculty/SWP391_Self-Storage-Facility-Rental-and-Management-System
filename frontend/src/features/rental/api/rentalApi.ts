@@ -1,5 +1,6 @@
 import { api } from '../../../api/api'
 import type {
+  EntityId,
   HoldRequest,
   HoldResponse,
   RenewalRequest,
@@ -14,12 +15,12 @@ export const rentalApi = {
 
   listMyRentals: (): Promise<Rental[]> => api.get('/rentals/me'),
 
-  cancelRental: (rentalId: string): Promise<Rental> =>
+  cancelRental: (rentalId: EntityId): Promise<Rental> =>
     api.post(`/rentals/${rentalId}/cancel`),
 
-  renewRental: (rentalId: string, payload: RenewalRequest): Promise<RenewalResponse> =>
+  renewRental: (rentalId: EntityId, payload: RenewalRequest): Promise<RenewalResponse> =>
     api.post(`/rentals/${rentalId}/renewals`, payload),
 
-  requestReturn: (rentalId: string, payload: ReturnRequestPayload): Promise<ReturnResponse> =>
+  requestReturn: (rentalId: EntityId, payload: ReturnRequestPayload): Promise<ReturnResponse> =>
     api.post(`/rentals/${rentalId}/return-requests`, payload),
 }

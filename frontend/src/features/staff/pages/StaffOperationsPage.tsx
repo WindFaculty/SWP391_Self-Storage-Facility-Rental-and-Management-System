@@ -23,7 +23,7 @@ const TASK_TABS: Array<TaskType | 'all'> = [
 
 const STATUS_OPTIONS: TaskStatus[] = ['ASSIGNED', 'IN_PROGRESS', 'DONE']
 
-type FilterKey = 'q' | 'tab' | 'status' | 'slot'
+type FilterKey = 'q' | 'tab' | 'status' | 'slot' | 'day'
 
 export function StaffOperationsPage() {
   const { activeFacilityId, facilitiesInScope } = useSession()
@@ -39,12 +39,14 @@ export function StaffOperationsPage() {
     const tabParam = searchParams.get('tab')
     const statusParam = searchParams.get('status')
     const slotParam = searchParams.get('slot')
+    const dayParam = searchParams.get('day')
+    const day = dayParam === 'upcoming' || dayParam === 'all' ? dayParam : 'today'
     return {
       facilityId,
       tab: tabParam && TASK_TABS.includes(tabParam as TaskType) ? (tabParam as TaskType) : 'all',
       status: statusParam && statusParam in TASK_STATUS_LABELS ? (statusParam as TaskStatus) : null,
       slot: slotParam === 'morning' || slotParam === 'afternoon' ? (slotParam as TaskSlot) : 'all',
-      day: 'today',
+      day,
       rentalId: null,
       search: searchParams.get('q') ?? '',
     }
@@ -72,7 +74,7 @@ export function StaffOperationsPage() {
     setPage(1)
   }
 
-  const hasActiveFilters = Boolean(filters.search || filters.status || filters.slot !== 'all')
+  const hasActiveFilters = Boolean(filters.search || filters.status || filters.slot !== 'all' || filters.day !== 'today')
 
   const taskCount = Object.values(summary.byStatus).reduce((total, value) => total + value, 0)
 
@@ -100,9 +102,20 @@ export function StaffOperationsPage() {
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg">
         <div>
           <p className="text-badge-caption uppercase tracking-wider text-text-muted">
-            Ca trực hôm nay{facility ? ` • ${facility.name}` : ''}
+            {filters.day === 'upcoming'
+              ? 'Lịch trực sắp tới'
+              : filters.day === 'all'
+                ? 'Toàn bộ lịch trực'
+                : 'Ca trực hôm nay'}
+            {facility ? ` • ${facility.name}` : ''}
           </p>
-          <h1 className="mt-1 text-page-title text-text-main">Công việc hôm nay</h1>
+          <h1 className="mt-1 text-page-title text-text-main">
+            {filters.day === 'upcoming'
+              ? 'Công việc sắp tới'
+              : filters.day === 'all'
+                ? 'Tất cả công việc'
+                : 'Công việc hôm nay'}
+          </h1>
           <p className="mt-space-xs text-body-default text-text-muted">
             Điều phối lượt khách nhận kho, kiểm định trả kho và công việc được phân công tại cơ sở.
           </p>
@@ -159,6 +172,20 @@ export function StaffOperationsPage() {
             className="w-full h-11 rounded-lg border border-border-hairline bg-surface pl-10 pr-space-md text-body-default text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring"
           />
         </div>
+
+        <label htmlFor="task-day-filter" className="sr-only">
+          Ngày thực hiện
+        </label>
+        <select
+          id="task-day-filter"
+          value={filters.day}
+          onChange={(event) => setFilter('day', event.target.value === 'today' ? '' : event.target.value)}
+          className="h-11 rounded-lg border border-border-hairline bg-surface px-space-md text-body-default text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring lg:w-[160px]"
+        >
+          <option value="today">Hôm nay</option>
+          <option value="upcoming">Sắp tới</option>
+          <option value="all">Tất cả ngày</option>
+        </select>
 
         <label htmlFor="task-slot-filter" className="sr-only">
           Khung giờ

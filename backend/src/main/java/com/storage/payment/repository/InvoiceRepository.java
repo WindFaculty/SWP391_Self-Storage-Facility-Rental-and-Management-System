@@ -11,4 +11,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     List<Invoice> findByRentalIdInOrderByCreatedAtDesc(List<Long> rentalIds);
 
     List<Invoice> findByRentalIdIn(List<Long> rentalIds);
+
+    boolean existsByRentalIdAndTypeAndStatus(Long rentalId, Invoice.Type type, Invoice.Status status);
 }

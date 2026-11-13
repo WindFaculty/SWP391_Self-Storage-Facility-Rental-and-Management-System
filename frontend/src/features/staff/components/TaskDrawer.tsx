@@ -510,7 +510,10 @@ function RentalSummary({ rental }: { rental: Rental }) {
   return (
     <>
       <dl className="mt-space-sm">
-        <SpecRow label="Khách thuê" value={`${rental.customerName} • ${rental.customerPhone}`} />
+        <SpecRow
+          label="Khách thuê"
+          value={rental.customerPhone ? `${rental.customerName} • ${rental.customerPhone}` : rental.customerName}
+        />
         <SpecRow label="Kho" value={`${rental.unitCode} (${rental.unitTypeName})`} />
         <SpecRow
           label="Thời hạn thuê"

@@ -32,7 +32,7 @@ export function RentalDrawer({ rental, tasks, tasksLoading, onClose, onAssign }:
         <h3 className="text-subsection text-text-main">Khách thuê</h3>
         <dl className="mt-space-sm">
           <SpecRow label="Khách hàng" value={rental.customerName} />
-          <SpecRow label="Điện thoại" value={rental.customerPhone} />
+          <SpecRow label="Điện thoại" value={rental.customerPhone ?? '—'} />
         </dl>
       </section>
 

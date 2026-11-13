@@ -15,6 +15,7 @@ export const RENTAL_STATUS_LABELS: Record<RentalStatus, string> = {
   PENDING_PAYMENT: 'Chờ thanh toán',
   RESERVED: 'Chờ nhận kho',
   ACTIVE: 'Đang thuê',
+  RETURN_REQUESTED: 'Đã yêu cầu trả kho',
   OVERDUE: 'Quá hạn',
   RETURNED: 'Đã trả kho',
   CANCELLED: 'Đã hủy',
@@ -58,7 +59,7 @@ export function daysUntilDate(dateIso: string, today: Date): number {
 }
 
 export function isRentalExpiring(rental: Rental, today: Date): boolean {
-  if (rental.status !== 'ACTIVE') {
+  if (rental.status !== 'ACTIVE' && rental.status !== 'RETURN_REQUESTED') {
     return false
   }
   const days = daysUntilDate(rental.endDate, today)
@@ -72,7 +73,7 @@ export function matchesRentalTab(rental: Rental, tab: RentalTab, today: Date): b
     case 'reserved':
       return rental.status === 'RESERVED'
     case 'active':
-      return rental.status === 'ACTIVE'
+      return rental.status === 'ACTIVE' || rental.status === 'RETURN_REQUESTED'
     case 'expiring':
       return isRentalExpiring(rental, today)
     case 'overdue':
@@ -95,7 +96,9 @@ export function filterRentals(rentals: Rental[], filters: RentalFilters, today: 
     .filter((rental) => (filters.unitTypeId ? rental.unitTypeId === filters.unitTypeId : true))
     .filter((rental) =>
       search
-        ? `#${rental.id} ${rental.customerName} ${rental.customerPhone} ${rental.unitCode}`
+        ? [`#${rental.id}`, rental.customerName, rental.customerPhone, rental.unitCode]
+            .filter(Boolean)
+            .join(' ')
             .toLowerCase()
             .includes(search)
         : true,
@@ -117,8 +120,15 @@ export function canHandover(rental: Rental): { allowed: boolean; reason?: string
 }
 
 export function canReturn(rental: Rental): { allowed: boolean; reason?: string } {
-  if (rental.status !== 'ACTIVE' && rental.status !== 'OVERDUE') {
-    return { allowed: false, reason: 'Chỉ xác nhận trả kho với hợp đồng đang thuê hoặc quá hạn.' }
+  if (
+    rental.status !== 'ACTIVE' &&
+    rental.status !== 'OVERDUE' &&
+    rental.status !== 'RETURN_REQUESTED'
+  ) {
+    return {
+      allowed: false,
+      reason: 'Chỉ xác nhận trả kho với hợp đồng đang thuê hoặc quá hạn (kể cả đã yêu cầu trả kho).',
+    }
   }
   return { allowed: true }
 }

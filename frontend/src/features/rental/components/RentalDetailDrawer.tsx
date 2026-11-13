@@ -19,7 +19,7 @@ export const RentalDetailDrawer = ({ rental, invoices, onClose }: RentalDetailDr
   if (!rental) return null;
 
   const status = RENTAL_STATUS_DISPLAY[rental.status];
-  const relatedInvoices = invoices.filter((invoice) => invoice.rentalId === rental.id);
+  const relatedInvoices = invoices.filter((invoice) => String(invoice.rentalId) === String(rental.id));
 
   return (
     <Drawer open title="Chi tiết đơn thuê" onClose={onClose}>

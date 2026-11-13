@@ -8,7 +8,14 @@ import type { Rental, StaffMember, TaskType } from '../types'
 const INPUT_CLASS =
   'mt-space-xs w-full h-11 rounded-lg border border-border-hairline bg-surface px-space-md text-body-default text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring'
 
-const ASSIGNABLE_TYPES: TaskType[] = ['HANDOVER', 'RETURN_INSPECTION', 'UNIT_INSPECTION']
+function getAllowedTaskTypes(status: Rental['status']): TaskType[] {
+  if (status === 'RESERVED') return ['HANDOVER']
+  if (status === 'ACTIVE' || status === 'OVERDUE' || status === 'RETURN_REQUESTED') {
+    return ['RETURN_INSPECTION']
+  }
+  if (status === 'RETURNED') return ['UNIT_INSPECTION']
+  return []
+}
 
 export function toDatetimeLocalValue(iso: string): string {
   const date = new Date(iso)
@@ -32,10 +39,16 @@ interface AssignTaskModalProps {
 }
 
 export function AssignTaskModal({ rental, staff, defaultType, onClose, onSubmit }: AssignTaskModalProps) {
-  const [taskType, setTaskType] = useState<TaskType>(defaultType)
+  const allowedTypes = getAllowedTaskTypes(rental.status)
+  const initialType = allowedTypes.includes(defaultType) ? defaultType : (allowedTypes[0] ?? defaultType)
+  const [taskType, setTaskType] = useState<TaskType>(initialType)
   const [assignedStaffId, setAssignedStaffId] = useState<number>(staff[0]?.id ?? 0)
   const [scheduledLocal, setScheduledLocal] = useState(
-    toDatetimeLocalValue(rental.appointmentAt ?? new Date().toISOString()),
+    toDatetimeLocalValue(
+      initialType === 'HANDOVER' && rental.appointmentAt
+        ? rental.appointmentAt
+        : new Date().toISOString(),
+    ),
   )
   const [notes, setNotes] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -43,6 +56,10 @@ export function AssignTaskModal({ rental, staff, defaultType, onClose, onSubmit 
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
+    if (!allowedTypes.includes(taskType)) {
+      setError('Loại công việc không phù hợp với trạng thái hợp đồng.')
+      return
+    }
     if (!assignedStaffId) {
       setError('Chọn nhân viên phụ trách.')
       return
@@ -87,14 +104,24 @@ export function AssignTaskModal({ rental, staff, defaultType, onClose, onSubmit 
             id="task-type"
             value={taskType}
             onChange={(event) => setTaskType(event.target.value as TaskType)}
+            disabled={allowedTypes.length === 0}
             className={INPUT_CLASS}
           >
-            {ASSIGNABLE_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {TASK_TYPE_LABELS[type]}
-              </option>
-            ))}
+            {allowedTypes.length > 0 ? (
+              allowedTypes.map((type) => (
+                <option key={type} value={type}>
+                  {TASK_TYPE_LABELS[type]}
+                </option>
+              ))
+            ) : (
+              <option value="">Không khả dụng cho trạng thái này</option>
+            )}
           </select>
+          {allowedTypes.length === 0 && (
+            <p className="mt-1 text-label-help text-warning">
+              Hợp đồng ở trạng thái này không thể giao thêm công việc.
+            </p>
+          )}
         </div>
 
         <div className="mt-space-lg">
@@ -151,7 +178,7 @@ export function AssignTaskModal({ rental, staff, defaultType, onClose, onSubmit 
           <Button variant="outline" onClick={onClose} disabled={submitting}>
             Hủy
           </Button>
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" disabled={submitting || allowedTypes.length === 0}>
             {submitting ? 'Đang lưu…' : 'Phân công'}
           </Button>
         </div>

@@ -20,7 +20,7 @@ public final class RentalStateMachineSelfCheck {
             RentalStatus.PENDING_PAYMENT, Set.of(RentalStatus.RESERVED, RentalStatus.CANCELLED, RentalStatus.EXPIRED),
             RentalStatus.RESERVED, Set.of(RentalStatus.ACTIVE, RentalStatus.CANCELLED),
             RentalStatus.ACTIVE, Set.of(RentalStatus.OVERDUE, RentalStatus.RETURNED, RentalStatus.RETURN_REQUESTED),
-            RentalStatus.OVERDUE, Set.of(RentalStatus.RETURNED, RentalStatus.RETURN_REQUESTED),
+            RentalStatus.OVERDUE, Set.of(RentalStatus.RETURNED, RentalStatus.RETURN_REQUESTED, RentalStatus.ACTIVE),
             RentalStatus.RETURN_REQUESTED, Set.of(RentalStatus.RETURNED, RentalStatus.ACTIVE),
             RentalStatus.EXPIRED, Set.of(RentalStatus.RESERVED),
             RentalStatus.RETURNED, Set.of(),

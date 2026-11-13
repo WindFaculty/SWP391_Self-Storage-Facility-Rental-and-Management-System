@@ -6,7 +6,7 @@ export interface VnPayUrlResponse {
 }
 
 export const paymentApi = {
-  createVnPayUrl: (invoiceId: string): Promise<VnPayUrlResponse> =>
+  createVnPayUrl: (invoiceId: string | number): Promise<VnPayUrlResponse> =>
     api.post('/payments/vnpay/url', { invoiceId }),
 
   getAttempt: (reference: string): Promise<PaymentAttempt> =>

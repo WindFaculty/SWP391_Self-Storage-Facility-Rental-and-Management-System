@@ -18,6 +18,7 @@ const EMPTY_RENTAL_SUMMARY: RentalSummary = {
     PENDING_PAYMENT: 0,
     RESERVED: 0,
     ACTIVE: 0,
+    RETURN_REQUESTED: 0,
     OVERDUE: 0,
     RETURNED: 0,
     CANCELLED: 0,

@@ -60,6 +60,7 @@ export type RentalStatus =
   | 'PENDING_PAYMENT'
   | 'RESERVED'
   | 'ACTIVE'
+  | 'RETURN_REQUESTED'
   | 'OVERDUE'
   | 'RETURNED'
   | 'CANCELLED'
@@ -81,7 +82,7 @@ export interface Rental {
   id: number
   facilityId: number
   customerName: string
-  customerPhone: string
+  customerPhone: string | null
   unitId: number
   unitCode: string
   unitTypeId: number
@@ -137,7 +138,7 @@ export interface TaskFilters {
   tab: TaskType | 'all'
   status: TaskStatus | null
   slot: TaskSlot
-  day: 'today' | 'all'
+  day: 'today' | 'upcoming' | 'all'
   rentalId: number | null
   search: string
 }

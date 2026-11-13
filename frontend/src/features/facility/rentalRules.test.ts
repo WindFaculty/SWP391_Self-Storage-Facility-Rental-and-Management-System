@@ -136,12 +136,26 @@ describe('canHandover', () => {
 })
 
 describe('canReturn', () => {
-  it('allows ACTIVE and OVERDUE rentals only', () => {
+  it('allows ACTIVE, RETURN_REQUESTED and OVERDUE rentals only', () => {
     expect(canReturn(makeRental({ status: 'ACTIVE' })).allowed).toBe(true)
+    expect(canReturn(makeRental({ status: 'RETURN_REQUESTED' })).allowed).toBe(true)
     expect(canReturn(makeRental({ status: 'OVERDUE' })).allowed).toBe(true)
     expect(canReturn(makeRental({ status: 'RETURNED' })).allowed).toBe(false)
     expect(canReturn(makeRental({ status: 'RESERVED' })).allowed).toBe(false)
     expect(canReturn(makeRental({ status: 'CANCELLED' })).reason).toContain('đang thuê hoặc quá hạn')
+  })
+})
+
+describe('RETURN_REQUESTED tab & expiring handling', () => {
+  it('keeps RETURN_REQUESTED rentals in active tab and flags expiring/overdue window', () => {
+    const requestedSoon = makeRental({ status: 'RETURN_REQUESTED', endDate: '2026-01-20' })
+    const requestedLater = makeRental({ status: 'RETURN_REQUESTED', endDate: '2026-04-01' })
+    expect(matchesRentalTab(requestedSoon, 'active', TODAY)).toBe(true)
+    expect(matchesRentalTab(requestedSoon, 'expiring', TODAY)).toBe(true)
+    expect(isRentalExpiring(requestedSoon, TODAY)).toBe(true)
+    expect(isRentalExpiring(requestedLater, TODAY)).toBe(false)
+    expect(matchesRentalTab(requestedSoon, 'reserved', TODAY)).toBe(false)
+    expect(matchesRentalTab(requestedSoon, 'ended', TODAY)).toBe(false)
   })
 })
 
