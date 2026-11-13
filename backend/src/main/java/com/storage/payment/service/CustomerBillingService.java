@@ -10,6 +10,7 @@ import com.storage.shared.exception.BusinessException;
 import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.exception.NotFoundException;
 import com.storage.rental.entity.Rental;
+import com.storage.rental.entity.RentalStatus;
 import com.storage.rental.repository.RentalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,12 +85,28 @@ public class CustomerBillingService {
         Invoice invoice = invoices.findById(invoiceId)
                 .filter(candidate -> ownsRental(customerId, candidate.getRentalId()))
                 .orElseThrow(() -> new NotFoundException(ErrorCode.INVOICE_NOT_FOUND));
+        if (invoice.getStatus() != Invoice.Status.PENDING) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Hóa đơn không còn chờ thanh toán.");
+        }
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(Duration.ofMinutes(15));
+        if (invoice.getType() == Invoice.Type.RENTAL) {
+            Rental rental = rentals.findById(invoice.getRentalId())
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.RENTAL_NOT_FOUND));
+            if (rental.getStatus() != RentalStatus.PENDING_PAYMENT
+                    || !rental.getPaymentExpiresAt().isAfter(now)) {
+                throw new BusinessException(ErrorCode.BAD_REQUEST,
+                        "Đơn giữ chỗ đã hết hạn hoặc không còn chờ thanh toán. Vui lòng đặt kho mới.");
+            }
+            // Do not issue a fresh 15-minute gateway session beyond the remaining hold.
+            if (rental.getPaymentExpiresAt().isBefore(expiresAt)) {
+                expiresAt = rental.getPaymentExpiresAt();
+            }
+        }
         PaymentAttempt attempt = paymentService.startAttempt(invoice.getId(), invoiceTotal(invoice),
                 "VNPAY", "VNP-" + invoice.getId() + "-"
-                        + java.util.UUID.randomUUID().toString().replace("-", "")
-                        .substring(0, 12).toUpperCase(java.util.Locale.ROOT));
-        Instant now = Instant.now();
-        Instant expiresAt = now.plus(java.time.Duration.ofMinutes(15));
+                        + UUID.randomUUID().toString().replace("-", "")
+                        .substring(0, 12).toUpperCase(Locale.ROOT));
         return vnPayService.createPaymentUrl(attempt, ClientIp.of(httpRequest), now, expiresAt);
     }
 

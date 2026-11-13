@@ -35,7 +35,7 @@ export const PaymentResultPage = () => {
   const statusDisplay = attempt ? PAYMENT_ATTEMPT_STATUS_DISPLAY[attempt.status] : null;
 
   return (
-    <section className="page-container px-4 py-16 sm:px-6 lg:px-10">
+    <section className="page-container px-4 py-16 sm:px-6 lg:px-10 text-center">
       <h1 className="text-page-title text-text-main">Kết quả thanh toán</h1>
       <p className="mt-2 text-table text-text-muted">
         Mã giao dịch: <strong className="text-text-main">{reference}</strong>
@@ -51,13 +51,13 @@ export const PaymentResultPage = () => {
           <strong className={gatewayReportedSuccess ? 'text-success' : 'text-danger'}>
             {gatewayReportedSuccess ? 'giao dịch thành công' : 'giao dịch không thành công'}
           </strong>
-          . Trạng thái cuối cùng bên dưới do hệ thống xác nhận qua IPN.
+          . Trạng thái bên dưới được xác nhận bởi hệ thống.
         </p>
       ) : null}
 
       <div className="mt-6">
         {attemptQuery.isPending ? (
-          <div className="flex flex-col items-center gap-4 rounded-lg border border-border-hairline bg-surface px-6 py-12">
+          <div className="flex flex-col items-center gap-4 rounded-lg border border-border-hairline bg-surface px-6 py-12 text-center">
             <LoadingSpinner size="lg" />
             <p className="text-body text-text-muted">
               Đang xác nhận giao dịch với hệ thống… Trang sẽ tự cập nhật.
