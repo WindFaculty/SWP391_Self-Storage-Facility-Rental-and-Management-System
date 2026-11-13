@@ -36,6 +36,7 @@ import com.storage.shared.exception.BusinessException;
 import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.exception.NotFoundException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -191,6 +194,7 @@ throw new BusinessException(ErrorCode.BAD_REQUEST,
     @Transactional
     public List<RentalResponse> listMine(Long customerId) {
         expireStaleHolds();
+        markOverdueRentals();
         return rentals.findByCustomerIdOrderByCreatedAtDesc(customerId).stream()
                 .map(rental -> toResponse(rental, enrich(rental)))
                 .toList();
@@ -199,6 +203,7 @@ throw new BusinessException(ErrorCode.BAD_REQUEST,
     @Transactional
     public RentalResponse getMine(Long customerId, Long rentalId) {
         expireStaleHolds();
+        markOverdueRentals();
         Rental rental = ownedRental(customerId, rentalId);
         return toResponse(rental, enrich(rental));
     }
@@ -252,8 +257,15 @@ throw new BusinessException(ErrorCode.BAD_REQUEST,
 
     private Long firstStaffOf(Long facilityId) {
         List<User> staff = users.findByFacilityIdAndRoleInAndStatus(facilityId,
-                List.of(UserRole.FACILITY_STAFF, UserRole.FACILITY_MANAGER), UserStatus.ACTIVE);
-        return staff.isEmpty() ? null : staff.get(0).getId();
+                List.of(UserRole.FACILITY_STAFF), UserStatus.ACTIVE);
+        if (staff.isEmpty()) {
+            staff = users.findByFacilityIdAndRoleInAndStatus(facilityId,
+                    List.of(UserRole.FACILITY_MANAGER), UserStatus.ACTIVE);
+        }
+        return staff.stream()
+                .map(User::getId)
+                .min(Long::compareTo)
+                .orElse(null);
     }
 
     private void expirePendingInvoices(Long rentalId) {
@@ -279,6 +291,36 @@ throw new BusinessException(ErrorCode.BAD_REQUEST,
             expirePendingInvoices(rental.getId());
         }
         return stale.size();
+    }
+
+    /**
+     * Marks expired active rentals as OVERDUE after the policy grace window and creates
+     * a pending overdue penalty invoice idempotently when a daily penalty rate applies.
+     */
+    @Scheduled(fixedDelay = 60_000)
+    @Transactional
+    public int markOverdueRentals() {
+        BusinessPolicy policy = policies.findById(BusinessPolicy.ID).orElse(null);
+        int graceDays = policy == null ? 0 : policy.getOverdueGraceDays();
+        BigDecimal feePerDay = policy == null || policy.getOverdueFeePerDay() == null
+                ? BigDecimal.ZERO
+                : policy.getOverdueFeePerDay();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDate cutoff = today.minusDays(graceDays);
+        List<Rental> overdue = rentals.findByStatusAndEndDateBefore(RentalStatus.ACTIVE, cutoff);
+        for (Rental rental : overdue) {
+            rental.transitionTo(RentalStatus.OVERDUE);
+            if (feePerDay.signum() > 0 && !invoices.existsByRentalIdAndTypeAndStatus(
+                    rental.getId(), Invoice.Type.OVERDUE, Invoice.Status.PENDING)) {
+                long overdueDays = Math.max(1L, ChronoUnit.DAYS.between(rental.getEndDate(), today));
+                BigDecimal penalty = feePerDay.multiply(BigDecimal.valueOf(overdueDays))
+                        .setScale(2, RoundingMode.HALF_UP);
+                Instant dueAt = Instant.now().plus(3, ChronoUnit.DAYS);
+                invoices.save(Invoice.create(Invoice.Type.OVERDUE, rental.getId(), null, null,
+                        "Phí quá hạn (" + overdueDays + " ngày)", penalty, BigDecimal.ZERO, dueAt));
+            }
+        }
+        return overdue.size();
     }
 
     private BigDecimal depositOf(BigDecimal monthlyPrice, int months) {

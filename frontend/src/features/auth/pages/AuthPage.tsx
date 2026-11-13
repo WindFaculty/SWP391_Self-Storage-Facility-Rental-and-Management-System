@@ -65,7 +65,7 @@ export const AuthPage = () => {
                     Kho Việt
                   </span>
                   <span className="mt-1 text-[10px] font-medium uppercase tracking-widest text-text-muted">
-                    Smart Spatial Storage
+                    Hệ thống kho tự quản
                   </span>
                 </div>
               </div>
@@ -75,8 +75,7 @@ export const AuthPage = () => {
                   {tab === 'login' ? 'Chào mừng bạn quay lại' : 'Tạo tài khoản thuê kho'}
                 </h1>
                 <p className="text-body text-text-muted">
-                  Organized space, quieter life. Không gian lưu trữ cá nhân và doanh nghiệp thông
-                  minh.
+                  Không gian lưu trữ cá nhân và doanh nghiệp thông minh, minh bạch chi phí.
                 </p>
               </div>
 
@@ -111,12 +110,59 @@ export const AuthPage = () => {
             <footer className="text-badge text-text-muted">Kho Việt — SWP391</footer>
           </section>
 
-          <section className="relative hidden overflow-hidden bg-forest-900 lg:flex lg:w-[55%] lg:flex-col lg:justify-end">
-            <div className="flex flex-col gap-6 p-12 text-white">
+          <section className="relative hidden overflow-hidden bg-forest-900 lg:flex lg:w-[55%] lg:flex-col lg:justify-between p-12 text-white">
+            <div className="flex items-center justify-between gap-4">
+              <span className="rounded-full border border-forest-tint/20 bg-white/5 px-3 py-1 text-badge uppercase tracking-widest text-forest-tint/90">
+                Kho Việt • Quản lý kho thông minh
+              </span>
+              <span className="text-badge text-forest-tint/70">Đặt kho trực tuyến 24/7</span>
+            </div>
+
+            <div className="my-auto py-8 flex flex-col gap-8">
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                viewBox="0 0 420 210"
+                className="w-full max-w-[420px] text-forest-tint"
+                fill="none"
+              >
+                <rect x="8" y="12" width="404" height="186" rx="16" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1.5" />
+                <rect x="28" y="34" width="112" height="68" rx="8" fill="currentColor" fillOpacity="0.08" stroke="currentColor" strokeOpacity="0.32" />
+                <rect x="154" y="34" width="112" height="68" rx="8" fill="currentColor" fillOpacity="0.14" stroke="currentColor" strokeOpacity="0.48" />
+                <rect x="280" y="34" width="112" height="68" rx="8" fill="currentColor" fillOpacity="0.08" stroke="currentColor" strokeOpacity="0.32" />
+                <rect x="28" y="114" width="174" height="64" rx="8" fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeOpacity="0.4" />
+                <rect x="216" y="114" width="176" height="64" rx="8" fill="currentColor" fillOpacity="0.06" stroke="currentColor" strokeOpacity="0.28" />
+                <circle cx="52" cy="58" r="8" fill="currentColor" fillOpacity="0.45" />
+                <path d="M68 58h52M44 78h72" stroke="currentColor" strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="178" cy="58" r="8" fill="#52B788" />
+                <path d="M194 58h52M170 78h72" stroke="currentColor" strokeOpacity="0.65" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="304" cy="58" r="8" fill="currentColor" fillOpacity="0.45" />
+                <path d="M320 58h52M296 78h72" stroke="currentColor" strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" />
+                <path d="M46 138h92M46 156h126" stroke="currentColor" strokeOpacity="0.55" strokeWidth="2" strokeLinecap="round" />
+                <path d="M234 138h90M234 156h128" stroke="currentColor" strokeOpacity="0.35" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+
+              <div className="grid grid-cols-3 gap-4 max-w-xl">
+                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <p className="text-badge uppercase tracking-wider text-forest-tint/70">Diện tích linh hoạt</p>
+                  <p className="mt-1 text-body font-semibold text-white">2 – 30 m²</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <p className="text-badge uppercase tracking-wider text-forest-tint/70">Bảng giá rõ ràng</p>
+                  <p className="mt-1 text-body font-semibold text-white">Không phí ẩn</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+                  <p className="text-badge uppercase tracking-wider text-forest-tint/70">Bàn giao hẹn trước</p>
+                  <p className="mt-1 text-body font-semibold text-white">Nhanh trong ngày</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
               <span className="text-badge uppercase tracking-widest text-forest-tint/80">
                 Triết lý không gian
               </span>
-              <blockquote className="max-w-xl font-serif text-[36px] leading-[44px] text-forest-tint">
+              <blockquote className="max-w-xl font-serif text-[34px] leading-[42px] text-forest-tint">
                 “Giải phóng không gian sống, bắt đầu từ một quyết định tinh gọn.”
               </blockquote>
               <p className="max-w-md text-body text-forest-tint/80">

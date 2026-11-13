@@ -6,6 +6,8 @@ import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
 import com.storage.rental.entity.Rental;
 import com.storage.rental.entity.RentalStatus;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import com.storage.rental.repository.RentalRenewalRepository;
 import com.storage.rental.repository.RentalRepository;
 import java.math.BigDecimal;
@@ -82,11 +84,16 @@ public class PaymentService {
                     .ifPresent(rental -> rental.transitionTo(RentalStatus.RESERVED));
         } else if (invoice.getType() == Invoice.Type.RENEWAL
                 && invoice.getRenewalId() != null) {
+            LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
             renewalRepository.findById(invoice.getRenewalId())
                     .ifPresent(renewal -> rentalRepository.findById(invoice.getRentalId())
                             .ifPresent(rental -> {
                                 rental.extendTo(renewal.getRequestedEndDate());
                                 renewal.apply(paidAt == null ? Instant.now() : paidAt);
+                                if (rental.getStatus() == RentalStatus.OVERDUE
+                                        && !rental.getEndDate().isBefore(today)) {
+                                    rental.transitionTo(RentalStatus.ACTIVE);
+                                }
                             }));
         }
         return attempt;

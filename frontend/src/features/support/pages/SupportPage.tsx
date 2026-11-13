@@ -42,7 +42,7 @@ export const SupportPage = () => {
   const rentalOptions = [
     { value: '', label: 'Chọn đơn thuê' },
     ...rentals.map((rental) => ({
-      value: rental.id,
+      value: String(rental.id),
       label: `${rental.facilityName ?? 'Cơ sở'} · ${rental.unitCode ?? rental.unitTypeName ?? 'Kho'}`,
     })),
   ];
@@ -61,7 +61,7 @@ export const SupportPage = () => {
       setError('Vui lòng chọn đơn thuê liên quan đến yêu cầu.');
       return;
     }
-    const selectedRental = rentals.find((rental) => rental.id === rentalId);
+    const selectedRental = rentals.find((rental) => String(rental.id) === String(rentalId));
     if (!selectedRental) {
       setError('Không tìm thấy đơn thuê đã chọn. Vui lòng tải lại trang.');
       return;

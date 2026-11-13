@@ -3,6 +3,7 @@ package com.storage.payment.controller;
 import com.storage.payment.service.VnPayIpnService;
 import com.storage.payment.service.VnPayService;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,23 @@ public class VnPayController {
     private final VnPayIpnService vnPayIpnService;
     private final VnPayService vnPayService;
     private final String frontendReturnUrl;
+    private final boolean confirmOnReturn;
 
     public VnPayController(VnPayIpnService vnPayIpnService, VnPayService vnPayService,
                            @Value("${vnpay.frontend-return-url:http://localhost:5173/payment/result}")
                            String frontendReturnUrl) {
+        this(vnPayIpnService, vnPayService, frontendReturnUrl, false);
+    }
+
+    @Autowired
+    public VnPayController(VnPayIpnService vnPayIpnService, VnPayService vnPayService,
+                           @Value("${vnpay.frontend-return-url:http://localhost:5173/payment/result}")
+                           String frontendReturnUrl,
+                           @Value("${vnpay.confirm-on-return:false}") boolean confirmOnReturn) {
         this.vnPayIpnService = vnPayIpnService;
         this.vnPayService = vnPayService;
         this.frontendReturnUrl = frontendReturnUrl;
+        this.confirmOnReturn = confirmOnReturn;
     }
 
     @GetMapping("/ipn")
@@ -44,6 +55,9 @@ public class VnPayController {
             redirect.queryParam("vnp_TxnRef", txnRef);
         }
         if (verified) {
+            if (confirmOnReturn) {
+                vnPayIpnService.handleIpn(params);
+            }
             String responseCode = params.get("vnp_ResponseCode");
             String transactionStatus = params.get("vnp_TransactionStatus");
             if (StringUtils.hasText(responseCode)) {

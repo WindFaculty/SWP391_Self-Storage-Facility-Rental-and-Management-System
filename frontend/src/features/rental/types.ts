@@ -9,26 +9,28 @@ export type RentalStatus =
   | 'RETURNED'
   | 'CANCELLED';
 
+export type EntityId = string | number
+
 export interface Rental {
-  id: string;
+  id: EntityId;
   status: RentalStatus;
-  facilityId: string;
+  facilityId: EntityId;
   facilityName?: string | null;
-  unitId?: string | null;
+  unitId?: EntityId | null;
   unitCode?: string | null;
-  unitTypeId: string;
+  unitTypeId: EntityId;
   unitTypeName?: string | null;
   startDate: string;
   endDate: string;
   monthlyPrice: number;
   holdExpiresAt?: string | null;
-  invoiceId?: string | null;
+  invoiceId?: EntityId | null;
   createdAt?: string | null;
 }
 
 export interface HoldRequest {
-  facilityId: string;
-  unitTypeId: string;
+  facilityId: EntityId;
+  unitTypeId: EntityId;
   startDate: string;
   rentalMonths: number;
   note?: string;

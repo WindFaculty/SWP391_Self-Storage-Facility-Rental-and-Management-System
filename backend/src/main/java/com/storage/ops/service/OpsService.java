@@ -46,6 +46,7 @@ import com.storage.rental.entity.TaskStatus;
 import com.storage.rental.entity.TaskType;
 import com.storage.rental.repository.RentalRepository;
 import com.storage.rental.repository.StaffTaskRepository;
+import com.storage.rental.service.RentalService;
 import com.storage.shared.exception.BusinessException;
 import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.exception.NotFoundException;
@@ -61,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -84,7 +85,8 @@ import java.util.stream.Collectors;
 @Service
 public class OpsService {
 
-    private static final int EXPIRING_WINDOW_DAYS = 30;
+    private static final int EXPIRING_WINDOW_DAYS = 14;
+    private static final ZoneId BIZ_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     private static final List<String> TABS =
             List.of("reserved", "active", "expiring", "overdue", "ended");
     private static final Set<UserRole> FACILITY_ROLES =
@@ -100,6 +102,7 @@ public class OpsService {
     private final SupportTicketRepository tickets;
     private final FacilityAccessService facilityAccess;
     private final Analytics analytics;
+    private final RentalService rentalService;
 
     public OpsService(FacilityRepository facilities,
                       UnitTypeRepository unitTypes,
@@ -110,7 +113,8 @@ public class OpsService {
                       InvoiceRepository invoices,
                       SupportTicketRepository tickets,
                       FacilityAccessService facilityAccess,
-                      Analytics analytics) {
+                      Analytics analytics,
+                      RentalService rentalService) {
         this.facilities = facilities;
         this.unitTypes = unitTypes;
         this.units = units;
@@ -121,6 +125,7 @@ public class OpsService {
         this.tickets = tickets;
         this.facilityAccess = facilityAccess;
         this.analytics = analytics;
+        this.rentalService = rentalService;
     }
 
     // ---------- catalog ----------
@@ -217,10 +222,11 @@ public class OpsService {
 
     // ---------- rentals ----------
 
-    @Transactional(readOnly = true)
+    @Transactional
     public RentalList rentals(Long facilityId, String tab, String search, String paymentState,
                               Long unitTypeId) {
         requireAccess(facilityId);
+        rentalService.markOverdueRentals();
         List<Rental> all = rentals.findByFacilityId(facilityId);
         Lookup lookup = lookup(all, List.of(), List.of());
         List<RentalDto> items = all.stream()
@@ -260,27 +266,30 @@ public class OpsService {
     @Transactional(readOnly = true)
     public TaskList tasks(Long facilityId, String tab, TaskStatus status, String slot, String day,
                           Long rentalId, String search, boolean onlyMine) {
+        requireAccess(facilityId);
         List<Long> staffIds = onlyMine
                 ? List.of(SecurityUtils.requireCurrentUserId())
                 : staffIdsOf(facilityId);
         List<StaffTask> all = staffIds.isEmpty() ? List.of()
                 : staffTasks.findByAssignedStaffIdIn(staffIds);
         Lookup lookup = lookup(List.of(), all, List.of());
-        List<StaffTaskDto> items = all.stream()
+        List<StaffTask> visible = all.stream()
                 .filter(task -> task.getStatus() != TaskStatus.CANCELLED)
+                .toList();
+        List<StaffTask> dayScoped = (day == null || "all".equals(day))
+                ? visible
+                : visible.stream().filter(task -> matchesDay(task, day)).toList();
+        List<StaffTaskDto> items = dayScoped.stream()
                 .filter(task -> rentalId == null || Objects.equals(task.getRentalId(), rentalId))
                 .filter(task -> tab == null || "all".equals(tab)
                         || task.getTaskType().name().equals(tab))
                 .filter(task -> status == null || task.getStatus() == status)
                 .filter(task -> slot == null || "all".equals(slot) || matchesSlot(task, slot))
-                .filter(task -> day == null || "all".equals(day) || isToday(task))
                 .filter(task -> matchesTask(task, search, lookup))
                 .map(task -> toTaskDto(task, lookup))
                 .toList();
-        List<StaffTask> open = all.stream()
-                .filter(task -> task.getStatus() != TaskStatus.CANCELLED).toList();
-        return new TaskList(items, new TaskSummary(tally(open, TaskStatus.class,
-                StaffTask::getStatus), tally(open, TaskType.class, StaffTask::getTaskType)));
+        return new TaskList(items, new TaskSummary(tally(dayScoped, TaskStatus.class,
+                StaffTask::getStatus), tally(dayScoped, TaskType.class, StaffTask::getTaskType)));
     }
 
     @Transactional
@@ -294,6 +303,7 @@ public class OpsService {
         Rental rental = rentals.findById(input.rentalId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RENTAL_NOT_FOUND));
         requireAccess(facilityIdOf(rental));
+        validateAssignableTaskType(input.taskType(), rental);
         StaffTask task = new StaffTask(staff.getId(), rental.getId(), null, input.taskType(),
                 input.scheduledAt() == null ? Instant.now() : input.scheduledAt());
         task.setNotes(input.notes());
@@ -302,15 +312,21 @@ public class OpsService {
 
     @Transactional
     public StaffTaskDto startTask(Long taskId) {
-        StaffTask task = taskOf(taskId).start();
+        StaffTask task = taskOf(taskId);
+        requireTaskFacilityAccess(task);
+        task.startIfNotStarted();
+        syncTicketOnStart(task);
         return toTaskDto(task, lookup(List.of(), List.of(task), List.of()));
     }
 
     @Transactional
     public StaffTaskDto completeTask(Long taskId, String notes) {
-        StaffTask task = taskOf(taskId).start();
+        StaffTask task = taskOf(taskId);
+        requireTaskFacilityAccess(task);
+        task.startIfNotStarted();
         task.setNotes(notes);
         task.complete(Instant.now());
+        syncTicketOnComplete(task);
         return toTaskDto(task, lookup(List.of(), List.of(task), List.of()));
     }
 
@@ -343,6 +359,12 @@ public class OpsService {
         requireTaskAccess(task);
         Rental rental = rentalOf(task.getRentalId());
         requireAccess(facilityIdOf(rental));
+        if (rental.getStatus() != RentalStatus.ACTIVE
+                && rental.getStatus() != RentalStatus.OVERDUE
+                && rental.getStatus() != RentalStatus.RETURN_REQUESTED) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
+                    "Chỉ xác nhận trả kho cho hợp đồng đang thuê, quá hạn hoặc đã yêu cầu trả kho");
+        }
         task.startIfNotStarted();
         task.setNotes(input.condition());
         task.complete(Instant.now());
@@ -417,6 +439,22 @@ public class OpsService {
                 && !ticket.getAssignedStaffId().equals(staffId)) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Ticket đã được giao cho người khác");
         }
+        List<StaffTask> openTasks = staffTasks.findByTicketId(ticketId).stream()
+                .filter(existing -> existing.getStatus() != TaskStatus.DONE
+                        && existing.getStatus() != TaskStatus.CANCELLED)
+                .toList();
+        for (StaffTask openTask : openTasks) {
+            if (openTask.getAssignedStaffId().equals(staffId)) {
+                if (ticket.getAssignedStaffId() == null) {
+                    ticket.assign(staffId);
+                }
+                Lookup lookup = lookup(List.of(), List.of(openTask), List.of(ticket));
+                return new TicketTaskPair(toTicketDto(ticket, lookup),
+                        toTaskDto(openTask, lookup));
+            }
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
+                    "Ticket đang có công việc mở cho nhân viên khác");
+        }
         ticket.assign(staffId);
         StaffTask task = new StaffTask(staffId, null, ticketId, TaskType.SUPPORT,
                 scheduledAt == null ? Instant.now() : scheduledAt);
@@ -464,13 +502,14 @@ public class OpsService {
 
     // ---------- dashboard ----------
 
-    @Transactional(readOnly = true)
+    @Transactional
     public FacilityDashboard dashboard(Long facilityId) {
         requireAccess(facilityId);
+        rentalService.markOverdueRentals();
         List<StorageUnit> allUnits = units.findByFacilityId(facilityId);
         List<Rental> allRentals = rentals.findByFacilityId(facilityId);
         List<StaffTask> allTasks = staffTasks.findByAssignedStaffIdIn(staffIdsOf(facilityId));
-        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        LocalDate today = LocalDate.now(BIZ_ZONE);
         Lookup lookup = lookup(allRentals, List.of(), List.of());
 
         Map<StorageUnitStatus, Long> unitByStatus = tally(allUnits, StorageUnitStatus.class,
@@ -528,7 +567,8 @@ public class OpsService {
                 overdue,
                 expiring.size(),
                 allTasks.stream().filter(OpsService::isToday).count(),
-                allTasks.stream().filter(task -> task.getStatus() != TaskStatus.DONE).count(),
+                allTasks.stream().filter(task -> task.getStatus() != TaskStatus.DONE
+                        && task.getStatus() != TaskStatus.CANCELLED).count(),
                 activeTickets, attention, expiring, occupancyByType);
     }
 
@@ -616,6 +656,81 @@ public class OpsService {
         }
     }
 
+    private void requireTaskFacilityAccess(StaffTask task) {
+        if (task.getRentalId() != null) {
+            requireAccess(facilityIdOf(rentalOf(task.getRentalId())));
+            return;
+        }
+        if (task.getTicketId() != null) {
+            SupportTicket ticket = tickets.findById(task.getTicketId())
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
+            requireAccess(ticket.getFacilityId());
+            return;
+        }
+        User staff = users.findById(task.getAssignedStaffId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        requireAccess(staff.getFacilityId());
+    }
+
+    private void validateAssignableTaskType(TaskType taskType, Rental rental) {
+        RentalStatus status = rental.getStatus();
+        boolean allowed = switch (taskType) {
+            case HANDOVER -> status == RentalStatus.RESERVED;
+            case RETURN_INSPECTION -> status == RentalStatus.ACTIVE
+                    || status == RentalStatus.OVERDUE
+                    || status == RentalStatus.RETURN_REQUESTED;
+            case UNIT_INSPECTION -> status == RentalStatus.RETURNED
+                    || unit(rental.getUnitId()).getStatus() == StorageUnitStatus.INSPECTION;
+            case SUPPORT -> false;
+        };
+        if (!allowed) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
+                    "Loại công việc không phù hợp với trạng thái hợp đồng");
+        }
+    }
+
+    private void syncTicketOnStart(StaffTask task) {
+        if (task.getTaskType() != TaskType.SUPPORT || task.getTicketId() == null) {
+            return;
+        }
+        SupportTicket ticket = tickets.findById(task.getTicketId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
+        if (ticket.getStatus() == SupportTicket.Status.OPEN) {
+            if (ticket.getAssignedStaffId() == null) {
+                ticket.assign(task.getAssignedStaffId());
+            }
+            if (!ticket.start()) {
+                throw new BusinessException(ErrorCode.BAD_REQUEST,
+                        "Không thể chuyển ticket sang trạng thái đang xử lý");
+            }
+        }
+    }
+
+    private void syncTicketOnComplete(StaffTask task) {
+        if (task.getTaskType() != TaskType.SUPPORT || task.getTicketId() == null) {
+            return;
+        }
+        SupportTicket ticket = tickets.findById(task.getTicketId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
+        if (ticket.getStatus() == SupportTicket.Status.RESOLVED
+                || ticket.getStatus() == SupportTicket.Status.CLOSED) {
+            return;
+        }
+        if (ticket.getStatus() == SupportTicket.Status.OPEN) {
+            if (ticket.getAssignedStaffId() == null) {
+                ticket.assign(task.getAssignedStaffId());
+            }
+            if (!ticket.start()) {
+                throw new BusinessException(ErrorCode.BAD_REQUEST,
+                        "Không thể bắt đầu xử lý ticket");
+            }
+        }
+        if (!ticket.resolve(Instant.now())) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
+                    "Không thể hoàn tất ticket ở trạng thái " + ticket.getStatus());
+        }
+    }
+
     private RentalSummary summaryOf(List<Rental> rentals) {
         Map<RentalStatus, Long> byStatus = tally(rentals, RentalStatus.class, Rental::getStatus);
         Map<String, Long> byTab = new LinkedHashMap<>();
@@ -629,12 +744,13 @@ public class OpsService {
     }
 
     private static String tabOf(Rental rental) {
-        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        LocalDate today = LocalDate.now(BIZ_ZONE);
         return switch (rental.getStatus()) {
-            case ACTIVE -> rental.getEndDate().isAfter(today.plusDays(EXPIRING_WINDOW_DAYS))
+            case RESERVED -> "reserved";
+            case ACTIVE, RETURN_REQUESTED -> rental.getEndDate().isAfter(today.plusDays(EXPIRING_WINDOW_DAYS))
                     ? "active" : "expiring";
             case OVERDUE -> "overdue";
-            case PENDING_PAYMENT, RESERVED, EXPIRED, CANCELLED, RETURN_REQUESTED, RETURNED -> "ended";
+            case PENDING_PAYMENT, EXPIRED, CANCELLED, RETURNED -> "ended";
         };
     }
 
@@ -642,24 +758,35 @@ public class OpsService {
         if (Strings.isBlank(search)) {
             return true;
         }
+        String needle = search.trim().toLowerCase(Locale.ROOT);
         StorageUnit unit = lookup.units().get(rental.getUnitId());
-        return matchesText(unit == null ? null : unit.getUnitCode(),
-                unit == null ? null : unit.getUnitType().getName(), search);
+        User customer = lookup.users().get(rental.getCustomerId());
+        return Strings.containsIgnoreCase("#" + rental.getId(), needle)
+                || Strings.containsIgnoreCase(unit == null ? null : unit.getUnitCode(), needle)
+                || Strings.containsIgnoreCase(unit == null ? null : unit.getUnitType().getName(), needle)
+                || Strings.containsIgnoreCase(customer == null ? null : customer.getFullName(), needle)
+                || Strings.containsIgnoreCase(customer == null ? null : customer.getPhone(), needle);
     }
 
     private static boolean matchesTask(StaffTask task, String search, Lookup lookup) {
         if (Strings.isBlank(search)) {
             return true;
         }
-        Rental rental = task.getRentalId() == null
-                ? null : lookup.rentals().get(task.getRentalId());
+        String needle = search.trim().toLowerCase(Locale.ROOT);
+        SupportTicket ticket = task.getTicketId() == null
+                ? null : lookup.tickets().get(task.getTicketId());
+        Long rentalId = task.getRentalId() != null
+                ? task.getRentalId()
+                : (ticket == null ? null : ticket.getRentalId());
+        Rental rental = rentalId == null ? null : lookup.rentals().get(rentalId);
         StorageUnit unit = rental == null ? null : lookup.units().get(rental.getUnitId());
-        return matchesText(String.valueOf(task.getId()), unit == null ? null : unit.getUnitCode(),
-                search);
+        return Strings.containsIgnoreCase(String.valueOf(task.getId()), needle)
+                || Strings.containsIgnoreCase(unit == null ? null : unit.getUnitCode(), needle)
+                || Strings.containsIgnoreCase(ticket == null ? null : ticket.getTitle(), needle);
     }
 
     private static boolean matchesSlot(StaffTask task, String slot) {
-        int hour = task.getScheduledAt().atZone(ZoneOffset.UTC).getHour();
+        int hour = task.getScheduledAt().atZone(BIZ_ZONE).getHour();
         return switch (slot) {
             case "morning" -> hour < 12;
             case "afternoon" -> hour >= 12;
@@ -667,9 +794,23 @@ public class OpsService {
         };
     }
 
+    private static boolean matchesDay(StaffTask task, String day) {
+        return switch (day) {
+            case "today" -> isToday(task);
+            case "upcoming" -> isUpcoming(task);
+            case "all" -> true;
+            default -> true;
+        };
+    }
+
     private static boolean isToday(StaffTask task) {
-        return task.getScheduledAt().atZone(ZoneOffset.UTC).toLocalDate()
-                .equals(LocalDate.now(ZoneOffset.UTC));
+        return task.getScheduledAt().atZone(BIZ_ZONE).toLocalDate()
+                .equals(LocalDate.now(BIZ_ZONE));
+    }
+
+    private static boolean isUpcoming(StaffTask task) {
+        return task.getScheduledAt().atZone(BIZ_ZONE).toLocalDate()
+                .isAfter(LocalDate.now(BIZ_ZONE));
     }
 
     private static boolean inPriceBand(StorageUnit unit, String priceBand) {
@@ -722,17 +863,27 @@ public class OpsService {
     }
 
     private StaffTaskDto toTaskDto(StaffTask task, Lookup lookup) {
-        Rental rental = task.getRentalId() == null
-                ? null : lookup.rentals().get(task.getRentalId());
+        SupportTicket ticket = task.getTicketId() == null
+                ? null : lookup.tickets().get(task.getTicketId());
+        Long rentalId = task.getRentalId() != null
+                ? task.getRentalId()
+                : (ticket == null ? null : ticket.getRentalId());
+        Rental rental = rentalId == null ? null : lookup.rentals().get(rentalId);
         StorageUnit unit = rental == null ? null : lookup.units().get(rental.getUnitId());
         User assigned = lookup.users().get(task.getAssignedStaffId());
+        Long facilityId = unit != null
+                ? unit.getFacility().getId()
+                : (ticket != null ? ticket.getFacilityId() : null);
+        String customerName = rental != null
+                ? fullNameOf(lookup.users().get(rental.getCustomerId()))
+                : (ticket != null ? fullNameOf(lookup.users().get(ticket.getCustomerId())) : null);
         return new StaffTaskDto(task.getId(),
-                unit == null ? null : unit.getFacility().getId(), task.getTaskType(),
+                facilityId, task.getTaskType(),
                 task.getStatus(), task.getAssignedStaffId(),
                 assigned == null ? null : assigned.getFullName(),
                 task.getRentalId(), task.getTicketId(),
                 unit == null ? null : unit.getUnitCode(),
-                rental == null ? null : fullNameOf(lookup.users().get(rental.getCustomerId())),
+                customerName,
                 rental == null ? null : lookup.paymentStateOf(rental),
                 task.getScheduledAt(), task.getCompletedAt(), task.getNotes());
     }
@@ -776,7 +927,8 @@ public class OpsService {
      */
     private record Lookup(Map<Long, StorageUnit> units, Map<Long, Rental> rentals,
                           Map<Long, User> users, Map<Long, String> paymentStates,
-                          Map<Long, StaffTask> openHandovers) {
+                          Map<Long, StaffTask> openHandovers,
+                          Map<Long, SupportTicket> tickets) {
 
         Long unitTypeIdOf(Rental rental) {
             StorageUnit unit = units.get(rental.getUnitId());
@@ -790,11 +942,19 @@ public class OpsService {
 
     private Lookup lookup(List<Rental> rentalRows, List<StaffTask> taskRows,
                           List<SupportTicket> ticketRows) {
+        Set<Long> ticketIds = new LinkedHashSet<>();
+        taskRows.stream().map(StaffTask::getTicketId).filter(Objects::nonNull)
+                .forEach(ticketIds::add);
+        ticketRows.forEach(ticket -> ticketIds.add(ticket.getId()));
+        Map<Long, SupportTicket> ticketById = ticketIds.isEmpty() ? new LinkedHashMap<>()
+                : new LinkedHashMap<>(index(tickets.findAllById(ticketIds), SupportTicket::getId));
+        ticketRows.forEach(ticket -> ticketById.putIfAbsent(ticket.getId(), ticket));
+
         Set<Long> rentalIds = new LinkedHashSet<>();
         rentalRows.forEach(row -> rentalIds.add(row.getId()));
         taskRows.stream().map(StaffTask::getRentalId).filter(Objects::nonNull)
                 .forEach(rentalIds::add);
-        ticketRows.stream().map(SupportTicket::getRentalId).filter(Objects::nonNull)
+        ticketById.values().stream().map(SupportTicket::getRentalId).filter(Objects::nonNull)
                 .forEach(rentalIds::add);
 
         Map<Long, Rental> rentalById = rentalIds.isEmpty() ? Map.of()
@@ -821,7 +981,7 @@ public class OpsService {
         rentalById.values().forEach(rental -> userIds.add(rental.getCustomerId()));
         taskRows.forEach(task -> userIds.add(task.getAssignedStaffId()));
         openHandovers.values().forEach(task -> userIds.add(task.getAssignedStaffId()));
-        ticketRows.forEach(ticket -> {
+        ticketById.values().forEach(ticket -> {
             userIds.add(ticket.getCustomerId());
             if (ticket.getAssignedStaffId() != null) {
                 userIds.add(ticket.getAssignedStaffId());
@@ -831,7 +991,7 @@ public class OpsService {
                 : index(users.findAllById(userIds), User::getId);
 
         return new Lookup(unitById, rentalById, userById, paymentStatesOf(rentalIds),
-                openHandovers);
+                openHandovers, ticketById);
     }
 
     private Map<Long, String> paymentStatesOf(Collection<Long> rentalIds) {

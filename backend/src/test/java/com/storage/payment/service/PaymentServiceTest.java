@@ -12,6 +12,12 @@ import com.storage.payment.entity.Invoice;
 import com.storage.payment.entity.PaymentAttempt;
 import com.storage.payment.repository.InvoiceRepository;
 import com.storage.payment.repository.PaymentAttemptRepository;
+import com.storage.rental.entity.RenewalStatus;
+import com.storage.rental.entity.Rental;
+import com.storage.rental.entity.RentalRenewal;
+import com.storage.rental.entity.RentalStatus;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import com.storage.rental.repository.RentalRenewalRepository;
 import com.storage.rental.repository.RentalRepository;
 import java.math.BigDecimal;
@@ -143,5 +149,34 @@ class PaymentServiceTest {
         assertEquals(PaymentAttempt.Status.FAILED, attempt.getStatus());
         assertEquals(null, attempt.getPaidAt());
         verifyNoInteractions(invoiceRepository);
+    }
+
+    @Test
+    void gatewaySuccessOnRenewalTransitionsOverdueRentalBackToActive() {
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        Rental rental = Rental.createHold(9L, 4L, today.minusMonths(2), today.minusDays(5),
+                new BigDecimal("1000000.00"), Instant.now().minusSeconds(60));
+        rental.transitionTo(RentalStatus.RESERVED);
+        rental.transitionTo(RentalStatus.ACTIVE);
+        rental.transitionTo(RentalStatus.OVERDUE);
+
+        LocalDate newEnd = today.plusMonths(1);
+        RentalRenewal renewal = RentalRenewal.request(rental, newEnd, Instant.now());
+        Invoice invoice = Invoice.create(Invoice.Type.RENEWAL, 1L, 77L, null,
+                "Gia hạn 1 tháng", new BigDecimal("1000000.00"), BigDecimal.ZERO, null);
+        PaymentAttempt attempt = PaymentAttempt.pending(
+                10L, new BigDecimal("1000000.00"), "VNPAY", "VNPAY-RENEW");
+
+        when(paymentAttemptRepository.findByProviderReference("VNPAY-RENEW"))
+                .thenReturn(Optional.of(attempt));
+        when(invoiceRepository.findById(10L)).thenReturn(Optional.of(invoice));
+        when(renewalRepository.findById(77L)).thenReturn(Optional.of(renewal));
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        paymentService.handleGatewayResult("VNPAY-RENEW", true, Instant.now(), "14226113");
+
+        assertEquals(RentalStatus.ACTIVE, rental.getStatus());
+        assertEquals(newEnd, rental.getEndDate());
+        assertEquals(RenewalStatus.APPLIED, renewal.getStatus());
     }
 }

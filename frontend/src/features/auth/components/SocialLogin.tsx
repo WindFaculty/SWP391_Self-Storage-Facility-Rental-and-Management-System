@@ -28,6 +28,11 @@ export const SocialLogin = () => {
       </svg>
       <span>{googleReady ? 'Continue with Google' : 'Google (chưa cấu hình)'}</span>
     </button>
+    {!googleReady && !error && (
+      <p className="text-center text-badge text-text-muted">
+        Đăng nhập Google chưa được bật trên môi trường này. Vui lòng sử dụng email và mật khẩu.
+      </p>
+    )}
     {busy && <p role="status" className="text-label text-text-muted">Đang xác minh đăng nhập…</p>}
   </div>;
 };

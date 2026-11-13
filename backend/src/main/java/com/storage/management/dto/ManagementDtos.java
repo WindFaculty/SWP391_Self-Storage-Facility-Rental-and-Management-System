@@ -37,6 +37,9 @@ public final class ManagementDtos {
     public record FeeTypeUpdateRequest(String name, BigDecimal defaultAmount, boolean active) {
     }
 
+    public record FeeTypeCreateRequest(String code, String name, BigDecimal defaultAmount, boolean active) {
+    }
+
     public record FacilityOverviewResponse(Long id, String code, String name, String address,
                                            String status, String managerName, long unitTotal,
                                            long unitOccupied, double occupancyRate,

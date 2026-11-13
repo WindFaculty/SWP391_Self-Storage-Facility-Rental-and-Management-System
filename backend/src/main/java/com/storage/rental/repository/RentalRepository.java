@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Optional;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     List<Rental> findByCustomerIdOrderByCreatedAtDesc(Long customerId);
 
     List<Rental> findByStatusAndPaymentExpiresAtBefore(RentalStatus status, Instant expiry);
+
+    List<Rental> findByStatusAndEndDateBefore(RentalStatus status, LocalDate cutoff);
 
     Optional<Rental> findByIdAndCustomerId(Long id, Long customerId);
 

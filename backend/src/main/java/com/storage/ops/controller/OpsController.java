@@ -4,6 +4,7 @@ import com.storage.facility.entity.StorageUnitStatus;
 import com.storage.rental.entity.TaskStatus;
 import com.storage.ops.dto.OpsDtos;
 import com.storage.ops.dto.OpsDtos.AssignTicketInput;
+import com.storage.ops.dto.OpsDtos.CompleteTaskInput;
 import com.storage.ops.dto.OpsDtos.FacilityDto;
 import com.storage.ops.dto.OpsDtos.FacilityDashboard;
 import com.storage.ops.dto.OpsDtos.HandoverInput;
@@ -28,6 +29,7 @@ import com.storage.ops.service.OpsService;
 import com.storage.shared.security.SecurityUtils;
 import com.storage.shared.security.UserPrincipal;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,6 +83,7 @@ public class OpsController {
     }
 
     @PostMapping("/units")
+    @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public org.springframework.http.ResponseEntity<com.storage.shared.response.ApiResponse<StorageUnitDto>> createUnit(
             @Valid @RequestBody StorageUnitInput input) {
         return org.springframework.http.ResponseEntity.status(
@@ -89,12 +92,14 @@ public class OpsController {
     }
 
     @PutMapping("/units/{unitId}")
+    @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public com.storage.shared.response.ApiResponse<StorageUnitDto> updateUnit(
             @PathVariable Long unitId, @Valid @RequestBody StorageUnitInput input) {
         return com.storage.shared.response.ApiResponse.success(ops.updateUnit(unitId, input));
     }
 
     @PatchMapping("/units/{unitId}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public com.storage.shared.response.ApiResponse<StorageUnitDto> changeUnitStatus(
             @PathVariable Long unitId, @Valid @RequestBody UnitStatusInput input) {
         return com.storage.shared.response.ApiResponse.success(ops.changeUnitStatus(unitId, input));
@@ -142,6 +147,7 @@ public class OpsController {
     }
 
     @PostMapping("/tasks")
+    @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public org.springframework.http.ResponseEntity<com.storage.shared.response.ApiResponse<StaffTaskDto>> assignTask(
             @Valid @RequestBody OpsDtos.AssignTaskInput input) {
         return org.springframework.http.ResponseEntity.status(
@@ -157,8 +163,9 @@ public class OpsController {
 
     @PostMapping("/tasks/{taskId}/complete")
     public com.storage.shared.response.ApiResponse<StaffTaskDto> completeTask(
-            @PathVariable Long taskId, @RequestBody(required = false) String notes) {
-        return com.storage.shared.response.ApiResponse.success(ops.completeTask(taskId, notes));
+            @PathVariable Long taskId, @RequestBody(required = false) CompleteTaskInput input) {
+        return com.storage.shared.response.ApiResponse.success(
+                ops.completeTask(taskId, input == null ? null : input.notes()));
     }
 
     @PostMapping("/tasks/{taskId}/handover")
@@ -198,6 +205,7 @@ public class OpsController {
     }
 
     @PostMapping("/tickets/{ticketId}/assign")
+    @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public com.storage.shared.response.ApiResponse<TicketTaskPair> assignTicket(
             @PathVariable Long ticketId, @Valid @RequestBody AssignTicketInput input) {
         return com.storage.shared.response.ApiResponse.success(
@@ -205,6 +213,7 @@ public class OpsController {
     }
 
     @PostMapping("/tickets/{ticketId}/close")
+    @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public com.storage.shared.response.ApiResponse<TicketDto> closeTicket(
             @PathVariable Long ticketId) {
         return com.storage.shared.response.ApiResponse.success(ops.closeTicket(ticketId));

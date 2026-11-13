@@ -13,6 +13,7 @@ import com.storage.facility.repository.StorageUnitRepository;
 import com.storage.management.dto.ManagementDtos.FacilityInputRequest;
 import com.storage.management.dto.ManagementDtos.FacilityOverviewResponse;
 import com.storage.management.dto.ManagementDtos.FacilityStatusRequest;
+import com.storage.management.dto.ManagementDtos.FeeTypeCreateRequest;
 import com.storage.management.dto.ManagementDtos.FeeTypeResponse;
 import com.storage.management.dto.ManagementDtos.FeeTypeUpdateRequest;
 import com.storage.management.dto.ManagementDtos.PolicyRequest;
@@ -100,6 +101,24 @@ public class ManagementOpsService {
     }
 
     @Transactional
+    public FeeTypeResponse createFeeType(FeeTypeCreateRequest request) {
+        if (request.code() == null || request.code().isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Mã phụ phí không được để trống");
+        }
+        String code = request.code().trim().toUpperCase(Locale.ROOT);
+        if (code.length() > 40) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Mã phụ phí tối đa 40 ký tự");
+        }
+        if (feeTypes.existsByCode(code)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Mã phụ phí đã tồn tại");
+        }
+        FeeType created = feeTypes.save(FeeType.create(
+                code, request.name(), request.defaultAmount(), request.active()));
+        return new FeeTypeResponse(created.getId(), created.getCode(), created.getName(),
+                created.getDefaultAmount(), created.isActive());
+    }
+
+    @Transactional
     public FeeTypeResponse updateFeeType(Long feeTypeId, FeeTypeUpdateRequest request) {
         FeeType feeType = feeTypes.findById(feeTypeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
@@ -155,7 +174,8 @@ public class ManagementOpsService {
             long active = rentals.findByFacilityId(facilityId).stream()
                     .filter(rental -> rental.getStatus() == RentalStatus.ACTIVE
                             || rental.getStatus() == RentalStatus.RESERVED
-                            || rental.getStatus() == RentalStatus.OVERDUE)
+                            || rental.getStatus() == RentalStatus.OVERDUE
+                            || rental.getStatus() == RentalStatus.RETURN_REQUESTED)
                     .count();
             if (active > 0) {
                 throw new BusinessException(ErrorCode.BAD_REQUEST,

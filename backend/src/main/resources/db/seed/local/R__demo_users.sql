@@ -3,9 +3,15 @@
 INSERT IGNORE INTO users (full_name, email, password_hash, role, status)
 VALUES
     ('Demo Customer', 'customer@demo.local', '$2a$10$OBBrTvgKWLQeGjshMSK/A.c04VT5q2/tBEE7F9/PVbVt.8xoNW8Da', 'CUSTOMER', 'ACTIVE'),
+    ('Demo Business Manager', 'business@demo.local', '$2a$10$OBBrTvgKWLQeGjshMSK/A.c04VT5q2/tBEE7F9/PVbVt.8xoNW8Da', 'BUSINESS_MANAGER', 'ACTIVE'),
     ('Demo Admin', 'admin@demo.local', '$2a$10$OBBrTvgKWLQeGjshMSK/A.c04VT5q2/tBEE7F9/PVbVt.8xoNW8Da', 'ADMIN', 'ACTIVE');
 
 INSERT IGNORE INTO users (facility_id, full_name, email, password_hash, role, status)
 SELECT id, 'Demo Facility Manager', 'manager@demo.local',
        '$2a$10$OBBrTvgKWLQeGjshMSK/A.c04VT5q2/tBEE7F9/PVbVt.8xoNW8Da', 'FACILITY_MANAGER', 'ACTIVE'
+FROM facilities WHERE code = 'DEMO-HCM-01';
+
+INSERT IGNORE INTO users (facility_id, full_name, email, password_hash, role, status)
+SELECT id, 'Demo Facility Staff', 'staff@demo.local',
+       '$2a$10$OBBrTvgKWLQeGjshMSK/A.c04VT5q2/tBEE7F9/PVbVt.8xoNW8Da', 'FACILITY_STAFF', 'ACTIVE'
 FROM facilities WHERE code = 'DEMO-HCM-01';

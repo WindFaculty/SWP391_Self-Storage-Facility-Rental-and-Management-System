@@ -121,6 +121,26 @@ class ManagementAdminE2ETests {
                 .andExpect(jsonPath("$.data.defaultAmount").value(300000))
                 .andExpect(jsonPath("$.data.active").value(false));
 
+        mvc.perform(post("/management/fee-types")
+                        .header("Authorization", bearer(businessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"code":"NEWFEE-%s","name":"Phí phát sinh mới",
+                                 "defaultAmount":150000.00,"active":true}
+                                """.formatted(suffix)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.code").value("NEWFEE-" + suffix.toUpperCase()))
+                .andExpect(jsonPath("$.data.active").value(true));
+
+        mvc.perform(post("/management/fee-types")
+                        .header("Authorization", bearer(businessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"code":"newfee-%s","name":"Trùng mã",
+                                 "defaultAmount":100000.00,"active":true}
+                                """.formatted(suffix)))
+                .andExpect(status().isBadRequest());
+
         // facilities, as OperationsFacilitiesPage does
         mvc.perform(get("/management/facilities").header("Authorization", bearer(businessToken)))
                 .andExpect(status().isOk())

@@ -31,6 +31,24 @@ public class FeeType {
     protected FeeType() {
     }
 
+    public static FeeType create(String code, String name, BigDecimal defaultAmount, boolean active) {
+        if (code == null || code.isBlank()) {
+            throw new IllegalArgumentException("code is required");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("name is required");
+        }
+        if (defaultAmount == null || defaultAmount.signum() < 0) {
+            throw new IllegalArgumentException("defaultAmount must be >= 0");
+        }
+        FeeType feeType = new FeeType();
+        feeType.code = code.trim().toUpperCase(java.util.Locale.ROOT);
+        feeType.name = name.trim();
+        feeType.defaultAmount = defaultAmount;
+        feeType.active = active;
+        return feeType;
+    }
+
     public Long getId() {
         return id;
     }

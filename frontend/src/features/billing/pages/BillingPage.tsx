@@ -36,8 +36,8 @@ const EMPTY_MESSAGES: Record<BillingTab, string> = {
 };
 
 const describeRental = (rentals: Rental[], rentalId: string): string => {
-  const rental = rentals.find((item) => item.id === rentalId);
-  if (!rental) return `Đơn #${rentalId.slice(0, 8).toUpperCase()}`;
+  const rental = rentals.find((item) => String(item.id) === String(rentalId));
+  if (!rental) return `Đơn #${String(rentalId ?? "").slice(0, 8).toUpperCase()}`;
   const facility = rental.facilityName ?? 'Cơ sở';
   return `${facility} · ${formatDate(rental.startDate)} – ${formatDate(rental.endDate)}`;
 };
@@ -141,7 +141,7 @@ export const BillingPage = () => {
                         {INVOICE_TYPE_LABELS[invoice.type]}
                       </h2>
                       <p className="text-table text-text-muted">
-                        #{invoice.id.slice(0, 8).toUpperCase()} ·{' '}
+                        #{String(invoice.id).slice(0, 8).toUpperCase()} ·{' '}
                         {describeRental(rentals, invoice.rentalId)}
                       </p>
                       {invoice.dueAt ? (

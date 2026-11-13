@@ -18,7 +18,7 @@ public enum RentalStatus {
             PENDING_PAYMENT, Set.of(RESERVED, CANCELLED, EXPIRED),
             RESERVED, Set.of(ACTIVE, CANCELLED),
             ACTIVE, Set.of(OVERDUE, RETURNED, RETURN_REQUESTED),
-            OVERDUE, Set.of(RETURNED, RETURN_REQUESTED),
+            OVERDUE, Set.of(RETURNED, RETURN_REQUESTED, ACTIVE),
             RETURN_REQUESTED, Set.of(RETURNED, ACTIVE),
             EXPIRED, Set.of(RESERVED),
             RETURNED, Set.of(),

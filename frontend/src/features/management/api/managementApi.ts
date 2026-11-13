@@ -3,11 +3,13 @@ import type { PolicyInput } from '../managementRules'
 import type { BusinessPolicy, FacilityOverview, FeeType, ReportFilters, ReportSummary, RevenuePoint } from '../types'
 
 export interface FeeTypeInput { name: string; defaultAmount: number; active: boolean }
+export interface FeeTypeCreateInput extends FeeTypeInput { code: string }
 export interface FacilityInput { code: string; name: string; address: string }
 
 export const getBusinessPolicy = (): Promise<BusinessPolicy> => api.get('/management/policy')
 export const updateBusinessPolicy = (input: PolicyInput): Promise<BusinessPolicy> => api.put('/management/policy', input)
 export const listFeeTypes = (): Promise<FeeType[]> => api.get('/management/fee-types')
+export const createFeeType = (input: FeeTypeCreateInput): Promise<FeeType> => api.post('/management/fee-types', input)
 export const updateFeeType = (id: number, input: FeeTypeInput): Promise<FeeType> => api.put(`/management/fee-types/${id}`, input)
 export const listFacilityOverviews = (): Promise<FacilityOverview[]> => api.get('/management/facilities')
 export const createFacility = async (input: FacilityInput): Promise<void> => { await api.post('/management/facilities', input) }

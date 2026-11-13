@@ -2,6 +2,7 @@ package com.storage.e2e;
 
 import com.jayway.jsonpath.JsonPath;
 import com.storage.payment.service.PaymentService;
+import com.storage.rental.service.RentalService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.testcontainers.mysql.MySQLContainer;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
@@ -60,6 +62,9 @@ class FacilityOpsE2ETests {
 
     @Autowired
     PaymentService paymentService;
+
+    @Autowired
+    RentalService rentalService;
 
     private String adminToken;
     private String managerToken;
@@ -177,7 +182,8 @@ class FacilityOpsE2ETests {
                                 {"facilityId":%d,"rentalId":%d,"taskType":"HANDOVER",
                                  "assignedStaffId":%d,"scheduledAt":"%s","notes":"Giao 9h sáng"}
                                 """.formatted(facilityId, rentalId, staffId,
-                                LocalDate.now(ZoneOffset.UTC).atTime(9, 0).toInstant(ZoneOffset.UTC))))
+                                LocalDate.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh")).atTime(9, 0)
+                                        .toInstant(java.time.ZoneOffset.ofHours(7)))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.status").value("ASSIGNED"))
                 .andExpect(jsonPath("$.data.taskType").value("HANDOVER"))
@@ -394,6 +400,201 @@ class FacilityOpsE2ETests {
                         .header("Authorization", bearer(managerToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("CLOSED"));
+    }
+
+    @Test
+    void staffCompletesSupportTaskSyncsTicketAndEnforcesRbac() throws Exception {
+        String customerToken = registerCustomer("cust-sup-" + suffix);
+        MvcResult ticketRes = mvc.perform(post("/support-tickets")
+                        .header("Authorization", bearer(customerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"category":"LOCK","title":"Cửa kẹt",
+                                 "description":"Không mở được khóa cửa."}
+                                """.formatted(facilityId)))
+                .andExpect(status().isCreated())
+                .andReturn();
+        Long ticketId = readLong(ticketRes, "$.data.id");
+
+        Long staffId = staffIdOfFacility();
+        MvcResult firstAssign = mvc.perform(post("/ops/tickets/" + ticketId + "/assign")
+                        .header("Authorization", bearer(managerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"staffId":%d,"notes":"Xử lý trong ca"}
+                                """.formatted(facilityId, staffId)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.task.facilityId").value(facilityId))
+                .andReturn();
+        Long taskId = readLong(firstAssign, "$.data.task.id");
+
+        // Re-assigning to same staff reuses the open task without creating a duplicate
+        mvc.perform(post("/ops/tickets/" + ticketId + "/assign")
+                        .header("Authorization", bearer(managerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"staffId":%d,"notes":"Nhắc lại"}
+                                """.formatted(facilityId, staffId)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.task.id").value(taskId));
+
+        mvc.perform(get("/ops/tasks")
+                        .param("facilityId", facilityId.toString())
+                        .param("tab", "SUPPORT")
+                        .header("Authorization", bearer(managerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items.length()").value(1));
+
+        // Staff cannot call manager-only endpoints
+        mvc.perform(post("/ops/tickets/" + ticketId + "/assign")
+                        .header("Authorization", bearer(staffToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"facilityId\":%d,\"staffId\":%d}".formatted(facilityId, staffId)))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/ops/tickets/" + ticketId + "/close")
+                        .header("Authorization", bearer(staffToken)))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/ops/units")
+                        .header("Authorization", bearer(staffToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"unitTypeId":%d,"unitCode":"FORB-01",
+                                 "locationLabel":"A","monthlyPrice":1200000}
+                                """.formatted(facilityId, unitTypeId)))
+                .andExpect(status().isForbidden());
+
+        // Start & complete SUPPORT task synchronizes SupportTicket OPEN -> IN_PROGRESS -> RESOLVED
+        mvc.perform(post("/ops/tasks/" + taskId + "/start")
+                        .header("Authorization", bearer(staffToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"));
+        mvc.perform(get("/ops/tickets/" + ticketId)
+                        .header("Authorization", bearer(managerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"));
+
+        mvc.perform(post("/ops/tasks/" + taskId + "/complete")
+                        .header("Authorization", bearer(staffToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"notes\":\"Đã cấp lại khóa mới\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("DONE"))
+                .andExpect(jsonPath("$.data.notes").value("Đã cấp lại khóa mới"));
+        mvc.perform(get("/ops/tickets/" + ticketId)
+                        .header("Authorization", bearer(managerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("RESOLVED"));
+    }
+
+    @Test
+    void dayFilterTaskValidationFirstStaffAndOverdueRenewalFlow() throws Exception {
+        Long unitId = createUnit("OVD-" + suffix, "1200000.00");
+        String customerToken = registerCustomer("cust-ovd-" + suffix);
+        LocalDate start = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")).plusDays(1);
+        MvcResult hold = mvc.perform(post("/rentals")
+                        .header("Authorization", bearer(customerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"unitTypeId":%d,
+                                 "startDate":"%s","endDate":"%s"}
+                                """.formatted(facilityId, unitTypeId, start, start.plusMonths(2))))
+                .andExpect(status().isCreated())
+                .andReturn();
+        Long rentalId = readLong(hold, "$.data.rental.id");
+        Long invoiceId = readLong(hold, "$.data.invoice.id");
+        String ref = referenceOf(mvc.perform(post("/payments/vnpay/url")
+                        .header("Authorization", bearer(customerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"invoiceId\":%d}".formatted(invoiceId)))
+                .andExpect(status().isOk()).andReturn());
+        paymentService.handleGatewayResult(ref, true, Instant.now(), "99887766");
+
+        Long staffId = staffIdOfFacility();
+        // RESERVED rental cannot receive RETURN_INSPECTION
+        mvc.perform(post("/ops/tasks")
+                        .header("Authorization", bearer(managerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"rentalId":%d,"taskType":"RETURN_INSPECTION",
+                                 "assignedStaffId":%d,"scheduledAt":"%s"}
+                                """.formatted(facilityId, rentalId, staffId, Instant.now())))
+                .andExpect(status().isBadRequest());
+
+        // Assign HANDOVER for tomorrow and check day=today vs day=upcoming summary counts
+        Instant tomorrowMorning = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")).plusDays(1)
+                .atTime(9, 0).toInstant(java.time.ZoneOffset.ofHours(7));
+        mvc.perform(post("/ops/tasks")
+                        .header("Authorization", bearer(managerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"rentalId":%d,"taskType":"HANDOVER",
+                                 "assignedStaffId":%d,"scheduledAt":"%s"}
+                                """.formatted(facilityId, rentalId, staffId, tomorrowMorning)))
+                .andExpect(status().isCreated());
+
+        mvc.perform(get("/ops/tasks").param("facilityId", facilityId.toString())
+                        .param("day", "today")
+                        .header("Authorization", bearer(staffToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items.length()").value(0))
+                .andExpect(jsonPath("$.data.summary.byStatus.ASSIGNED").value(0));
+
+        mvc.perform(get("/ops/tasks").param("facilityId", facilityId.toString())
+                        .param("day", "upcoming")
+                        .header("Authorization", bearer(staffToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items.length()").value(1))
+                .andExpect(jsonPath("$.data.summary.byStatus.ASSIGNED").value(1));
+
+        // Transition rental to ACTIVE with an expired end_date, run overdue sweep, then renew back to ACTIVE
+        LocalDate vnToday = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        jdbc.update("""
+                update rentals set status = 'ACTIVE', start_date = ?, end_date = ?
+                where id = ?
+                """, vnToday.minusMonths(2), vnToday.minusDays(5), rentalId);
+        jdbc.update("update storage_units set status = 'OCCUPIED' where id = ?", unitId);
+
+        int marked = rentalService.markOverdueRentals();
+        org.junit.jupiter.api.Assertions.assertEquals(1, marked);
+        // Running sweep again must be idempotent (no second OVERDUE invoice)
+        org.junit.jupiter.api.Assertions.assertEquals(0, rentalService.markOverdueRentals());
+        Integer overdueInvoices = jdbc.queryForObject(
+                "select count(*) from invoices where rental_id = ? and invoice_type = 'OVERDUE'",
+                Integer.class, rentalId);
+        org.junit.jupiter.api.Assertions.assertEquals(1, overdueInvoices);
+
+        // firstStaffOf assigns return request to FACILITY_STAFF (not manager with smaller id)
+        MvcResult renewal = mvc.perform(post("/rentals/" + rentalId + "/renewals")
+                        .header("Authorization", bearer(customerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"additionalMonths\":1}"))
+                .andExpect(status().isCreated())
+                .andReturn();
+        Long renewInvoiceId = readLong(renewal, "$.data.invoice.id");
+        String renewRef = referenceOf(mvc.perform(post("/payments/vnpay/url")
+                        .header("Authorization", bearer(customerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"invoiceId\":%d}".formatted(renewInvoiceId)))
+                .andExpect(status().isOk()).andReturn());
+        paymentService.handleGatewayResult(renewRef, true, Instant.now(), "99887767");
+
+        mvc.perform(get("/ops/rentals/" + rentalId)
+                        .header("Authorization", bearer(managerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"));
+
+        // Requesting return must auto-assign RETURN_INSPECTION to FACILITY_STAFF rather than FACILITY_MANAGER
+        mvc.perform(post("/rentals/" + rentalId + "/return-requests")
+                        .header("Authorization", bearer(customerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"requestedDate\":\"%s\"}".formatted(vnToday.plusDays(1))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.rental.status").value("RETURN_REQUESTED"));
+
+        Long returnAssigneeId = jdbc.queryForObject(
+                "select assigned_staff_id from staff_tasks where rental_id = ? and task_type = 'RETURN_INSPECTION'",
+                Long.class, rentalId);
+        org.junit.jupiter.api.Assertions.assertEquals(staffId, returnAssigneeId);
     }
 
     // ---------- helpers ----------

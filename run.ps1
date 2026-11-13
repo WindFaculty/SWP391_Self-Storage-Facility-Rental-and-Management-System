@@ -11,6 +11,7 @@ $frontendDirectory = Join-Path $projectRoot 'frontend'
 $logDirectory = Join-Path $projectRoot '.run'
 $processes = @()
 $savedEnvironment = @{}
+$serversStarted = $false
 
 function Assert-PortFree([int] $Port) {
     $listener = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
@@ -96,6 +97,7 @@ try {
     }
 
     Write-Host 'Starting backend and frontend...'
+    $serversStarted = $true
     $processes += Start-DevServer 'backend' $backendDirectory 'mvnw.cmd spring-boot:run'
     $processes += Start-DevServer 'frontend' $frontendDirectory 'npm.cmd run dev -- --port 5173 --strictPort'
     Write-Host "Logs: $logDirectory"
@@ -150,6 +152,18 @@ try {
                 & taskkill.exe /PID $process.Id /T /F 2>$null | Out-Null
             } catch {
                 Write-Warning "Could not stop $($process.ServerName) (PID $($process.Id)): $($_.Exception.Message)"
+            }
+        }
+    }
+    if ($serversStarted) {
+        foreach ($port in @(8088, 5173)) {
+            $listeners = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
+            if ($listeners) {
+                foreach ($listenerPid in ($listeners | Select-Object -ExpandProperty OwningProcess -Unique)) {
+                    if ($listenerPid -gt 0) {
+                        & taskkill.exe /PID $listenerPid /T /F 2>$null | Out-Null
+                    }
+                }
             }
         }
     }
