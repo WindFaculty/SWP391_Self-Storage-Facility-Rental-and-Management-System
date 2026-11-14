@@ -1,0 +1,5521 @@
+{
+  "head": "371fb4f501408ed64418f0266fae54dc988877c4",
+  "branch": "fix/vnpay-checkout-guards",
+  "remote": "https://github.com/WindFaculty/SWP391_Self-Storage-Facility-Rental-and-Management-System.git",
+  "asof": "2026-11-14",
+  "commits": [
+    {
+      "sha": "b4d37fc55de84171f8aa0784435afaa55b509f2d",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-09-09T14:45:31+07:00",
+      "merge": false,
+      "subject": "Initial commit"
+    },
+    {
+      "sha": "f72d10d82e7653612ead60f22a6f33a61c0fdf32",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-09-12T13:43:57+07:00",
+      "merge": false,
+      "subject": "feat: setup project architecture with Spring Boot and React Vite"
+    },
+    {
+      "sha": "769c6ddfc015f058c26cea3957b66a1222bf2648",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-09-12T14:22:02+07:00",
+      "merge": false,
+      "subject": "feat: add identity auth module, frontend skeleton, docs and dev scripts"
+    },
+    {
+      "sha": "8301d88a16f0ec34a55c841cbb5ec497252d2493",
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "date": "2026-09-16T14:45:54+07:00",
+      "merge": false,
+      "subject": "feat: update login page and shared components (#1)"
+    },
+    {
+      "sha": "09bb18af79ac00800e1d0aa5e95fd26cec7d19e2",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-09-16T14:51:03+07:00",
+      "merge": false,
+      "subject": "refactor: align project with layered monolith architecture"
+    },
+    {
+      "sha": "4039b35a0ddce959f9e12d3ef0b86fd125672c02",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-09-16T14:54:44+07:00",
+      "merge": true,
+      "subject": "Merge branch 'main' of https://github.com/WindFaculty/SWP391_Self-Storage-Facility-Rental-and-Management-System"
+    },
+    {
+      "sha": "db738458d7e0ad91651a1e977dd64d948181701e",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-09T11:09:27+07:00",
+      "merge": false,
+      "subject": "refactor: scaffold base project architecture and preserve SQL references"
+    },
+    {
+      "sha": "d66668554fb3c48d1574a5b614c052771eedfa03",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T16:33:22+07:00",
+      "merge": false,
+      "subject": "chore: align README with scaffolded architecture and ignore local worktrees"
+    },
+    {
+      "sha": "7a11f27d0c4c2a26063a86383db25de35b7d355d",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T16:33:26+07:00",
+      "merge": false,
+      "subject": "docs: add FE1-01 stitch audit with asset manifest, tokens and TS migration plan"
+    },
+    {
+      "sha": "43f94a17b9a5bcb88589f37801809d883fdad683",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T17:03:05+07:00",
+      "merge": false,
+      "subject": "feat: scaffold typed frontend with design tokens, UI kit, API client and auth UI"
+    },
+    {
+      "sha": "d7f587b88d0c8cc143b15bd62fe0e2f256cc5a8b",
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "date": "2026-10-10T17:07:43+07:00",
+      "merge": false,
+      "subject": "docs: add FE2-01 internal screens, route matrix and layout audit"
+    },
+    {
+      "sha": "ef2de5919d9497034b2af70cf1594b62971f1f7d",
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "date": "2026-10-10T19:21:40+07:00",
+      "merge": false,
+      "subject": "feat: build FE2-02 facility units management and internal workspace shell"
+    },
+    {
+      "sha": "0540c604c9b43c2b3aac5a34ea575dd0bbf726e8",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T19:25:40+07:00",
+      "merge": false,
+      "subject": "feat(fe1): add catalog pages with date-based availability and shared catalog filters"
+    },
+    {
+      "sha": "b5a3df6e71adfa3fab4dc6581fce5f55eeeebee3",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T21:12:44+07:00",
+      "merge": false,
+      "subject": "feat(fe1): add hold booking flow, VNPay result page and my rentals list"
+    },
+    {
+      "sha": "d03028a03f56be40f8b1c946ae039b92bbf644ba",
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "date": "2026-10-10T21:20:12+07:00",
+      "merge": false,
+      "subject": "feat: add FE2-03 booking and task dashboards with check-in handover flow"
+    },
+    {
+      "sha": "8baced19f95ac8149278898cd398c859f91ff18b",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T21:25:06+07:00",
+      "merge": false,
+      "subject": "feat(fe1): add rental renewal, return request, billing and support pages"
+    },
+    {
+      "sha": "3560ede7a3377a1b3efaff35d7f8927a9093402e",
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "date": "2026-10-10T21:29:14+07:00",
+      "merge": false,
+      "subject": "feat: add FE2-04 return, inspection, support ticket and task completion flows"
+    },
+    {
+      "sha": "f2547314e5827b879a2ff260b19188601d0e5fa9",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T21:29:36+07:00",
+      "merge": false,
+      "subject": "feat(fe1): add responsive mobile nav, skeleton loading states, tests and Cloudflare deploy docs"
+    },
+    {
+      "sha": "137dd8feb0e5648992f6d83d52d88ad3812c6244",
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "date": "2026-10-10T21:39:29+07:00",
+      "merge": false,
+      "subject": "feat: add FE2-05 facility, business and admin dashboards with role switching"
+    },
+    {
+      "sha": "339a9b9c91fec26604ee1eb1dbfda3cd6c98f572",
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "date": "2026-10-10T21:47:24+07:00",
+      "merge": false,
+      "subject": "test: add FE2-06 access-control integration and Playwright role-flow e2e tests"
+    },
+    {
+      "sha": "99719b9721db54b4d689eba9b40e3da3eba532be",
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "date": "2026-10-10T22:02:23+07:00",
+      "merge": false,
+      "subject": "chore: bootstrap Spring Boot backend skeleton for Java 25 with Maven Wrapper and profiles (BE1-01)"
+    },
+    {
+      "sha": "b3f63d4545b834a25ee7c6387964b1be998bfa52",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-10T22:02:49+07:00",
+      "merge": true,
+      "subject": "Merge commit '339a9b9' into tran-xuan-khoa"
+    },
+    {
+      "sha": "626f9ccb4d8a353a48da121191ef25bdf0a014e1",
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "date": "2026-10-10T22:13:12+07:00",
+      "merge": false,
+      "subject": "feat(rental): add rental state machine, half-open timeline and price snapshot (BE2-01)"
+    },
+    {
+      "sha": "22fbf27bd3e35392ff76fe88fde67ed07dcc7360",
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "date": "2026-10-10T22:13:59+07:00",
+      "merge": false,
+      "subject": "feat(rental): add availability check from rental schedule and physical unit status (BE2-02)"
+    },
+    {
+      "sha": "a65ed123cd5abede0f62cf401d2d2f6250b5068a",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-10T22:16:00+07:00",
+      "merge": false,
+      "subject": "feat(payment): add billing model and payment attempt lifecycle (BE3-01)"
+    },
+    {
+      "sha": "6b1330b0a35b23575491ac9b2f43ac38befd6c1d",
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "date": "2026-10-10T22:16:54+07:00",
+      "merge": false,
+      "subject": "feat(rental): add atomic hold creation with per-unit lock and overlap rejection (BE2-03)"
+    },
+    {
+      "sha": "d12374467be0fcd6a0910d102a443896e4d206e8",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-10T22:23:13+07:00",
+      "merge": false,
+      "subject": "feat(payment): add VNPay sandbox payment URL builder with HMAC-SHA512 (BE3-02)"
+    },
+    {
+      "sha": "c35c213bb5220f2536b6875ae34b2bcb6c6aefdb",
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "date": "2026-10-10T22:24:05+07:00",
+      "merge": false,
+      "subject": "feat: add MySQL Flyway baseline schema with profile datasource and controlled local seed (BE1-02)"
+    },
+    {
+      "sha": "6e0fb319906d3e8d4c4b9e71aa81dc802d36f432",
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "date": "2026-10-10T22:25:21+07:00",
+      "merge": false,
+      "subject": "feat(rental): add hold timeout sweep, cancellation and late-payment resolution (BE2-04)"
+    },
+    {
+      "sha": "00e160aa46a1450391399cced1383249aaf5da59",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-10T22:26:36+07:00",
+      "merge": false,
+      "subject": "feat(payment): add VNPay IPN endpoint with checksum, amount checks and idempotency (BE3-03)"
+    },
+    {
+      "sha": "7a4535e6345cc94955987235e9613e96d0dce85d",
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "date": "2026-10-10T22:27:36+07:00",
+      "merge": false,
+      "subject": "feat(rental): add check-in handover records and staff task model (BE2-05)"
+    },
+    {
+      "sha": "f5c124e7572738ca61accfcf3b7209c842604f09",
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "date": "2026-10-10T23:01:02+07:00",
+      "merge": false,
+      "subject": "feat(rental): add renewal with overlap re-check, overdue sweep, check-out and inspection (BE2-06)"
+    },
+    {
+      "sha": "e597d3f2cb308a2bcd437f951751d37c29f4bed8",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-10T23:04:37+07:00",
+      "merge": false,
+      "subject": "feat(payment): add policy-checked invoice creation, payment history and gateway audit (BE3-04)"
+    },
+    {
+      "sha": "6df2af640b1e78a2a9da978f50aa8379551ecd1b",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-10T23:25:03+07:00",
+      "merge": false,
+      "subject": "feat(payment): add audited manual refund workflow (BE3-05)"
+    },
+    {
+      "sha": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65",
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "date": "2026-10-10T23:28:40+07:00",
+      "merge": false,
+      "subject": "feat: implement email/password auth with JWT access/refresh, revocation and profiles config (BE1-03)"
+    },
+    {
+      "sha": "bd5b5e47b24c6552cc9675996752954fd9716c78",
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "date": "2026-10-10T23:29:09+07:00",
+      "merge": false,
+      "subject": "test(rental): add state transition matrix and race-condition suites (BE2-07)"
+    },
+    {
+      "sha": "db0392c3aae6a32a15a5a2cdae4d35f1e248a9e1",
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "date": "2026-10-10T23:31:31+07:00",
+      "merge": false,
+      "subject": "feat: enforce role-based route rules, facility scope and ownership guards (BE1-04)"
+    },
+    {
+      "sha": "4175f11b4413c86c0ff31c7105c733a15576f879",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-10T23:32:12+07:00",
+      "merge": false,
+      "subject": "feat(support): add support ticket workflow with facility-scoped assignment (BE3-06)"
+    },
+    {
+      "sha": "fd7c9836b09ad2c4eecedae9bed14b7c47bbe82f",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-10T23:38:14+07:00",
+      "merge": false,
+      "subject": "feat(management): add business policy management and payment reports (BE3-07)"
+    },
+    {
+      "sha": "61e7d3cb185c60115fbaf0e4ca3830e5fde49944",
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "date": "2026-10-10T23:40:50+07:00",
+      "merge": false,
+      "subject": "feat: add facility, unit-type and storage-unit management with public catalog (BE1-05)"
+    },
+    {
+      "sha": "28edc8d436fd0c703502e74b801dc283cd1e33b2",
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "date": "2026-10-10T23:44:06+07:00",
+      "merge": false,
+      "subject": "chore: add OpenAPI/Swagger UI, GitHub Actions CI and editor config (BE1-06)"
+    },
+    {
+      "sha": "3731d2b71f043dfd1cf074ee6287bdfc33340dd8",
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "date": "2026-10-10T23:58:50+07:00",
+      "merge": false,
+      "subject": "feat: add admin user management, audit logging and docker/backup baseline (BE1-07)"
+    },
+    {
+      "sha": "7ddada2ee348700016f06eed1af9c36d2847b702",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-11T00:13:57+07:00",
+      "merge": false,
+      "subject": "refactor: remove runtime mocks and prepare backend integration"
+    },
+    {
+      "sha": "104004e1745c87435e1142f07fe625a7d5421578",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T00:21:54+07:00",
+      "merge": true,
+      "subject": "merge: integrate Bui Van Tinh backend bootstrap (auth, facility, security)"
+    },
+    {
+      "sha": "727b938ed4f6b689de781d8ecfc3bc90a4719df0",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T00:22:08+07:00",
+      "merge": true,
+      "subject": "merge: integrate Ho Xuan Thanh rental module (BE2 state machine, holds, renewals)"
+    },
+    {
+      "sha": "e5b0ab9711dad26bc272102b7889259c1ee99905",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T00:43:14+07:00",
+      "merge": false,
+      "subject": "fix(merge): resolve schema overlap between BE1 baseline and BE3 billing/support migrations"
+    },
+    {
+      "sha": "7ae7a685c723052798ef4b0df09f65a855e55c82",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T01:32:09+07:00",
+      "merge": false,
+      "subject": "fix(payment): repair VNPay routing, security and add checkout API"
+    },
+    {
+      "sha": "0e9b395572403196d2ad106d0cba3f0e3b3e3e0a",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T01:32:19+07:00",
+      "merge": false,
+      "subject": "chore(db): rename migrations to V{NNN} and drop legacy payments table"
+    },
+    {
+      "sha": "77f978996082f00d89d4ff8b1c3dd2e69343da98",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T01:32:27+07:00",
+      "merge": false,
+      "subject": "refactor: unify storage unit status and expose support/management APIs"
+    },
+    {
+      "sha": "766bd0651b4ae3c0197a7eb40cdef420d7f5d954",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T01:32:34+07:00",
+      "merge": false,
+      "subject": "chore(infra): non-root database user and vnpay env passthrough in compose"
+    },
+    {
+      "sha": "662b6450fa1adde85dd6788978c97e2b92f85a71",
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "date": "2026-10-11T01:32:34+07:00",
+      "merge": false,
+      "subject": "chore(infra): non-root database user and vnpay env passthrough in compose"
+    },
+    {
+      "sha": "55990f3e3d9e4b208eab5ba1f19fd64c86d3a08e",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-11T01:42:20+07:00",
+      "merge": true,
+      "subject": "Merge branch 'le-tri-thien' of D:/FAll26/SWP391/le-tri-thien into tran-xuan-khoa"
+    },
+    {
+      "sha": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-11T16:20:05+07:00",
+      "merge": false,
+      "subject": "feat: integrate rental and operations flows with full-stack CI"
+    },
+    {
+      "sha": "322483d4d450fbfb469841e3d20a8c2efeb32b57",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-11T16:20:05+07:00",
+      "merge": true,
+      "subject": "Merge tran-xuan-khoa into main with full-stack CI"
+    },
+    {
+      "sha": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-11T19:57:37+07:00",
+      "merge": false,
+      "subject": "Add social login and cookie-based authentication flows"
+    },
+    {
+      "sha": "f8e5499de543ed219294f69a687b87c7b9da5156",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-12T01:04:23+07:00",
+      "merge": false,
+      "subject": "refactor(backend): consolidate shared services and drop dead modules"
+    },
+    {
+      "sha": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-12T01:12:15+07:00",
+      "merge": false,
+      "subject": "refactor(frontend): finish react-query migration and collapse duplicate layers"
+    },
+    {
+      "sha": "36557ea3e34b7344254039862e863f38f80a8a4c",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-12T13:35:44+07:00",
+      "merge": false,
+      "subject": "feat: add SWP391 development plan version 2 documentation in HTML and Markdown formats"
+    },
+    {
+      "sha": "ec687e229633f4be2f1589c1ff4ce0407012fb32",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-18T19:05:20+07:00",
+      "merge": false,
+      "subject": "feat: improve customer flows and VNPay integration"
+    },
+    {
+      "sha": "b579d0a941b094397d94f33a53e9fd097892d51b",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-18T19:22:36+07:00",
+      "merge": false,
+      "subject": "ci: deploy frontend to Cloudflare Pages"
+    },
+    {
+      "sha": "7400804863e8d269cdb5552f27091ef751e85c16",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-18T19:26:12+07:00",
+      "merge": false,
+      "subject": "ci: deploy pages after frontend checks"
+    },
+    {
+      "sha": "4306891f4f42379b59387c1cc13c12ae56dd6d34",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-18T19:57:38+07:00",
+      "merge": false,
+      "subject": "deploy: prepare AWS backend staging"
+    },
+    {
+      "sha": "f16c35dad0281192f0cb3ff07106b376069b4371",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-18T20:00:04+07:00",
+      "merge": false,
+      "subject": "fix: correct EC2 CPU credit property"
+    },
+    {
+      "sha": "b4ad8b6e43eb3049a9bab980760ecc5b73e5ef7f",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-18T20:07:34+07:00",
+      "merge": false,
+      "subject": "fix: avoid curl package conflict on AL2023"
+    },
+    {
+      "sha": "f99350e9e39d29912323c93918a22ad0f7cca0d1",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-18T20:12:56+07:00",
+      "merge": false,
+      "subject": "fix: install Docker Buildx before staging build"
+    },
+    {
+      "sha": "c19ba4144f69b0102c188fce0890ff1c7482c4e5",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-19T00:30:40+07:00",
+      "merge": false,
+      "subject": "fix(backend): repair VNPay test config and local seed assertion"
+    },
+    {
+      "sha": "2ccd9209f32d5f8158063ccdc5ba8be8a0f28ce4",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-10-30T21:20:08+07:00",
+      "merge": false,
+      "subject": "Update local setup and frontend validation"
+    },
+    {
+      "sha": "97538fbbd751dbf540de6a579db74a7e843761a6",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-11-13T15:00:00+07:00",
+      "merge": false,
+      "subject": "feat: add storage management, operations, payment, and rental modules with frontend integration"
+    },
+    {
+      "sha": "2f0172d216bdd1643cd2e627d5f6d4bb5aa8e3c5",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-11-14T00:31:59+07:00",
+      "merge": false,
+      "subject": "fix(test): align rental lifecycle E2E with API contract"
+    },
+    {
+      "sha": "e0c24357240f250991b2c53a632790efde6f500b",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-11-14T00:36:47+07:00",
+      "merge": true,
+      "subject": "Merge pull request #2 from WindFaculty/fix/demo-flow-bugs"
+    },
+    {
+      "sha": "371fb4f501408ed64418f0266fae54dc988877c4",
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "date": "2026-11-14T02:17:32+07:00",
+      "merge": false,
+      "subject": "fix(payment): guard VNPay checkout and configure local credentials"
+    }
+  ],
+  "authors": [
+    {
+      "author": "Trần Xuân Khoa",
+      "email": "tranxuankhoa777@gmail.com",
+      "commits": 35,
+      "nonmerge": 30,
+      "first": "2026-09-09",
+      "last": "2026-11-14"
+    },
+    {
+      "author": "tuanthanh25-alt",
+      "email": "btthanh1507@gmail.com",
+      "commits": 7,
+      "nonmerge": 7,
+      "first": "2026-09-16",
+      "last": "2026-10-10"
+    },
+    {
+      "author": "tinhden3333",
+      "email": "tinhden3333@gmail.com",
+      "commits": 7,
+      "nonmerge": 7,
+      "first": "2026-10-10",
+      "last": "2026-10-10"
+    },
+    {
+      "author": "hxtit2004-dot",
+      "email": "hxtit2004@gmail.com",
+      "commits": 7,
+      "nonmerge": 7,
+      "first": "2026-10-10",
+      "last": "2026-10-10"
+    },
+    {
+      "author": "letrithien22112005",
+      "email": "letrithien22112005@gmail.com",
+      "commits": 15,
+      "nonmerge": 13,
+      "first": "2026-10-10",
+      "last": "2026-10-11"
+    }
+  ],
+  "files": [
+    {
+      "path": "backend/src/main/java/com/storage/StorageApplication.java",
+      "group": "Backend",
+      "loc": 11,
+      "physical": 14
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/controller/AdminController.java",
+      "group": "Backend",
+      "loc": 65,
+      "physical": 78
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/controller/AuthController.java",
+      "group": "Backend",
+      "loc": 50,
+      "physical": 59
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/controller/CookieAuthController.java",
+      "group": "Backend",
+      "loc": 52,
+      "physical": 54
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/dto/AdminDtos.java",
+      "group": "Backend",
+      "loc": 9,
+      "physical": 13
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/dto/AuthResponse.java",
+      "group": "Backend",
+      "loc": 8,
+      "physical": 9
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/dto/LoginRequest.java",
+      "group": "Backend",
+      "loc": 5,
+      "physical": 7
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/dto/RefreshTokenRequest.java",
+      "group": "Backend",
+      "loc": 4,
+      "physical": 6
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/dto/RegisterRequest.java",
+      "group": "Backend",
+      "loc": 10,
+      "physical": 12
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/dto/UserDto.java",
+      "group": "Backend",
+      "loc": 17,
+      "physical": 20
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/entity/ActivityLog.java",
+      "group": "Backend",
+      "loc": 75,
+      "physical": 100
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/entity/RefreshToken.java",
+      "group": "Backend",
+      "loc": 50,
+      "physical": 67
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/entity/SocialIdentity.java",
+      "group": "Backend",
+      "loc": 21,
+      "physical": 24
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/entity/User.java",
+      "group": "Backend",
+      "loc": 86,
+      "physical": 115
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/entity/UserRole.java",
+      "group": "Backend",
+      "loc": 8,
+      "physical": 9
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/entity/UserStatus.java",
+      "group": "Backend",
+      "loc": 5,
+      "physical": 6
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/repository/ActivityLogRepository.java",
+      "group": "Backend",
+      "loc": 18,
+      "physical": 21
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/repository/RefreshTokenRepository.java",
+      "group": "Backend",
+      "loc": 8,
+      "physical": 12
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/repository/SocialIdentityRepository.java",
+      "group": "Backend",
+      "loc": 7,
+      "physical": 9
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/repository/UserRepository.java",
+      "group": "Backend",
+      "loc": 29,
+      "physical": 37
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/service/ActivityLogService.java",
+      "group": "Backend",
+      "loc": 43,
+      "physical": 58
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/service/AdminOpsService.java",
+      "group": "Backend",
+      "loc": 175,
+      "physical": 197
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/service/AuthService.java",
+      "group": "Backend",
+      "loc": 155,
+      "physical": 174
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/service/GoogleAccountService.java",
+      "group": "Backend",
+      "loc": 57,
+      "physical": 61
+    },
+    {
+      "path": "backend/src/main/java/com/storage/account/service/UserAdminService.java",
+      "group": "Backend",
+      "loc": 40,
+      "physical": 52
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/controller/CatalogController.java",
+      "group": "Backend",
+      "loc": 32,
+      "physical": 45
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/controller/FacilityController.java",
+      "group": "Backend",
+      "loc": 28,
+      "physical": 39
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/dto/CatalogDtos.java",
+      "group": "Backend",
+      "loc": 34,
+      "physical": 45
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/entity/Facility.java",
+      "group": "Backend",
+      "loc": 55,
+      "physical": 71
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/entity/FacilityStatus.java",
+      "group": "Backend",
+      "loc": 5,
+      "physical": 6
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/entity/StorageUnit.java",
+      "group": "Backend",
+      "loc": 74,
+      "physical": 97
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/entity/StorageUnitStatus.java",
+      "group": "Backend",
+      "loc": 33,
+      "physical": 45
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/entity/UnitType.java",
+      "group": "Backend",
+      "loc": 61,
+      "physical": 81
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/repository/FacilityRepository.java",
+      "group": "Backend",
+      "loc": 9,
+      "physical": 14
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/repository/StorageUnitRepository.java",
+      "group": "Backend",
+      "loc": 92,
+      "physical": 117
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/repository/UnitTypeRepository.java",
+      "group": "Backend",
+      "loc": 6,
+      "physical": 9
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/service/CatalogService.java",
+      "group": "Backend",
+      "loc": 73,
+      "physical": 91
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/service/FacilityAccessService.java",
+      "group": "Backend",
+      "loc": 28,
+      "physical": 38
+    },
+    {
+      "path": "backend/src/main/java/com/storage/facility/service/FacilityService.java",
+      "group": "Backend",
+      "loc": 41,
+      "physical": 54
+    },
+    {
+      "path": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "group": "Backend",
+      "loc": 81,
+      "physical": 100
+    },
+    {
+      "path": "backend/src/main/java/com/storage/management/dto/ManagementDtos.java",
+      "group": "Backend",
+      "loc": 51,
+      "physical": 66
+    },
+    {
+      "path": "backend/src/main/java/com/storage/management/service/BusinessPolicyService.java",
+      "group": "Backend",
+      "loc": 27,
+      "physical": 32
+    },
+    {
+      "path": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+      "group": "Backend",
+      "loc": 271,
+      "physical": 307
+    },
+    {
+      "path": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "group": "Backend",
+      "loc": 208,
+      "physical": 256
+    },
+    {
+      "path": "backend/src/main/java/com/storage/ops/dto/OpsDtos.java",
+      "group": "Backend",
+      "loc": 111,
+      "physical": 148
+    },
+    {
+      "path": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+      "group": "Backend",
+      "loc": 921,
+      "physical": 1025
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/config/VnPayConfiguration.java",
+      "group": "Backend",
+      "loc": 7,
+      "physical": 9
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/config/VnPayProperties.java",
+      "group": "Backend",
+      "loc": 5,
+      "physical": 7
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/controller/CustomerBillingController.java",
+      "group": "Backend",
+      "loc": 50,
+      "physical": 64
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/controller/VnPayController.java",
+      "group": "Backend",
+      "loc": 68,
+      "physical": 77
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/dto/CustomerBillingDtos.java",
+      "group": "Backend",
+      "loc": 33,
+      "physical": 43
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/entity/BusinessPolicy.java",
+      "group": "Backend",
+      "loc": 107,
+      "physical": 137
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/entity/FeeType.java",
+      "group": "Backend",
+      "loc": 66,
+      "physical": 83
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/entity/Invoice.java",
+      "group": "Backend",
+      "loc": 133,
+      "physical": 165
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/entity/PaymentAttempt.java",
+      "group": "Backend",
+      "loc": 117,
+      "physical": 149
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/repository/BusinessPolicyRepository.java",
+      "group": "Backend",
+      "loc": 5,
+      "physical": 7
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/repository/FeeTypeRepository.java",
+      "group": "Backend",
+      "loc": 6,
+      "physical": 9
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/repository/InvoiceRepository.java",
+      "group": "Backend",
+      "loc": 10,
+      "physical": 16
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/repository/PaymentAttemptRepository.java",
+      "group": "Backend",
+      "loc": 26,
+      "physical": 34
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/service/CustomerBillingService.java",
+      "group": "Backend",
+      "loc": 109,
+      "physical": 126
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/service/PaymentService.java",
+      "group": "Backend",
+      "loc": 90,
+      "physical": 101
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/service/VnPayIpnService.java",
+      "group": "Backend",
+      "loc": 65,
+      "physical": 75
+    },
+    {
+      "path": "backend/src/main/java/com/storage/payment/service/VnPayService.java",
+      "group": "Backend",
+      "loc": 129,
+      "physical": 144
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/controller/RentalController.java",
+      "group": "Backend",
+      "loc": 61,
+      "physical": 76
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/dto/RentalDtos.java",
+      "group": "Backend",
+      "loc": 45,
+      "physical": 58
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/AccessMethod.java",
+      "group": "Backend",
+      "loc": 6,
+      "physical": 7
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/RenewalStatus.java",
+      "group": "Backend",
+      "loc": 20,
+      "physical": 25
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/Rental.java",
+      "group": "Backend",
+      "loc": 158,
+      "physical": 200
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/RentalRenewal.java",
+      "group": "Backend",
+      "loc": 92,
+      "physical": 116
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/RentalStatus.java",
+      "group": "Backend",
+      "loc": 34,
+      "physical": 41
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/StaffTask.java",
+      "group": "Backend",
+      "loc": 108,
+      "physical": 142
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/TaskStatus.java",
+      "group": "Backend",
+      "loc": 20,
+      "physical": 25
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/entity/TaskType.java",
+      "group": "Backend",
+      "loc": 7,
+      "physical": 8
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/repository/RentalRenewalRepository.java",
+      "group": "Backend",
+      "loc": 10,
+      "physical": 15
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/repository/RentalRepository.java",
+      "group": "Backend",
+      "loc": 47,
+      "physical": 66
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/repository/StaffTaskRepository.java",
+      "group": "Backend",
+      "loc": 45,
+      "physical": 62
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/service/RentalAvailability.java",
+      "group": "Backend",
+      "loc": 27,
+      "physical": 32
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+      "group": "Backend",
+      "loc": 328,
+      "physical": 387
+    },
+    {
+      "path": "backend/src/main/java/com/storage/rental/service/UnitNotAvailableException.java",
+      "group": "Backend",
+      "loc": 7,
+      "physical": 10
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/config/GoogleClientConfiguration.java",
+      "group": "Backend",
+      "loc": 23,
+      "physical": 25
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/config/SecurityConfig.java",
+      "group": "Backend",
+      "loc": 131,
+      "physical": 143
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/exception/BusinessException.java",
+      "group": "Backend",
+      "loc": 22,
+      "physical": 29
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/exception/ErrorCode.java",
+      "group": "Backend",
+      "loc": 44,
+      "physical": 59
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/exception/ForbiddenException.java",
+      "group": "Backend",
+      "loc": 9,
+      "physical": 12
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/exception/GlobalExceptionHandler.java",
+      "group": "Backend",
+      "loc": 74,
+      "physical": 90
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/exception/NotFoundException.java",
+      "group": "Backend",
+      "loc": 9,
+      "physical": 12
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/response/ApiError.java",
+      "group": "Backend",
+      "loc": 4,
+      "physical": 6
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/response/ApiResponse.java",
+      "group": "Backend",
+      "loc": 15,
+      "physical": 20
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/response/PageResponse.java",
+      "group": "Backend",
+      "loc": 9,
+      "physical": 13
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/security/AuthCookies.java",
+      "group": "Backend",
+      "loc": 36,
+      "physical": 38
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/security/CustomUserDetailsService.java",
+      "group": "Backend",
+      "loc": 22,
+      "physical": 27
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/security/GoogleOAuthHandlers.java",
+      "group": "Backend",
+      "loc": 44,
+      "physical": 46
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/security/JwtAuthenticationFilter.java",
+      "group": "Backend",
+      "loc": 58,
+      "physical": 68
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/security/JwtTokenProvider.java",
+      "group": "Backend",
+      "loc": 71,
+      "physical": 85
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/security/SecurityUtils.java",
+      "group": "Backend",
+      "loc": 27,
+      "physical": 35
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/security/UserPrincipal.java",
+      "group": "Backend",
+      "loc": 83,
+      "physical": 101
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/service/Analytics.java",
+      "group": "Backend",
+      "loc": 71,
+      "physical": 89
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/text/Strings.java",
+      "group": "Backend",
+      "loc": 12,
+      "physical": 18
+    },
+    {
+      "path": "backend/src/main/java/com/storage/shared/web/ClientIp.java",
+      "group": "Backend",
+      "loc": 21,
+      "physical": 28
+    },
+    {
+      "path": "backend/src/main/java/com/storage/support/controller/SupportController.java",
+      "group": "Backend",
+      "loc": 42,
+      "physical": 52
+    },
+    {
+      "path": "backend/src/main/java/com/storage/support/dto/SupportDtos.java",
+      "group": "Backend",
+      "loc": 26,
+      "physical": 32
+    },
+    {
+      "path": "backend/src/main/java/com/storage/support/entity/SupportTicket.java",
+      "group": "Backend",
+      "loc": 127,
+      "physical": 159
+    },
+    {
+      "path": "backend/src/main/java/com/storage/support/repository/SupportTicketRepository.java",
+      "group": "Backend",
+      "loc": 9,
+      "physical": 14
+    },
+    {
+      "path": "backend/src/main/java/com/storage/support/service/SupportTicketService.java",
+      "group": "Backend",
+      "loc": 67,
+      "physical": 75
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V001__baseline_schema.sql",
+      "group": "Backend",
+      "loc": 258,
+      "physical": 313
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V002__account_refresh_tokens.sql",
+      "group": "Backend",
+      "loc": 12,
+      "physical": 18
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V003__billing_schema.sql",
+      "group": "Backend",
+      "loc": 18,
+      "physical": 24
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V004__payment_attempt_gateway_transaction_no.sql",
+      "group": "Backend",
+      "loc": 2,
+      "physical": 3
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V005__payment_attempt_manual_refund.sql",
+      "group": "Backend",
+      "loc": 6,
+      "physical": 9
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V006__support_tickets.sql",
+      "group": "Backend",
+      "loc": 3,
+      "physical": 6
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V007__drop_legacy_payments.sql",
+      "group": "Backend",
+      "loc": 1,
+      "physical": 4
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V008__rental_return_requested_and_invoice_expired.sql",
+      "group": "Backend",
+      "loc": 8,
+      "physical": 14
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V009__social_identities.sql",
+      "group": "Backend",
+      "loc": 8,
+      "physical": 8
+    },
+    {
+      "path": "backend/src/main/resources/db/migration/mysql/V010__case_sensitive_provider_subject.sql",
+      "group": "Backend",
+      "loc": 2,
+      "physical": 2
+    },
+    {
+      "path": "backend/src/main/resources/db/seed/local/R__demo_catalog_seed.sql",
+      "group": "Backend",
+      "loc": 95,
+      "physical": 128
+    },
+    {
+      "path": "backend/src/main/resources/db/seed/local/R__demo_fee_types.sql",
+      "group": "Backend",
+      "loc": 6,
+      "physical": 8
+    },
+    {
+      "path": "backend/src/main/resources/db/seed/local/R__demo_users.sql",
+      "group": "Backend",
+      "loc": 13,
+      "physical": 17
+    },
+    {
+      "path": "frontend/src/api/api.ts",
+      "group": "Frontend",
+      "loc": 17,
+      "physical": 19
+    },
+    {
+      "path": "frontend/src/api/client.ts",
+      "group": "Frontend",
+      "loc": 132,
+      "physical": 154
+    },
+    {
+      "path": "frontend/src/app/App.tsx",
+      "group": "Frontend",
+      "loc": 14,
+      "physical": 15
+    },
+    {
+      "path": "frontend/src/app/providers/SessionProvider.tsx",
+      "group": "Frontend",
+      "loc": 55,
+      "physical": 59
+    },
+    {
+      "path": "frontend/src/app/queryClient.ts",
+      "group": "Frontend",
+      "loc": 10,
+      "physical": 11
+    },
+    {
+      "path": "frontend/src/app/routes/AppRoutes.tsx",
+      "group": "Frontend",
+      "loc": 74,
+      "physical": 78
+    },
+    {
+      "path": "frontend/src/app/routes/NotBuiltPage.tsx",
+      "group": "Frontend",
+      "loc": 10,
+      "physical": 11
+    },
+    {
+      "path": "frontend/src/app/routes/NotFoundPage.tsx",
+      "group": "Frontend",
+      "loc": 13,
+      "physical": 15
+    },
+    {
+      "path": "frontend/src/app/routes/router.tsx",
+      "group": "Frontend",
+      "loc": 114,
+      "physical": 119
+    },
+    {
+      "path": "frontend/src/components/guards/ProtectedRoute.tsx",
+      "group": "Frontend",
+      "loc": 19,
+      "physical": 23
+    },
+    {
+      "path": "frontend/src/components/ui/Button.tsx",
+      "group": "Frontend",
+      "loc": 56,
+      "physical": 61
+    },
+    {
+      "path": "frontend/src/components/ui/Drawer.tsx",
+      "group": "Frontend",
+      "loc": 52,
+      "physical": 57
+    },
+    {
+      "path": "frontend/src/components/ui/EmptyState.tsx",
+      "group": "Frontend",
+      "loc": 19,
+      "physical": 21
+    },
+    {
+      "path": "frontend/src/components/ui/ErrorState.tsx",
+      "group": "Frontend",
+      "loc": 21,
+      "physical": 23
+    },
+    {
+      "path": "frontend/src/components/ui/Input.tsx",
+      "group": "Frontend",
+      "loc": 36,
+      "physical": 39
+    },
+    {
+      "path": "frontend/src/components/ui/LoadingSpinner.tsx",
+      "group": "Frontend",
+      "loc": 21,
+      "physical": 24
+    },
+    {
+      "path": "frontend/src/components/ui/Modal.tsx",
+      "group": "Frontend",
+      "loc": 56,
+      "physical": 61
+    },
+    {
+      "path": "frontend/src/components/ui/Select.tsx",
+      "group": "Frontend",
+      "loc": 48,
+      "physical": 52
+    },
+    {
+      "path": "frontend/src/components/ui/Skeleton.tsx",
+      "group": "Frontend",
+      "loc": 12,
+      "physical": 14
+    },
+    {
+      "path": "frontend/src/components/ui/StatusLabel.tsx",
+      "group": "Frontend",
+      "loc": 26,
+      "physical": 30
+    },
+    {
+      "path": "frontend/src/components/ui/Tabs.tsx",
+      "group": "Frontend",
+      "loc": 35,
+      "physical": 37
+    },
+    {
+      "path": "frontend/src/features/admin/adminRules.ts",
+      "group": "Frontend",
+      "loc": 94,
+      "physical": 102
+    },
+    {
+      "path": "frontend/src/features/admin/api/adminApi.ts",
+      "group": "Frontend",
+      "loc": 10,
+      "physical": 11
+    },
+    {
+      "path": "frontend/src/features/admin/components/UserFormModal.tsx",
+      "group": "Frontend",
+      "loc": 183,
+      "physical": 197
+    },
+    {
+      "path": "frontend/src/features/admin/hooks/useAdmin.ts",
+      "group": "Frontend",
+      "loc": 29,
+      "physical": 32
+    },
+    {
+      "path": "frontend/src/features/admin/pages/AdminSecurityPage.tsx",
+      "group": "Frontend",
+      "loc": 470,
+      "physical": 492
+    },
+    {
+      "path": "frontend/src/features/admin/types.ts",
+      "group": "Frontend",
+      "loc": 22,
+      "physical": 26
+    },
+    {
+      "path": "frontend/src/features/auth/AuthProvider.tsx",
+      "group": "Frontend",
+      "loc": 46,
+      "physical": 47
+    },
+    {
+      "path": "frontend/src/features/auth/api/authApi.ts",
+      "group": "Frontend",
+      "loc": 15,
+      "physical": 16
+    },
+    {
+      "path": "frontend/src/features/auth/auth-context.ts",
+      "group": "Frontend",
+      "loc": 11,
+      "physical": 13
+    },
+    {
+      "path": "frontend/src/features/auth/components/LoginForm.tsx",
+      "group": "Frontend",
+      "loc": 98,
+      "physical": 107
+    },
+    {
+      "path": "frontend/src/features/auth/components/RegisterForm.tsx",
+      "group": "Frontend",
+      "loc": 161,
+      "physical": 171
+    },
+    {
+      "path": "frontend/src/features/auth/components/SocialLogin.tsx",
+      "group": "Frontend",
+      "loc": 35,
+      "physical": 38
+    },
+    {
+      "path": "frontend/src/features/auth/pages/AuthPage.tsx",
+      "group": "Frontend",
+      "loc": 162,
+      "physical": 177
+    },
+    {
+      "path": "frontend/src/features/auth/pages/ForbiddenPage.tsx",
+      "group": "Frontend",
+      "loc": 15,
+      "physical": 17
+    },
+    {
+      "path": "frontend/src/features/auth/roles.ts",
+      "group": "Frontend",
+      "loc": 15,
+      "physical": 16
+    },
+    {
+      "path": "frontend/src/features/auth/types.ts",
+      "group": "Frontend",
+      "loc": 28,
+      "physical": 32
+    },
+    {
+      "path": "frontend/src/features/auth/useAuth.ts",
+      "group": "Frontend",
+      "loc": 9,
+      "physical": 10
+    },
+    {
+      "path": "frontend/src/features/billing/api/invoiceApi.ts",
+      "group": "Frontend",
+      "loc": 5,
+      "physical": 6
+    },
+    {
+      "path": "frontend/src/features/billing/api/paymentApi.ts",
+      "group": "Frontend",
+      "loc": 11,
+      "physical": 14
+    },
+    {
+      "path": "frontend/src/features/billing/hooks/useInvoices.ts",
+      "group": "Frontend",
+      "loc": 7,
+      "physical": 8
+    },
+    {
+      "path": "frontend/src/features/billing/hooks/usePayment.ts",
+      "group": "Frontend",
+      "loc": 25,
+      "physical": 27
+    },
+    {
+      "path": "frontend/src/features/billing/pages/BillingPage.tsx",
+      "group": "Frontend",
+      "loc": 185,
+      "physical": 200
+    },
+    {
+      "path": "frontend/src/features/billing/pages/PaymentResultPage.tsx",
+      "group": "Frontend",
+      "loc": 122,
+      "physical": 135
+    },
+    {
+      "path": "frontend/src/features/billing/types.ts",
+      "group": "Frontend",
+      "loc": 23,
+      "physical": 28
+    },
+    {
+      "path": "frontend/src/features/catalog/api/catalogApi.ts",
+      "group": "Frontend",
+      "loc": 16,
+      "physical": 22
+    },
+    {
+      "path": "frontend/src/features/catalog/components/CatalogFilters.tsx",
+      "group": "Frontend",
+      "loc": 113,
+      "physical": 126
+    },
+    {
+      "path": "frontend/src/features/catalog/components/FacilityCard.tsx",
+      "group": "Frontend",
+      "loc": 52,
+      "physical": 58
+    },
+    {
+      "path": "frontend/src/features/catalog/components/UnitTypeCard.tsx",
+      "group": "Frontend",
+      "loc": 53,
+      "physical": 57
+    },
+    {
+      "path": "frontend/src/features/catalog/hooks/useCatalog.ts",
+      "group": "Frontend",
+      "loc": 36,
+      "physical": 41
+    },
+    {
+      "path": "frontend/src/features/catalog/lib/rentalRange.ts",
+      "group": "Frontend",
+      "loc": 18,
+      "physical": 23
+    },
+    {
+      "path": "frontend/src/features/catalog/pages/FacilityDetailPage.tsx",
+      "group": "Frontend",
+      "loc": 149,
+      "physical": 164
+    },
+    {
+      "path": "frontend/src/features/catalog/pages/FacilityListPage.tsx",
+      "group": "Frontend",
+      "loc": 170,
+      "physical": 184
+    },
+    {
+      "path": "frontend/src/features/catalog/pages/HomePage.tsx",
+      "group": "Frontend",
+      "loc": 188,
+      "physical": 202
+    },
+    {
+      "path": "frontend/src/features/catalog/types.ts",
+      "group": "Frontend",
+      "loc": 23,
+      "physical": 26
+    },
+    {
+      "path": "frontend/src/features/facility/api/dashboardApi.ts",
+      "group": "Frontend",
+      "loc": 33,
+      "physical": 37
+    },
+    {
+      "path": "frontend/src/features/facility/api/facilityUnitsApi.ts",
+      "group": "Frontend",
+      "loc": 10,
+      "physical": 11
+    },
+    {
+      "path": "frontend/src/features/facility/api/rentalOpsApi.ts",
+      "group": "Frontend",
+      "loc": 23,
+      "physical": 26
+    },
+    {
+      "path": "frontend/src/features/facility/api/supportTicketsApi.ts",
+      "group": "Frontend",
+      "loc": 7,
+      "physical": 8
+    },
+    {
+      "path": "frontend/src/features/facility/components/AssignTaskModal.tsx",
+      "group": "Frontend",
+      "loc": 174,
+      "physical": 188
+    },
+    {
+      "path": "frontend/src/features/facility/components/RentalDrawer.tsx",
+      "group": "Frontend",
+      "loc": 119,
+      "physical": 127
+    },
+    {
+      "path": "frontend/src/features/facility/components/StatusLabels.tsx",
+      "group": "Frontend",
+      "loc": 54,
+      "physical": 63
+    },
+    {
+      "path": "frontend/src/features/facility/components/TicketsPanel.tsx",
+      "group": "Frontend",
+      "loc": 317,
+      "physical": 340
+    },
+    {
+      "path": "frontend/src/features/facility/components/UnitDrawer.tsx",
+      "group": "Frontend",
+      "loc": 131,
+      "physical": 143
+    },
+    {
+      "path": "frontend/src/features/facility/components/UnitFormModal.tsx",
+      "group": "Frontend",
+      "loc": 137,
+      "physical": 148
+    },
+    {
+      "path": "frontend/src/features/facility/components/UnitStatusLabel.tsx",
+      "group": "Frontend",
+      "loc": 16,
+      "physical": 18
+    },
+    {
+      "path": "frontend/src/features/facility/components/UnitsTable.tsx",
+      "group": "Frontend",
+      "loc": 63,
+      "physical": 66
+    },
+    {
+      "path": "frontend/src/features/facility/components/UnitsToolbar.tsx",
+      "group": "Frontend",
+      "loc": 94,
+      "physical": 103
+    },
+    {
+      "path": "frontend/src/features/facility/hooks/useFacilityDashboard.ts",
+      "group": "Frontend",
+      "loc": 24,
+      "physical": 27
+    },
+    {
+      "path": "frontend/src/features/facility/hooks/useFacilityUnits.ts",
+      "group": "Frontend",
+      "loc": 20,
+      "physical": 22
+    },
+    {
+      "path": "frontend/src/features/facility/hooks/useRentalOps.ts",
+      "group": "Frontend",
+      "loc": 77,
+      "physical": 83
+    },
+    {
+      "path": "frontend/src/features/facility/hooks/useUnitTypes.ts",
+      "group": "Frontend",
+      "loc": 9,
+      "physical": 10
+    },
+    {
+      "path": "frontend/src/features/facility/pages/FacilityDashboardPage.tsx",
+      "group": "Frontend",
+      "loc": 235,
+      "physical": 248
+    },
+    {
+      "path": "frontend/src/features/facility/pages/FacilityRentalsPage.tsx",
+      "group": "Frontend",
+      "loc": 400,
+      "physical": 431
+    },
+    {
+      "path": "frontend/src/features/facility/pages/FacilityUnitsPage.tsx",
+      "group": "Frontend",
+      "loc": 240,
+      "physical": 261
+    },
+    {
+      "path": "frontend/src/features/facility/rentalRules.ts",
+      "group": "Frontend",
+      "loc": 170,
+      "physical": 188
+    },
+    {
+      "path": "frontend/src/features/facility/supportRules.ts",
+      "group": "Frontend",
+      "loc": 50,
+      "physical": 56
+    },
+    {
+      "path": "frontend/src/features/facility/types.ts",
+      "group": "Frontend",
+      "loc": 165,
+      "physical": 193
+    },
+    {
+      "path": "frontend/src/features/facility/unitRules.ts",
+      "group": "Frontend",
+      "loc": 101,
+      "physical": 114
+    },
+    {
+      "path": "frontend/src/features/management/api/managementApi.ts",
+      "group": "Frontend",
+      "loc": 17,
+      "physical": 19
+    },
+    {
+      "path": "frontend/src/features/management/hooks/useManagement.ts",
+      "group": "Frontend",
+      "loc": 55,
+      "physical": 60
+    },
+    {
+      "path": "frontend/src/features/management/managementRules.ts",
+      "group": "Frontend",
+      "loc": 111,
+      "physical": 120
+    },
+    {
+      "path": "frontend/src/features/management/pages/OperationsFacilitiesPage.tsx",
+      "group": "Frontend",
+      "loc": 394,
+      "physical": 417
+    },
+    {
+      "path": "frontend/src/features/management/pages/OperationsPoliciesPage.tsx",
+      "group": "Frontend",
+      "loc": 513,
+      "physical": 543
+    },
+    {
+      "path": "frontend/src/features/management/pages/OperationsReportsPage.tsx",
+      "group": "Frontend",
+      "loc": 351,
+      "physical": 369
+    },
+    {
+      "path": "frontend/src/features/management/types.ts",
+      "group": "Frontend",
+      "loc": 60,
+      "physical": 67
+    },
+    {
+      "path": "frontend/src/features/rental/api/rentalApi.ts",
+      "group": "Frontend",
+      "loc": 21,
+      "physical": 26
+    },
+    {
+      "path": "frontend/src/features/rental/components/RenewalModal.tsx",
+      "group": "Frontend",
+      "loc": 180,
+      "physical": 190
+    },
+    {
+      "path": "frontend/src/features/rental/components/RentalCard.tsx",
+      "group": "Frontend",
+      "loc": 134,
+      "physical": 148
+    },
+    {
+      "path": "frontend/src/features/rental/components/RentalDetailDrawer.tsx",
+      "group": "Frontend",
+      "loc": 106,
+      "physical": 112
+    },
+    {
+      "path": "frontend/src/features/rental/components/ReturnRequestModal.tsx",
+      "group": "Frontend",
+      "loc": 108,
+      "physical": 115
+    },
+    {
+      "path": "frontend/src/features/rental/hooks/useRentals.ts",
+      "group": "Frontend",
+      "loc": 47,
+      "physical": 52
+    },
+    {
+      "path": "frontend/src/features/rental/lib/renewal.ts",
+      "group": "Frontend",
+      "loc": 13,
+      "physical": 15
+    },
+    {
+      "path": "frontend/src/features/rental/pages/MyRentalsPage.tsx",
+      "group": "Frontend",
+      "loc": 112,
+      "physical": 122
+    },
+    {
+      "path": "frontend/src/features/rental/types.ts",
+      "group": "Frontend",
+      "loc": 51,
+      "physical": 60
+    },
+    {
+      "path": "frontend/src/features/reservation/lib/estimate.ts",
+      "group": "Frontend",
+      "loc": 12,
+      "physical": 13
+    },
+    {
+      "path": "frontend/src/features/reservation/pages/ReservationPage.tsx",
+      "group": "Frontend",
+      "loc": 402,
+      "physical": 433
+    },
+    {
+      "path": "frontend/src/features/staff/components/TaskDrawer.tsx",
+      "group": "Frontend",
+      "loc": 573,
+      "physical": 631
+    },
+    {
+      "path": "frontend/src/features/staff/pages/StaffOperationsPage.tsx",
+      "group": "Frontend",
+      "loc": 336,
+      "physical": 363
+    },
+    {
+      "path": "frontend/src/features/support/api/supportApi.ts",
+      "group": "Frontend",
+      "loc": 7,
+      "physical": 9
+    },
+    {
+      "path": "frontend/src/features/support/hooks/useSupport.ts",
+      "group": "Frontend",
+      "loc": 17,
+      "physical": 19
+    },
+    {
+      "path": "frontend/src/features/support/pages/SupportPage.tsx",
+      "group": "Frontend",
+      "loc": 232,
+      "physical": 248
+    },
+    {
+      "path": "frontend/src/features/support/types.ts",
+      "group": "Frontend",
+      "loc": 22,
+      "physical": 25
+    },
+    {
+      "path": "frontend/src/layouts/PublicLayout.tsx",
+      "group": "Frontend",
+      "loc": 124,
+      "physical": 134
+    },
+    {
+      "path": "frontend/src/layouts/WorkspaceLayout.tsx",
+      "group": "Frontend",
+      "loc": 18,
+      "physical": 19
+    },
+    {
+      "path": "frontend/src/layouts/WorkspaceSidebar.tsx",
+      "group": "Frontend",
+      "loc": 156,
+      "physical": 165
+    },
+    {
+      "path": "frontend/src/layouts/WorkspaceTopbar.tsx",
+      "group": "Frontend",
+      "loc": 100,
+      "physical": 108
+    },
+    {
+      "path": "frontend/src/lib/cn.ts",
+      "group": "Frontend",
+      "loc": 10,
+      "physical": 12
+    },
+    {
+      "path": "frontend/src/lib/format.ts",
+      "group": "Frontend",
+      "loc": 49,
+      "physical": 62
+    },
+    {
+      "path": "frontend/src/lib/statusMappings.ts",
+      "group": "Frontend",
+      "loc": 51,
+      "physical": 58
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "group": "Frontend",
+      "loc": 9,
+      "physical": 10
+    },
+    {
+      "path": "frontend/src/styles/globals.css",
+      "group": "Frontend",
+      "loc": 56,
+      "physical": 66
+    },
+    {
+      "path": "frontend/src/styles/tokens.css",
+      "group": "Frontend",
+      "loc": 162,
+      "physical": 171
+    },
+    {
+      "path": "frontend/src/test/setup.ts",
+      "group": "Frontend",
+      "loc": 6,
+      "physical": 7
+    }
+  ],
+  "endpoints": [
+    {
+      "id": 1,
+      "api": "listUsers",
+      "feature": "Danh sách tài khoản",
+      "domain": "Quản trị tài khoản và nhật ký",
+      "description": "GET /api/v1/admin/users",
+      "level": "Simple",
+      "loc": 9,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "tinhden3333; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AdminController.java",
+      "first": 40,
+      "last": 48,
+      "origin": "3731d2b71f043dfd1cf074ee6287bdfc33340dd8",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 5,
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/admin",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AdminOpsService.java",
+          "method": "listUsers",
+          "first": 57,
+          "last": 69,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/admin/users",
+          "file": "frontend/src/features/admin/api/adminApi.ts",
+          "line": 7,
+          "token": "/admin/users",
+          "module": "frontend/src/features/admin",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "api": "createUserWorkspace",
+      "feature": "Tạo tài khoản",
+      "domain": "Quản trị tài khoản và nhật ký",
+      "description": "POST /api/v1/admin/users",
+      "level": "Medium",
+      "loc": 7,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "tinhden3333; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AdminController.java",
+      "first": 50,
+      "last": 56,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "tinhden3333": 1,
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/admin",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AdminOpsService.java",
+          "method": "createUser",
+          "first": 72,
+          "last": 92,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/admin/users",
+          "file": "frontend/src/features/admin/api/adminApi.ts",
+          "line": 8,
+          "token": "/admin/users",
+          "module": "frontend/src/features/admin",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "api": "updateUserWorkspace",
+      "feature": "Cập nhật tài khoản",
+      "domain": "Quản trị tài khoản và nhật ký",
+      "description": "PUT /api/v1/admin/users/{userId}",
+      "level": "Medium",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AdminController.java",
+      "first": 58,
+      "last": 63,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5,
+        "tinhden3333": 1
+      },
+      "backend_module": "frontend/src/features/admin",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AdminOpsService.java",
+          "method": "updateUser",
+          "first": 95,
+          "last": 116,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PUT",
+          "path": "/admin/users/{}",
+          "file": "frontend/src/features/admin/api/adminApi.ts",
+          "line": 9,
+          "token": "/admin/users/${id}",
+          "module": "frontend/src/features/admin",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "api": "updateUserStatus",
+      "feature": "Đổi trạng thái tài khoản",
+      "domain": "Quản trị tài khoản và nhật ký",
+      "description": "PUT /api/v1/admin/users/{userId}/status",
+      "level": "Medium",
+      "loc": 6,
+      "web": "Chưa thấy lời gọi",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AdminController.java",
+      "first": 65,
+      "last": 70,
+      "origin": "3731d2b71f043dfd1cf074ee6287bdfc33340dd8",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "backend/src/main/java/com/storage/account",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AdminOpsService.java",
+          "method": "updateUserStatus",
+          "first": 119,
+          "last": 121,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 5,
+      "api": "updateUserStatus",
+      "feature": "Đổi trạng thái tài khoản",
+      "domain": "Quản trị tài khoản và nhật ký",
+      "description": "PATCH /api/v1/admin/users/{userId}/status",
+      "level": "Medium",
+      "loc": 0,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AdminController.java",
+      "first": 65,
+      "last": 70,
+      "origin": "3731d2b71f043dfd1cf074ee6287bdfc33340dd8",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/admin",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AdminOpsService.java",
+          "method": "updateUserStatus",
+          "first": 119,
+          "last": 121,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PATCH",
+          "path": "/admin/users/{}/status",
+          "file": "frontend/src/features/admin/api/adminApi.ts",
+          "line": 10,
+          "token": "/admin/users/${id}/status",
+          "module": "frontend/src/features/admin",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "api": "activityLogs",
+      "feature": "Tra cứu nhật ký hoạt động",
+      "domain": "Quản trị tài khoản và nhật ký",
+      "description": "GET /api/v1/admin/activity-logs",
+      "level": "Simple",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AdminController.java",
+      "first": 72,
+      "last": 77,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5,
+        "tinhden3333": 1
+      },
+      "backend_module": "frontend/src/features/admin",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AdminOpsService.java",
+          "method": "activityLogs",
+          "first": 124,
+          "last": 135,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/admin/activity-logs",
+          "file": "frontend/src/features/admin/api/adminApi.ts",
+          "line": 11,
+          "token": "/admin/activity-logs",
+          "module": "frontend/src/features/admin",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "api": "register",
+      "feature": "Đăng ký tài khoản",
+      "domain": "Đăng nhập bằng token",
+      "description": "POST /api/v1/auth/register",
+      "level": "Medium",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AuthController.java",
+      "first": 32,
+      "last": 35,
+      "origin": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 4
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "register",
+          "first": 62,
+          "last": 78,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/auth/register",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 12,
+          "token": "/auth/register",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "43f94a17b9a5bcb88589f37801809d883fdad683"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "api": "login",
+      "feature": "Đăng nhập",
+      "domain": "Đăng nhập bằng token",
+      "description": "POST /api/v1/auth/login",
+      "level": "Medium",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AuthController.java",
+      "first": 37,
+      "last": 40,
+      "origin": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 4
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "login",
+          "first": 81,
+          "last": 99,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/auth/login",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 11,
+          "token": "/auth/login",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "43f94a17b9a5bcb88589f37801809d883fdad683"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "api": "refresh",
+      "feature": "Làm mới phiên/token",
+      "domain": "Đăng nhập bằng token",
+      "description": "POST /api/v1/auth/refresh",
+      "level": "Medium",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AuthController.java",
+      "first": 42,
+      "last": 45,
+      "origin": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 4
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "refresh",
+          "first": 102,
+          "last": 121,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/auth/refresh",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 15,
+          "token": "/auth/refresh",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "43f94a17b9a5bcb88589f37801809d883fdad683"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "api": "logout",
+      "feature": "Đăng xuất",
+      "domain": "Đăng nhập bằng token",
+      "description": "POST /api/v1/auth/logout",
+      "level": "Medium",
+      "loc": 5,
+      "web": "Chưa thấy lời gọi",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AuthController.java",
+      "first": 47,
+      "last": 51,
+      "origin": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 5
+      },
+      "backend_module": "backend/src/main/java/com/storage/account",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "logout",
+          "first": 124,
+          "last": 127,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 11,
+      "api": "me",
+      "feature": "Thông tin tài khoản hiện tại",
+      "domain": "Đăng nhập bằng token",
+      "description": "GET /api/v1/auth/me",
+      "level": "Simple",
+      "loc": 6,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/AuthController.java",
+      "first": 53,
+      "last": 58,
+      "origin": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 6
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "me",
+          "first": 130,
+          "last": 134,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/auth/me",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 13,
+          "token": "/auth/me",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "43f94a17b9a5bcb88589f37801809d883fdad683"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "api": "config",
+      "feature": "Kiểm tra bật Google login",
+      "domain": "Phiên cookie và Google",
+      "description": "GET /api/v1/auth/google/config",
+      "level": "Simple",
+      "loc": 3,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/CookieAuthController.java",
+      "first": 22,
+      "last": 24,
+      "origin": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 3
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/auth/google/config",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 5,
+          "token": "/auth/google/config",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "17f1be112d90013dfbd56400d094fb9e36daa4e6"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "api": "login",
+      "feature": "Đăng nhập",
+      "domain": "Phiên cookie và Google",
+      "description": "POST /api/v1/auth/cookie/login",
+      "level": "High",
+      "loc": 5,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/CookieAuthController.java",
+      "first": 25,
+      "last": 29,
+      "origin": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "login",
+          "first": 81,
+          "last": 99,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/auth/cookie/login",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 7,
+          "token": "/auth/cookie/login",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "17f1be112d90013dfbd56400d094fb9e36daa4e6"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "api": "register",
+      "feature": "Đăng ký tài khoản",
+      "domain": "Phiên cookie và Google",
+      "description": "POST /api/v1/auth/cookie/register",
+      "level": "High",
+      "loc": 5,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/CookieAuthController.java",
+      "first": 30,
+      "last": 34,
+      "origin": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "register",
+          "first": 62,
+          "last": 78,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/auth/cookie/register",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 9,
+          "token": "/auth/cookie/register",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "17f1be112d90013dfbd56400d094fb9e36daa4e6"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "api": "csrf",
+      "feature": "Lấy CSRF token",
+      "domain": "Phiên cookie và Google",
+      "description": "GET /api/v1/auth/cookie/csrf",
+      "level": "Simple",
+      "loc": 3,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/CookieAuthController.java",
+      "first": 39,
+      "last": 41,
+      "origin": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 3
+      },
+      "backend_module": "frontend/src/api",
+      "services": [],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/auth/cookie/csrf",
+          "file": "frontend/src/api/client.ts",
+          "line": 65,
+          "token": "/auth/cookie/csrf",
+          "module": "frontend/src/api",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+          "intro": "17f1be112d90013dfbd56400d094fb9e36daa4e6"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "api": "refresh",
+      "feature": "Làm mới phiên/token",
+      "domain": "Phiên cookie và Google",
+      "description": "POST /api/v1/auth/cookie/refresh",
+      "level": "High",
+      "loc": 7,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/CookieAuthController.java",
+      "first": 42,
+      "last": 48,
+      "origin": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 7
+      },
+      "backend_module": "frontend/src/api",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "refresh",
+          "first": 102,
+          "last": 121,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/auth/cookie/refresh",
+          "file": "frontend/src/api/client.ts",
+          "line": 75,
+          "token": "/auth/cookie/refresh",
+          "module": "frontend/src/api",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+          "intro": "17f1be112d90013dfbd56400d094fb9e36daa4e6"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "api": "logout",
+      "feature": "Đăng xuất",
+      "domain": "Phiên cookie và Google",
+      "description": "POST /api/v1/auth/cookie/logout",
+      "level": "High",
+      "loc": 5,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/account/controller/CookieAuthController.java",
+      "first": 49,
+      "last": 53,
+      "origin": "17f1be112d90013dfbd56400d094fb9e36daa4e6",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/auth",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/account/service/AuthService.java",
+          "method": "logout",
+          "first": 124,
+          "last": 127,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "351ab673f1e12ef7e0f664e8f73a72e32bf15e65"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/auth/cookie/logout",
+          "file": "frontend/src/features/auth/api/authApi.ts",
+          "line": 10,
+          "token": "/auth/cookie/logout",
+          "module": "frontend/src/features/auth",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "17f1be112d90013dfbd56400d094fb9e36daa4e6"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "api": "unitTypes",
+      "feature": "Danh sách loại kho",
+      "domain": "Danh mục và tình trạng trống",
+      "description": "GET /api/v1/unit-types",
+      "level": "Simple",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; tinhden3333; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/facility/controller/CatalogController.java",
+      "first": 32,
+      "last": 35,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/catalog",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/facility/service/CatalogService.java",
+          "method": "listUnitTypes",
+          "first": 49,
+          "last": 53,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/unit-types",
+          "file": "frontend/src/features/catalog/api/catalogApi.ts",
+          "line": 15,
+          "token": "/unit-types",
+          "module": "frontend/src/features/catalog",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "0540c604c9b43c2b3aac5a34ea575dd0bbf726e8"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "api": "availability",
+      "feature": "Kiểm tra kho trống",
+      "domain": "Danh mục và tình trạng trống",
+      "description": "GET /api/v1/availability",
+      "level": "Medium",
+      "loc": 8,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; tinhden3333; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/facility/controller/CatalogController.java",
+      "first": 37,
+      "last": 44,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 8
+      },
+      "backend_module": "frontend/src/features/catalog",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/facility/service/CatalogService.java",
+          "method": "availability",
+          "first": 58,
+          "last": 72,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/availability",
+          "file": "frontend/src/features/catalog/api/catalogApi.ts",
+          "line": 21,
+          "token": "/availability",
+          "module": "frontend/src/features/catalog",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "0540c604c9b43c2b3aac5a34ea575dd0bbf726e8"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "api": "listFacilities",
+      "feature": "Danh sách cơ sở",
+      "domain": "Tra cứu cơ sở",
+      "description": "GET /api/v1/facilities",
+      "level": "Simple",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/facility/controller/FacilityController.java",
+      "first": 25,
+      "last": 28,
+      "origin": "61e7d3cb185c60115fbaf0e4ca3830e5fde49944",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 4
+      },
+      "backend_module": "frontend/src/features/catalog",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/facility/service/FacilityService.java",
+          "method": "listFacilities",
+          "first": 33,
+          "last": 37,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "61e7d3cb185c60115fbaf0e4ca3830e5fde49944"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/facilities",
+          "file": "frontend/src/features/catalog/api/catalogApi.ts",
+          "line": 11,
+          "token": "/facilities",
+          "module": "frontend/src/features/catalog",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "0540c604c9b43c2b3aac5a34ea575dd0bbf726e8"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "api": "getFacility",
+      "feature": "Chi tiết cơ sở",
+      "domain": "Tra cứu cơ sở",
+      "description": "GET /api/v1/facilities/{facilityId}",
+      "level": "Simple",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/facility/controller/FacilityController.java",
+      "first": 30,
+      "last": 33,
+      "origin": "61e7d3cb185c60115fbaf0e4ca3830e5fde49944",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 4
+      },
+      "backend_module": "frontend/src/features/catalog",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/facility/service/FacilityService.java",
+          "method": "getFacility",
+          "first": 40,
+          "last": 42,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "61e7d3cb185c60115fbaf0e4ca3830e5fde49944"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/facilities/{}",
+          "file": "frontend/src/features/catalog/api/catalogApi.ts",
+          "line": 13,
+          "token": "/facilities/${facilityId}",
+          "module": "frontend/src/features/catalog",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "0540c604c9b43c2b3aac5a34ea575dd0bbf726e8"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "api": "listUnitTypes",
+      "feature": "Loại kho theo cơ sở",
+      "domain": "Tra cứu cơ sở",
+      "description": "GET /api/v1/facilities/{facilityId}/unit-types",
+      "level": "Simple",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "tinhden3333; Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/facility/controller/FacilityController.java",
+      "first": 35,
+      "last": 38,
+      "origin": "61e7d3cb185c60115fbaf0e4ca3830e5fde49944",
+      "origin_author": "tinhden3333",
+      "blame": {
+        "tinhden3333": 4
+      },
+      "backend_module": "frontend/src/features/catalog",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/facility/service/FacilityService.java",
+          "method": "listUnitTypes",
+          "first": 45,
+          "last": 48,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "61e7d3cb185c60115fbaf0e4ca3830e5fde49944"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/facilities/{}/unit-types",
+          "file": "frontend/src/features/catalog/api/catalogApi.ts",
+          "line": 18,
+          "token": "/facilities/${facilityId}/unit-types",
+          "module": "frontend/src/features/catalog",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "0540c604c9b43c2b3aac5a34ea575dd0bbf726e8"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "api": "policy",
+      "feature": "Xem chính sách kinh doanh",
+      "domain": "Quản lý kinh doanh",
+      "description": "GET /api/v1/management/policy",
+      "level": "Simple",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 43,
+      "last": 46,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "policy",
+          "first": 81,
+          "last": 84,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/management/policy",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 9,
+          "token": "/management/policy",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "api": "updatePolicy",
+      "feature": "Cập nhật chính sách",
+      "domain": "Quản lý kinh doanh",
+      "description": "PUT /api/v1/management/policy",
+      "level": "Medium",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 48,
+      "last": 51,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "updatePolicy",
+          "first": 87,
+          "last": 93,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PUT",
+          "path": "/management/policy",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 10,
+          "token": "/management/policy",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "api": "feeTypes",
+      "feature": "Danh sách loại phí",
+      "domain": "Quản lý kinh doanh",
+      "description": "GET /api/v1/management/fee-types",
+      "level": "Simple",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 53,
+      "last": 56,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "feeTypes",
+          "first": 96,
+          "last": 101,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/management/fee-types",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 11,
+          "token": "/management/fee-types",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "api": "createFeeType",
+      "feature": "Tạo loại phí",
+      "domain": "Quản lý kinh doanh",
+      "description": "POST /api/v1/management/fee-types",
+      "level": "Medium",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 58,
+      "last": 63,
+      "origin": "97538fbbd751dbf540de6a579db74a7e843761a6",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "createFeeType",
+          "first": 104,
+          "last": 119,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "97538fbbd751dbf540de6a579db74a7e843761a6"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/management/fee-types",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 12,
+          "token": "/management/fee-types",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "97538fbbd751dbf540de6a579db74a7e843761a6",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "api": "updateFeeType",
+      "feature": "Cập nhật loại phí",
+      "domain": "Quản lý kinh doanh",
+      "description": "PUT /api/v1/management/fee-types/{feeTypeId}",
+      "level": "Medium",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 65,
+      "last": 69,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "updateFeeType",
+          "first": 122,
+          "last": 130,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PUT",
+          "path": "/management/fee-types/{}",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 13,
+          "token": "/management/fee-types/${id}",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "api": "facilityOverviews",
+      "feature": "Tổng quan các cơ sở",
+      "domain": "Quản lý kinh doanh",
+      "description": "GET /api/v1/management/facilities",
+      "level": "Simple",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 71,
+      "last": 74,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "facilityOverviews",
+          "first": 133,
+          "last": 137,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/management/facilities",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 14,
+          "token": "/management/facilities",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "api": "createFacility",
+      "feature": "Tạo cơ sở",
+      "domain": "Quản lý kinh doanh",
+      "description": "POST /api/v1/management/facilities",
+      "level": "Medium",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 76,
+      "last": 81,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "createFacility",
+          "first": 140,
+          "last": 151,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/management/facilities",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 15,
+          "token": "/management/facilities",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "api": "updateFacility",
+      "feature": "Cập nhật cơ sở",
+      "domain": "Quản lý kinh doanh",
+      "description": "PUT /api/v1/management/facilities/{facilityId}",
+      "level": "Medium",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 83,
+      "last": 87,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "updateFacility",
+          "first": 154,
+          "last": 165,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PUT",
+          "path": "/management/facilities/{}",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 16,
+          "token": "/management/facilities/${id}",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "api": "changeFacilityStatus",
+      "feature": "Đổi trạng thái cơ sở",
+      "domain": "Quản lý kinh doanh",
+      "description": "PATCH /api/v1/management/facilities/{facilityId}/status",
+      "level": "Medium",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 89,
+      "last": 93,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "changeFacilityStatus",
+          "first": 168,
+          "last": 187,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PATCH",
+          "path": "/management/facilities/{}/status",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 17,
+          "token": "/management/facilities/${id}/status",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "api": "report",
+      "feature": "Báo cáo kinh doanh",
+      "domain": "Quản lý kinh doanh",
+      "description": "GET /api/v1/management/reports",
+      "level": "Medium",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/management/controller/ManagementOpsController.java",
+      "first": 95,
+      "last": 99,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/management/service/ManagementOpsService.java",
+          "method": "report",
+          "first": 190,
+          "last": 231,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/management/reports",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 18,
+          "token": "/management/reports",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "api": "facilities",
+      "feature": "Danh sách cơ sở vận hành",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/facilities",
+      "level": "Simple",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 62,
+      "last": 65,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "facilities",
+          "first": 134,
+          "last": 139,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/facilities",
+          "file": "frontend/src/features/facility/api/facilityUnitsApi.ts",
+          "line": 4,
+          "token": "/ops/facilities",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "api": "unitTypes",
+      "feature": "Danh sách loại kho",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/unit-types",
+      "level": "Simple",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 67,
+      "last": 70,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "unitTypes",
+          "first": 142,
+          "last": 147,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/unit-types",
+          "file": "frontend/src/features/facility/api/facilityUnitsApi.ts",
+          "line": 5,
+          "token": "/ops/unit-types",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "api": "units",
+      "feature": "Danh sách kho",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/units",
+      "level": "Simple",
+      "loc": 10,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 74,
+      "last": 83,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 10
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "units",
+          "first": 152,
+          "last": 165,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/units",
+          "file": "frontend/src/features/facility/api/facilityUnitsApi.ts",
+          "line": 7,
+          "token": "/ops/units",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "api": "createUnit",
+      "feature": "Tạo kho",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/units",
+      "level": "Medium",
+      "loc": 8,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 85,
+      "last": 92,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 8
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "createUnit",
+          "first": 168,
+          "last": 186,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/units",
+          "file": "frontend/src/features/facility/api/facilityUnitsApi.ts",
+          "line": 8,
+          "token": "/ops/units",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "api": "updateUnit",
+      "feature": "Cập nhật kho",
+      "domain": "Vận hành cơ sở",
+      "description": "PUT /api/v1/ops/units/{unitId}",
+      "level": "Medium",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 94,
+      "last": 99,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "updateUnit",
+          "first": 189,
+          "last": 205,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PUT",
+          "path": "/ops/units/{}",
+          "file": "frontend/src/features/facility/api/facilityUnitsApi.ts",
+          "line": 9,
+          "token": "/ops/units/${id}",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "api": "changeUnitStatus",
+      "feature": "Đổi trạng thái kho",
+      "domain": "Vận hành cơ sở",
+      "description": "PATCH /api/v1/ops/units/{unitId}/status",
+      "level": "Medium",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 101,
+      "last": 106,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "changeUnitStatus",
+          "first": 208,
+          "last": 221,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "PATCH",
+          "path": "/ops/units/{}/status",
+          "file": "frontend/src/features/facility/api/facilityUnitsApi.ts",
+          "line": 11,
+          "token": "/ops/units/${id}/status",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "api": "rentals",
+      "feature": "Danh sách hợp đồng thuê",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/rentals",
+      "level": "Simple",
+      "loc": 10,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 110,
+      "last": 119,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 10
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "rentals",
+          "first": 226,
+          "last": 242,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/rentals",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 4,
+          "token": "/ops/rentals",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "api": "rental",
+      "feature": "Chi tiết hợp đồng thuê",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/rentals/{rentalId}",
+      "level": "Simple",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 121,
+      "last": 124,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "rental",
+          "first": 245,
+          "last": 250,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/rentals/{}",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 5,
+          "token": "/ops/rentals/${id}",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "api": "staff",
+      "feature": "Danh sách nhân viên",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/staff",
+      "level": "Simple",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 128,
+      "last": 132,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "staff",
+          "first": 255,
+          "last": 262,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/staff",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 7,
+          "token": "/ops/staff",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "api": "tasks",
+      "feature": "Danh sách nhiệm vụ",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/tasks",
+      "level": "Simple",
+      "loc": 12,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 136,
+      "last": 147,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 12
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "tasks",
+          "first": 267,
+          "last": 293,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/tasks",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 6,
+          "token": "/ops/tasks",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "api": "assignTask",
+      "feature": "Phân công nhiệm vụ",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tasks",
+      "level": "Medium",
+      "loc": 8,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 149,
+      "last": 156,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 8
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "assignTask",
+          "first": 296,
+          "last": 311,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tasks",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 21,
+          "token": "/ops/tasks",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "api": "startTask",
+      "feature": "Bắt đầu nhiệm vụ",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tasks/{taskId}/start",
+      "level": "Medium",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 158,
+      "last": 162,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "startTask",
+          "first": 314,
+          "last": 320,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tasks/{}/start",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 22,
+          "token": "/ops/tasks/${taskId}/start",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "api": "completeTask",
+      "feature": "Hoàn thành nhiệm vụ",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tasks/{taskId}/complete",
+      "level": "Medium",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 164,
+      "last": 169,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "completeTask",
+          "first": 323,
+          "last": 331,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tasks/{}/complete",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 23,
+          "token": "/ops/tasks/${taskId}/complete",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "api": "completeHandover",
+      "feature": "Bàn giao nhận kho",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tasks/{taskId}/handover",
+      "level": "High",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 171,
+      "last": 176,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "completeHandover",
+          "first": 334,
+          "last": 353,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tasks/{}/handover",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 24,
+          "token": "/ops/tasks/${taskId}/handover",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "api": "completeReturn",
+      "feature": "Hoàn tất trả kho",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tasks/{taskId}/return",
+      "level": "High",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 178,
+      "last": 182,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "completeReturn",
+          "first": 356,
+          "last": 379,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tasks/{}/return",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 25,
+          "token": "/ops/tasks/${taskId}/return",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "api": "completeUnitInspection",
+      "feature": "Ghi kết quả kiểm tra kho",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tasks/{taskId}/inspection",
+      "level": "High",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 184,
+      "last": 189,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "completeUnitInspection",
+          "first": 382,
+          "last": 400,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tasks/{}/inspection",
+          "file": "frontend/src/features/facility/api/rentalOpsApi.ts",
+          "line": 26,
+          "token": "/ops/tasks/${taskId}/inspection",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "api": "tickets",
+      "feature": "Danh sách yêu cầu hỗ trợ",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/tickets",
+      "level": "Simple",
+      "loc": 8,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 193,
+      "last": 200,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 8
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "tickets",
+          "first": 405,
+          "last": 416,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/tickets",
+          "file": "frontend/src/features/facility/api/supportTicketsApi.ts",
+          "line": 5,
+          "token": "/ops/tickets",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "api": "ticket",
+      "feature": "Chi tiết yêu cầu hỗ trợ",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/tickets/{ticketId}",
+      "level": "Simple",
+      "loc": 4,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 202,
+      "last": 205,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "ticket",
+          "first": 419,
+          "last": 424,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/tickets/{}",
+          "file": "frontend/src/features/facility/api/supportTicketsApi.ts",
+          "line": 6,
+          "token": "/ops/tickets/${id}",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "api": "assignTicket",
+      "feature": "Phân công xử lý hỗ trợ",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tickets/{ticketId}/assign",
+      "level": "Medium",
+      "loc": 7,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 207,
+      "last": 213,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 7
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "assignTicket",
+          "first": 427,
+          "last": 465,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tickets/{}/assign",
+          "file": "frontend/src/features/facility/api/supportTicketsApi.ts",
+          "line": 7,
+          "token": "/ops/tickets/${ticketId}/assign",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "api": "closeTicket",
+      "feature": "Đóng yêu cầu hỗ trợ",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tickets/{ticketId}/close",
+      "level": "Medium",
+      "loc": 6,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 215,
+      "last": 220,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "closeTicket",
+          "first": 468,
+          "last": 477,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/ops/tickets/{}/close",
+          "file": "frontend/src/features/facility/api/supportTicketsApi.ts",
+          "line": 8,
+          "token": "/ops/tickets/${ticketId}/close",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "api": "startTicket",
+      "feature": "Bắt đầu xử lý hỗ trợ",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tickets/{ticketId}/start",
+      "level": "Medium",
+      "loc": 5,
+      "web": "Chưa thấy lời gọi",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 222,
+      "last": 226,
+      "origin": "f8e5499de543ed219294f69a687b87c7b9da5156",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "backend/src/main/java/com/storage/ops",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "startTicket",
+          "first": 480,
+          "last": 489,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "f8e5499de543ed219294f69a687b87c7b9da5156"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 54,
+      "api": "resolveTicket",
+      "feature": "Hoàn tất xử lý hỗ trợ",
+      "domain": "Vận hành cơ sở",
+      "description": "POST /api/v1/ops/tickets/{ticketId}/resolve",
+      "level": "Medium",
+      "loc": 5,
+      "web": "Chưa thấy lời gọi",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 228,
+      "last": 232,
+      "origin": "f8e5499de543ed219294f69a687b87c7b9da5156",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "backend/src/main/java/com/storage/ops",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "resolveTicket",
+          "first": 492,
+          "last": 501,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "f8e5499de543ed219294f69a687b87c7b9da5156"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 55,
+      "api": "dashboard",
+      "feature": "Dashboard cơ sở",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/facilities/{facilityId}/dashboard",
+      "level": "Medium",
+      "loc": 5,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 236,
+      "last": 240,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/facility",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "dashboard",
+          "first": 506,
+          "last": 573,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/facilities/{}/dashboard",
+          "file": "frontend/src/features/facility/api/dashboardApi.ts",
+          "line": 37,
+          "token": "/ops/facilities/${facilityId}/dashboard",
+          "module": "frontend/src/features/facility",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "api": "revenue",
+      "feature": "Doanh thu theo tháng",
+      "domain": "Vận hành cơ sở",
+      "description": "GET /api/v1/ops/facilities/{facilityId}/revenue",
+      "level": "Medium",
+      "loc": 7,
+      "web": "n.a.",
+      "admin": "Trần Xuân Khoa; tuanthanh25-alt",
+      "backend": "Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/ops/controller/OpsController.java",
+      "first": 242,
+      "last": 248,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 7
+      },
+      "backend_module": "frontend/src/features/management",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/ops/service/OpsService.java",
+          "method": "revenueSeries",
+          "first": 576,
+          "last": 580,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/ops/facilities/{}/revenue",
+          "file": "frontend/src/features/management/api/managementApi.ts",
+          "line": 19,
+          "token": "/ops/facilities/${facilityId}/revenue",
+          "module": "frontend/src/features/management",
+          "authors": [
+            "Trần Xuân Khoa",
+            "tuanthanh25-alt"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "7ddada2ee348700016f06eed1af9c36d2847b702"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "api": "myInvoices",
+      "feature": "Danh sách hóa đơn cá nhân",
+      "domain": "Hóa đơn và thanh toán",
+      "description": "GET /api/v1/invoices/me",
+      "level": "Simple",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/payment/controller/CustomerBillingController.java",
+      "first": 37,
+      "last": 40,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/billing",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/payment/service/CustomerBillingService.java",
+          "method": "myInvoices",
+          "first": 53,
+          "last": 63,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/invoices/me",
+          "file": "frontend/src/features/billing/api/invoiceApi.ts",
+          "line": 5,
+          "token": "/invoices/me",
+          "module": "frontend/src/features/billing",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "8baced19f95ac8149278898cd398c859f91ff18b"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "api": "myInvoice",
+      "feature": "Chi tiết hóa đơn cá nhân",
+      "domain": "Hóa đơn và thanh toán",
+      "description": "GET /api/v1/invoices/{invoiceId}",
+      "level": "Simple",
+      "loc": 6,
+      "web": "Chưa thấy lời gọi",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/payment/controller/CustomerBillingController.java",
+      "first": 42,
+      "last": 47,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "backend/src/main/java/com/storage/payment",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/payment/service/CustomerBillingService.java",
+          "method": "myInvoice",
+          "first": 66,
+          "last": 70,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 59,
+      "api": "createVnPayUrl",
+      "feature": "Tạo URL thanh toán VNPay",
+      "domain": "Hóa đơn và thanh toán",
+      "description": "POST /api/v1/payments/vnpay/url",
+      "level": "High",
+      "loc": 7,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/payment/controller/CustomerBillingController.java",
+      "first": 49,
+      "last": 55,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 7
+      },
+      "backend_module": "frontend/src/features/billing",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/payment/service/CustomerBillingService.java",
+          "method": "createVnPayUrl",
+          "first": 80,
+          "last": 111,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/payments/vnpay/url",
+          "file": "frontend/src/features/billing/api/paymentApi.ts",
+          "line": 10,
+          "token": "/payments/vnpay/url",
+          "module": "frontend/src/features/billing",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "b5a3df6e71adfa3fab4dc6581fce5f55eeeebee3"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "api": "myAttempt",
+      "feature": "Tra cứu lần thanh toán",
+      "domain": "Hóa đơn và thanh toán",
+      "description": "GET /api/v1/payments/attempts/{reference}",
+      "level": "Simple",
+      "loc": 6,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/payment/controller/CustomerBillingController.java",
+      "first": 57,
+      "last": 62,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/billing",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/payment/service/CustomerBillingService.java",
+          "method": "myAttempt",
+          "first": 73,
+          "last": 77,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/payments/attempts/{}",
+          "file": "frontend/src/features/billing/api/paymentApi.ts",
+          "line": 13,
+          "token": "/payments/attempts/${encodeURIComponent(reference)}",
+          "module": "frontend/src/features/billing",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "b5a3df6e71adfa3fab4dc6581fce5f55eeeebee3"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "api": "ipn",
+      "feature": "Nhận thông báo IPN VNPay",
+      "domain": "Callback VNPay",
+      "description": "GET /api/v1/payments/vnpay/ipn",
+      "level": "High",
+      "loc": 4,
+      "web": "n.a. (callback)",
+      "admin": "n.a.",
+      "backend": "letrithien22112005; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/payment/controller/VnPayController.java",
+      "first": 43,
+      "last": 46,
+      "origin": "00e160aa46a1450391399cced1383249aaf5da59",
+      "origin_author": "letrithien22112005",
+      "blame": {
+        "letrithien22112005": 4
+      },
+      "backend_module": "backend/src/main/java/com/storage/payment",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/payment/service/VnPayIpnService.java",
+          "method": "handleIpn",
+          "first": 26,
+          "last": 58,
+          "authors": [
+            "letrithien22112005"
+          ],
+          "intro": "00e160aa46a1450391399cced1383249aaf5da59"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 62,
+      "api": "returnUrl",
+      "feature": "Xác minh kết quả và chuyển hướng",
+      "domain": "Callback VNPay",
+      "description": "GET /api/v1/payments/vnpay/return",
+      "level": "High",
+      "loc": 27,
+      "web": "n.a. (callback)",
+      "admin": "n.a.",
+      "backend": "letrithien22112005; Trần Xuân Khoa",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/payment/controller/VnPayController.java",
+      "first": 48,
+      "last": 76,
+      "origin": "7ae7a685c723052798ef4b0df09f65a855e55c82",
+      "origin_author": "letrithien22112005",
+      "blame": {
+        "letrithien22112005": 3,
+        "Trần Xuân Khoa": 26
+      },
+      "backend_module": "backend/src/main/java/com/storage/payment",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/payment/service/VnPayIpnService.java",
+          "method": "handleIpn",
+          "first": 26,
+          "last": 58,
+          "authors": [
+            "letrithien22112005"
+          ],
+          "intro": "00e160aa46a1450391399cced1383249aaf5da59"
+        },
+        {
+          "file": "backend/src/main/java/com/storage/payment/service/VnPayService.java",
+          "method": "verifyChecksum",
+          "first": 100,
+          "last": 125,
+          "authors": [
+            "letrithien22112005",
+            "Trần Xuân Khoa"
+          ],
+          "intro": "00e160aa46a1450391399cced1383249aaf5da59"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 63,
+      "api": "createHold",
+      "feature": "Giữ chỗ thuê kho",
+      "domain": "Vòng đời thuê kho",
+      "description": "POST /api/v1/rentals/holds",
+      "level": "High",
+      "loc": 5,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/rental/controller/RentalController.java",
+      "first": 37,
+      "last": 41,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "frontend/src/features/rental",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+          "method": "createHold",
+          "first": 100,
+          "last": 127,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/rentals/holds",
+          "file": "frontend/src/features/rental/api/rentalApi.ts",
+          "line": 14,
+          "token": "/rentals/holds",
+          "module": "frontend/src/features/rental",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "b5a3df6e71adfa3fab4dc6581fce5f55eeeebee3"
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "api": "myRentals",
+      "feature": "Danh sách thuê kho cá nhân",
+      "domain": "Vòng đời thuê kho",
+      "description": "GET /api/v1/rentals/me",
+      "level": "Simple",
+      "loc": 4,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/rental/controller/RentalController.java",
+      "first": 43,
+      "last": 46,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 4
+      },
+      "backend_module": "frontend/src/features/rental",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+          "method": "listMine",
+          "first": 195,
+          "last": 201,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/rentals/me",
+          "file": "frontend/src/features/rental/api/rentalApi.ts",
+          "line": 16,
+          "token": "/rentals/me",
+          "module": "frontend/src/features/rental",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "b5a3df6e71adfa3fab4dc6581fce5f55eeeebee3"
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "api": "myRental",
+      "feature": "Chi tiết thuê kho cá nhân",
+      "domain": "Vòng đời thuê kho",
+      "description": "GET /api/v1/rentals/{rentalId}",
+      "level": "Simple",
+      "loc": 5,
+      "web": "Chưa thấy lời gọi",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/rental/controller/RentalController.java",
+      "first": 48,
+      "last": 52,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 5
+      },
+      "backend_module": "backend/src/main/java/com/storage/rental",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+          "method": "getMine",
+          "first": 204,
+          "last": 209,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": []
+    },
+    {
+      "id": 66,
+      "api": "cancel",
+      "feature": "Hủy thuê kho",
+      "domain": "Vòng đời thuê kho",
+      "description": "POST /api/v1/rentals/{rentalId}/cancel",
+      "level": "High",
+      "loc": 7,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/rental/controller/RentalController.java",
+      "first": 54,
+      "last": 60,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 7
+      },
+      "backend_module": "frontend/src/features/rental",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+          "method": "cancel",
+          "first": 130,
+          "last": 139,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        },
+        {
+          "file": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+          "method": "getMine",
+          "first": 204,
+          "last": 209,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/rentals/{}/cancel",
+          "file": "frontend/src/features/rental/api/rentalApi.ts",
+          "line": 19,
+          "token": "/rentals/${rentalId}/cancel",
+          "module": "frontend/src/features/rental",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "b5a3df6e71adfa3fab4dc6581fce5f55eeeebee3"
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "api": "renew",
+      "feature": "Yêu cầu gia hạn thuê",
+      "domain": "Vòng đời thuê kho",
+      "description": "POST /api/v1/rentals/{rentalId}/renewals",
+      "level": "High",
+      "loc": 6,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/rental/controller/RentalController.java",
+      "first": 62,
+      "last": 67,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 6
+      },
+      "backend_module": "frontend/src/features/rental",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+          "method": "requestRenewal",
+          "first": 142,
+          "last": 162,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/rentals/{}/renewals",
+          "file": "frontend/src/features/rental/api/rentalApi.ts",
+          "line": 22,
+          "token": "/rentals/${rentalId}/renewals",
+          "module": "frontend/src/features/rental",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "8baced19f95ac8149278898cd398c859f91ff18b"
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "api": "requestReturn",
+      "feature": "Yêu cầu trả kho",
+      "domain": "Vòng đời thuê kho",
+      "description": "POST /api/v1/rentals/{rentalId}/return-requests",
+      "level": "High",
+      "loc": 7,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; hxtit2004-dot; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/rental/controller/RentalController.java",
+      "first": 69,
+      "last": 75,
+      "origin": "d14a8df90f1838d2824ab62ed2a9338a16e893db",
+      "origin_author": "Trần Xuân Khoa",
+      "blame": {
+        "Trần Xuân Khoa": 7
+      },
+      "backend_module": "frontend/src/features/rental",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/rental/service/RentalService.java",
+          "method": "requestReturn",
+          "first": 165,
+          "last": 192,
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "intro": "d14a8df90f1838d2824ab62ed2a9338a16e893db"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/rentals/{}/return-requests",
+          "file": "frontend/src/features/rental/api/rentalApi.ts",
+          "line": 25,
+          "token": "/rentals/${rentalId}/return-requests",
+          "module": "frontend/src/features/rental",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "8baced19f95ac8149278898cd398c859f91ff18b"
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "api": "create",
+      "feature": "Tạo yêu cầu hỗ trợ",
+      "domain": "Hỗ trợ khách hàng",
+      "description": "POST /api/v1/support-tickets",
+      "level": "Medium",
+      "loc": 10,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; letrithien22112005; tinhden3333",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/support/controller/SupportController.java",
+      "first": 35,
+      "last": 44,
+      "origin": "77f978996082f00d89d4ff8b1c3dd2e69343da98",
+      "origin_author": "letrithien22112005",
+      "blame": {
+        "Trần Xuân Khoa": 10
+      },
+      "backend_module": "frontend/src/features/support",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/support/service/SupportTicketService.java",
+          "method": "create",
+          "first": 36,
+          "last": 59,
+          "authors": [
+            "letrithien22112005",
+            "Trần Xuân Khoa"
+          ],
+          "intro": "4175f11b4413c86c0ff31c7105c733a15576f879"
+        },
+        {
+          "file": "backend/src/main/java/com/storage/account/service/ActivityLogService.java",
+          "method": "record",
+          "first": 33,
+          "last": 36,
+          "authors": [
+            "tinhden3333"
+          ],
+          "intro": "3731d2b71f043dfd1cf074ee6287bdfc33340dd8"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "POST",
+          "path": "/support-tickets",
+          "file": "frontend/src/features/support/api/supportApi.ts",
+          "line": 8,
+          "token": "/support-tickets",
+          "module": "frontend/src/features/support",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "8baced19f95ac8149278898cd398c859f91ff18b"
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "api": "mine",
+      "feature": "Danh sách hỗ trợ cá nhân",
+      "domain": "Hỗ trợ khách hàng",
+      "description": "GET /api/v1/support-tickets/me",
+      "level": "Simple",
+      "loc": 6,
+      "web": "Trần Xuân Khoa",
+      "admin": "n.a.",
+      "backend": "Trần Xuân Khoa; letrithien22112005",
+      "status": "Có mã nguồn",
+      "est_hours": "n.a.",
+      "team_hours": "n.a.",
+      "file": "backend/src/main/java/com/storage/support/controller/SupportController.java",
+      "first": 46,
+      "last": 51,
+      "origin": "77f978996082f00d89d4ff8b1c3dd2e69343da98",
+      "origin_author": "letrithien22112005",
+      "blame": {
+        "Trần Xuân Khoa": 3,
+        "letrithien22112005": 3
+      },
+      "backend_module": "frontend/src/features/support",
+      "services": [
+        {
+          "file": "backend/src/main/java/com/storage/support/service/SupportTicketService.java",
+          "method": "ticketsOfCustomer",
+          "first": 67,
+          "last": 69,
+          "authors": [
+            "letrithien22112005"
+          ],
+          "intro": "77f978996082f00d89d4ff8b1c3dd2e69343da98"
+        }
+      ],
+      "fe_evidence": [
+        {
+          "verb": "GET",
+          "path": "/support-tickets/me",
+          "file": "frontend/src/features/support/api/supportApi.ts",
+          "line": 5,
+          "token": "/support-tickets/me",
+          "module": "frontend/src/features/support",
+          "authors": [
+            "Trần Xuân Khoa"
+          ],
+          "blame": "681937695ba40bb01ff1da73f649e7dcddddbfe7",
+          "intro": "8baced19f95ac8149278898cd398c859f91ff18b"
+        }
+      ]
+    }
+  ],
+  "total_loc": 17501,
+  "physical": 19893
+}
