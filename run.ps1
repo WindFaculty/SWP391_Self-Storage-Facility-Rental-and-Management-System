@@ -6,6 +6,7 @@ param([switch] $SmokeTest)
 
 $ErrorActionPreference = 'Stop'
 $projectRoot = $PSScriptRoot
+$keyDirectory = Join-Path $projectRoot 'key'
 $backendDirectory = Join-Path $projectRoot 'backend'
 $frontendDirectory = Join-Path $projectRoot 'frontend'
 $logDirectory = Join-Path $projectRoot '.run'
@@ -23,6 +24,35 @@ function Assert-PortFree([int] $Port) {
 function Set-RunEnvironment([string] $Name, [string] $Value) {
     $savedEnvironment[$Name] = [Environment]::GetEnvironmentVariable($Name, 'Process')
     [Environment]::SetEnvironmentVariable($Name, $Value, 'Process')
+}
+
+function Set-LocalVnPayEnvironment {
+    # These files stay Git-ignored. Explicit process environment values take precedence.
+    $credentialFiles = @{
+        VNPAY_TMN_CODE = 'Vnpay_tmn_code.key'
+        VNPAY_HASH_SECRET = 'Vnpay_secret.key'
+    }
+    foreach ($name in $credentialFiles.Keys) {
+        if ([Environment]::GetEnvironmentVariable($name, 'Process')) { continue }
+        $path = Join-Path $keyDirectory $credentialFiles[$name]
+        if (Test-Path -LiteralPath $path -PathType Leaf) {
+            $value = (Get-Content -Raw -LiteralPath $path).Trim()
+            if (-not $value) { throw "Local VNPay credential file '$($credentialFiles[$name])' is empty." }
+            Set-RunEnvironment $name $value
+        }
+    }
+
+    if (-not $env:VNPAY_TMN_CODE -or -not $env:VNPAY_HASH_SECRET) {
+        Write-Warning 'VNPay is not configured. Supply VNPAY_TMN_CODE/VNPAY_HASH_SECRET or key/Vnpay_tmn_code.key and key/Vnpay_secret.key. Payment requests will return 503 until both credentials are supplied.'
+        return
+    }
+    if ($env:VNPAY_TMN_CODE -cnotmatch '^[A-Za-z0-9]{8}$') {
+        throw 'VNPAY_TMN_CODE must contain the 8 alphanumeric characters issued by VNPay.'
+    }
+    if ($env:VNPAY_HASH_SECRET -match 'change-me') {
+        throw 'VNPAY_HASH_SECRET is still a placeholder. Supply the signing secret issued for this terminal.'
+    }
+    Write-Host 'VNPay merchant credentials loaded (signing secret not displayed).'
 }
 
 function Start-DevServer([string] $Name, [string] $Directory, [string] $Command) {
@@ -49,8 +79,14 @@ try {
     Assert-PortFree 8088
     Assert-PortFree 5173
 
+    Set-LocalVnPayEnvironment
+
     # Google downloads stay local/Git-ignored; credentials are passed only in child-process environment.
-    $googleCredentialFiles = @(Get-ChildItem -LiteralPath $projectRoot -File -Filter 'client_secret*.json')
+    $googleCredentialFiles = @(
+        if (Test-Path -LiteralPath $keyDirectory -PathType Container) {
+            Get-ChildItem -LiteralPath $keyDirectory -File -Filter 'client_secret*.json'
+        }
+    )
     if ($googleCredentialFiles.Count -gt 1) {
         throw 'Multiple Google credential files found. Keep one local web client file or configure GOOGLE_CLIENT_ID/SECRET explicitly.'
     }

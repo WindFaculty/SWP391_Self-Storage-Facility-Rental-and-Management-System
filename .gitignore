@@ -18,6 +18,8 @@ test-results/
 playwright-report/
 
 # Local secrets/environment
+/key/
+/note_name_password.md
 client_secret*.json
 .env
 .env.*
