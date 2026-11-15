@@ -5,6 +5,9 @@ import com.storage.payment.service.PaymentService;
 import com.storage.rental.service.RentalService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import com.storage.rental.entity.AccessMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -595,6 +598,107 @@ class FacilityOpsE2ETests {
                 "select assigned_staff_id from staff_tasks where rental_id = ? and task_type = 'RETURN_INSPECTION'",
                 Long.class, rentalId);
         org.junit.jupiter.api.Assertions.assertEquals(staffId, returnAssigneeId);
+    }
+
+    @ParameterizedTest
+    @EnumSource(AccessMethod.class)
+    void checkInHandoverActivatesRentalForEachAccessMethod(AccessMethod method) throws Exception {
+        runCheckInHandover(method, false);
+    }
+
+    @Test
+    void unassignedStaffCannotConfirmAnotherStaffMembersHandover() throws Exception {
+        runCheckInHandover(AccessMethod.KEY, true);
+    }
+
+    private void runCheckInHandover(AccessMethod method, boolean probeUnassignedStaff) throws Exception {
+        Long unitId = createUnitViaOps("FLOW2-" + suffix, "900000.00");
+        String customer = registerCustomer("flow2-customer-" + suffix);
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        MvcResult hold = mvc.perform(post("/rentals/holds")
+                        .header("Authorization", bearer(customer))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"facilityId":%d,"unitTypeId":%d,"startDate":"%s","rentalMonths":1}
+                                """.formatted(facilityId, unitTypeId, today)))
+                .andExpect(status().isOk()).andReturn();
+        Long rentalId = readLong(hold, "$.data.rental.id");
+        Long invoiceId = readLong(hold, "$.data.invoice.id");
+        String assignment = """
+                {"facilityId":%d,"rentalId":%d,"taskType":"HANDOVER",
+                 "assignedStaffId":%d,"scheduledAt":"%s","notes":"Flow 2 handover"}
+                """.formatted(facilityId, rentalId, staffIdOfFacility(),
+                today.atTime(9, 0).atZone(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant());
+        // An unpaid hold must not be handed over.
+        mvc.perform(post("/ops/tasks").header("Authorization", bearer(managerToken))
+                        .contentType(MediaType.APPLICATION_JSON).content(assignment))
+                .andExpect(status().isBadRequest());
+        MvcResult checkout = mvc.perform(post("/payments/vnpay/url")
+                        .header("Authorization", bearer(customer))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"invoiceId\":%d}".formatted(invoiceId)))
+                .andExpect(status().isOk()).andReturn();
+        // Flow 1 payment is a fixture; Flow 2 starts from the resulting RESERVED rental.
+        paymentService.handleGatewayResult(referenceOf(checkout), true, Instant.now(), "FLOW2-" + suffix);
+        mvc.perform(get("/ops/rentals/" + rentalId).header("Authorization", bearer(staffToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("RESERVED"))
+                .andExpect(jsonPath("$.data.paymentState").value("PAID"))
+                .andExpect(jsonPath("$.data.customerName").isNotEmpty());
+        MvcResult task = mvc.perform(post("/ops/tasks").header("Authorization", bearer(managerToken))
+                        .contentType(MediaType.APPLICATION_JSON).content(assignment))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.status").value("ASSIGNED")).andReturn();
+        Long taskId = readLong(task, "$.data.id");
+        mvc.perform(get("/ops/tasks").param("facilityId", facilityId.toString())
+                        .param("day", "today").param("rentalId", rentalId.toString())
+                        .header("Authorization", bearer(staffToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items.length()").value(1))
+                .andExpect(jsonPath("$.data.items[0].id").value(taskId.intValue()));
+        String otherStaff = createUserAndLogin("flow2-other-" + suffix, "FACILITY_STAFF", facilityId);
+        mvc.perform(get("/ops/tasks").param("facilityId", facilityId.toString())
+                        .param("day", "today").param("rentalId", rentalId.toString())
+                        .header("Authorization", bearer(otherStaff)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items.length()").value(0));
+        String handover = """
+                {"accessMethod":"%s","handoverCondition":"Identity checked; access handed over; unit inspected"}
+                """.formatted(method.name());
+        if (probeUnassignedStaff) {
+            mvc.perform(post("/ops/tasks/" + taskId + "/handover")
+                            .header("Authorization", bearer(otherStaff))
+                            .contentType(MediaType.APPLICATION_JSON).content(handover))
+                    .andExpect(status().isForbidden());
+            return;
+        }
+        mvc.perform(post("/ops/tasks/" + taskId + "/start")
+                        .header("Authorization", bearer(staffToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"));
+        mvc.perform(post("/ops/tasks/" + taskId + "/handover")
+                        .header("Authorization", bearer(staffToken))
+                        .contentType(MediaType.APPLICATION_JSON).content(handover))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.task.status").value("DONE"))
+                .andExpect(jsonPath("$.data.task.completedAt").isNotEmpty())
+                .andExpect(jsonPath("$.data.rental.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.rental.accessMethod").value(method.name()))
+                .andExpect(jsonPath("$.data.rental.checkedInAt").isNotEmpty())
+                .andExpect(jsonPath("$.data.rental.handoverCondition")
+                        .value("Identity checked; access handed over; unit inspected"));
+        mvc.perform(get("/rentals/" + rentalId).header("Authorization", bearer(customer)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"));
+        org.junit.jupiter.api.Assertions.assertEquals("OCCUPIED", jdbc.queryForObject(
+                "select status from storage_units where id = ?", String.class, unitId));
+        // Replaying handover cannot check the same customer in twice.
+        mvc.perform(post("/ops/tasks/" + taskId + "/handover")
+                        .header("Authorization", bearer(staffToken))
+                        .contentType(MediaType.APPLICATION_JSON).content(handover))
+                .andExpect(status().isBadRequest());
+        org.junit.jupiter.api.Assertions.assertEquals("DONE", jdbc.queryForObject(
+                "select status from staff_tasks where id = ?", String.class, taskId));
     }
 
     // ---------- helpers ----------
