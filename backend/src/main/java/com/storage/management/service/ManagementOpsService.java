@@ -8,8 +8,10 @@ import com.storage.facility.entity.Facility;
 import com.storage.facility.entity.FacilityStatus;
 import com.storage.facility.entity.StorageUnit;
 import com.storage.facility.entity.StorageUnitStatus;
+import com.storage.facility.entity.UnitType;
 import com.storage.facility.repository.FacilityRepository;
 import com.storage.facility.repository.StorageUnitRepository;
+import com.storage.facility.repository.UnitTypeRepository;
 import com.storage.management.dto.ManagementDtos.FacilityInputRequest;
 import com.storage.management.dto.ManagementDtos.FacilityOverviewResponse;
 import com.storage.management.dto.ManagementDtos.FacilityStatusRequest;
@@ -20,6 +22,8 @@ import com.storage.management.dto.ManagementDtos.PolicyRequest;
 import com.storage.management.dto.ManagementDtos.PolicyResponse;
 import com.storage.management.dto.ManagementDtos.FacilityReportRow;
 import com.storage.management.dto.ManagementDtos.ReportSummary;
+import com.storage.management.dto.ManagementDtos.UnitTypeInputRequest;
+import com.storage.management.dto.ManagementDtos.UnitTypeResponse;
 import com.storage.payment.entity.BusinessPolicy;
 import com.storage.payment.entity.FeeType;
 import com.storage.payment.repository.BusinessPolicyRepository;
@@ -53,6 +57,7 @@ public class ManagementOpsService {
     private final BusinessPolicyService policyService;
     private final BusinessPolicyRepository policies;
     private final FeeTypeRepository feeTypes;
+    private final UnitTypeRepository unitTypes;
     private final FacilityRepository facilities;
     private final StorageUnitRepository units;
     private final RentalRepository rentals;
@@ -62,6 +67,7 @@ public class ManagementOpsService {
     public ManagementOpsService(BusinessPolicyService policyService,
                                 BusinessPolicyRepository policies,
                                 FeeTypeRepository feeTypes,
+                                UnitTypeRepository unitTypes,
                                 FacilityRepository facilities,
                                 StorageUnitRepository units,
                                 RentalRepository rentals,
@@ -70,6 +76,7 @@ public class ManagementOpsService {
         this.policyService = policyService;
         this.policies = policies;
         this.feeTypes = feeTypes;
+        this.unitTypes = unitTypes;
         this.facilities = facilities;
         this.units = units;
         this.rentals = rentals;
@@ -129,6 +136,77 @@ public class ManagementOpsService {
                 feeType.getDefaultAmount(), feeType.isActive());
     }
 
+    @Transactional
+    public UnitTypeResponse createUnitType(UnitTypeInputRequest request) {
+        UnitType unitType = new UnitType();
+        validateAndApplyUnitType(unitType, request);
+        return toUnitTypeResponse(unitTypes.save(unitType));
+    }
+
+    @Transactional
+    public UnitTypeResponse updateUnitType(Long unitTypeId, UnitTypeInputRequest request) {
+        UnitType unitType = unitTypes.findById(unitTypeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.UNIT_TYPE_NOT_FOUND));
+        validateAndApplyUnitType(unitType, request);
+        return toUnitTypeResponse(unitType);
+    }
+
+    private void validateAndApplyUnitType(UnitType unitType, UnitTypeInputRequest request) {
+        if (request.name() == null || request.name().isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Tên loại kho không được để trống");
+        }
+        String name = request.name().trim();
+        if (name.length() > 80) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Tên loại kho tối đa 80 ký tự");
+        }
+        if ((unitType.getName() == null || !unitType.getName().equals(name))
+                && unitTypes.existsByName(name)) {
+            throw new BusinessException(ErrorCode.UNIT_TYPE_NAME_EXISTS);
+        }
+        if (request.sizeM2() == null || request.sizeM2().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Diện tích loại kho phải lớn hơn 0");
+        }
+        if (request.minMonthlyPrice() == null
+                || request.minMonthlyPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Giá sàn phải lớn hơn 0");
+        }
+        if (request.maxMonthlyPrice() == null
+                || request.maxMonthlyPrice().compareTo(request.minMonthlyPrice()) < 0) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
+                    "Giá trần phải lớn hơn hoặc bằng giá sàn");
+        }
+        unitType.setName(name);
+        unitType.setSizeM2(request.sizeM2());
+        unitType.setMinMonthlyPrice(request.minMonthlyPrice());
+        unitType.setMaxMonthlyPrice(request.maxMonthlyPrice());
+        if (request.description() != null) {
+            unitType.setDescription(request.description().trim());
+        }
+        if (request.imageUrl() != null) {
+            unitType.setImageUrl(normalizeImageUrl(request.imageUrl()));
+        }
+    }
+
+    private static String normalizeImageUrl(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        String trimmed = raw.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        if (trimmed.length() > 500) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Đường dẫn ảnh tối đa 500 ký tự");
+        }
+        return trimmed;
+    }
+
+    private static UnitTypeResponse toUnitTypeResponse(UnitType unitType) {
+        return new UnitTypeResponse(unitType.getId(), unitType.getName(), unitType.getSizeM2(),
+                unitType.getDescription(), unitType.getMinMonthlyPrice(),
+                unitType.getMaxMonthlyPrice(), unitType.getImageUrl());
+    }
+
 @Transactional(readOnly = true)
     public List<FacilityOverviewResponse> facilityOverviews() {
         List<Facility> all = facilities.findAll(Sort.by("name"));
@@ -147,6 +225,9 @@ public class ManagementOpsService {
         facility.setName(request.name().trim());
         facility.setAddress(request.address());
         facility.setStatus(FacilityStatus.ACTIVE);
+        if (request.imageUrl() != null) {
+            facility.setImageUrl(normalizeImageUrl(request.imageUrl()));
+        }
         return toOverview(facilities.save(facility));
     }
 
@@ -161,6 +242,9 @@ public class ManagementOpsService {
         facility.setCode(code);
         facility.setName(request.name().trim());
         facility.setAddress(request.address());
+        if (request.imageUrl() != null) {
+            facility.setImageUrl(normalizeImageUrl(request.imageUrl()));
+        }
         return toOverview(facility);
     }
 
@@ -296,7 +380,8 @@ public class ManagementOpsService {
                 stats.manager(facility.getId()), facilityUnits.size(), occupied,
                 Analytics.rate(occupied, facilityUnits.size()),
                 Analytics.count(facilityRentals, rental -> rental.getStatus() == RentalStatus.ACTIVE),
-                Analytics.count(facilityRentals, rental -> rental.getStatus() == RentalStatus.OVERDUE));
+                Analytics.count(facilityRentals, rental -> rental.getStatus() == RentalStatus.OVERDUE),
+                facility.getImageUrl());
     }
 
     private PolicyResponse withUpdatedByName(BusinessPolicy policy) {

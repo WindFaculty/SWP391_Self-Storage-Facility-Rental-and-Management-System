@@ -8,6 +8,7 @@ RUN ./mvnw -B -DskipTests package
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 RUN addgroup --system app && adduser --system --ingroup app app
+RUN mkdir /app/uploads && chown app:app /app/uploads
 COPY --from=build /app/target/storage-backend-*.jar app.jar
 USER app
 EXPOSE 8080

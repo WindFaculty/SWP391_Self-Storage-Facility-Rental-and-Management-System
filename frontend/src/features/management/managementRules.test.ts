@@ -5,6 +5,7 @@ import {
   validateFacilityInput,
   validateFeeTypeInput,
   validatePolicy,
+  validateUnitTypeInput,
 } from './managementRules'
 
 const VALID_POLICY = {
@@ -42,6 +43,51 @@ describe('validateFeeTypeInput', () => {
   })
 })
 
+describe('validateUnitTypeInput', () => {
+  const existing = [
+    { id: 1, name: 'Demo Small (5 m2)' },
+    { id: 2, name: 'Demo Medium (12 m2)' },
+  ]
+
+  it('accepts a valid new unit type', () => {
+    expect(
+      validateUnitTypeInput(
+        { name: 'Standard (10 m2)', sizeM2: 10, minMonthlyPrice: 1_000_000, maxMonthlyPrice: 1_500_000 },
+        existing,
+        null,
+      ),
+    ).toEqual({})
+  })
+
+  it('rejects duplicate names case-insensitively but allows keeping the edited unit type name', () => {
+    expect(
+      validateUnitTypeInput(
+        { name: 'demo small (5 m2)', sizeM2: 5, minMonthlyPrice: 500_000, maxMonthlyPrice: 800_000 },
+        existing,
+        null,
+      ).name,
+    ).toBeTruthy()
+    expect(
+      validateUnitTypeInput(
+        { name: 'Demo Small (5 m2)', sizeM2: 5, minMonthlyPrice: 500_000, maxMonthlyPrice: 800_000 },
+        existing,
+        1,
+      ).name,
+    ).toBeUndefined()
+  })
+
+  it('requires positive area, positive min price and max price >= min price', () => {
+    const errors = validateUnitTypeInput(
+      { name: ' ', sizeM2: 0, minMonthlyPrice: 1_000_000, maxMonthlyPrice: 800_000 },
+      existing,
+      null,
+    )
+    expect(errors.name).toBeTruthy()
+    expect(errors.sizeM2).toBeTruthy()
+    expect(errors.maxMonthlyPrice).toBeTruthy()
+  })
+})
+
 describe('validateFacilityInput', () => {
   const existing = [
     { id: 1, code: 'CS-HN-CG01' },
@@ -71,6 +117,30 @@ describe('validateFacilityInput', () => {
     const errors = validateFacilityInput({ code: 'CS-X', name: ' ', address: '' }, existing, null)
     expect(errors.name).toBeTruthy()
     expect(errors.address).toBeTruthy()
+  })
+
+  it('validates optional imageUrl format and length', () => {
+    expect(
+      validateFacilityInput(
+        { code: 'CS-DN-HC01', name: 'Cơ sở', address: '12 Bạch Đằng', imageUrl: '/images/facilities/dn-hai-chau.jpg' },
+        existing,
+        null,
+      ),
+    ).toEqual({})
+    expect(
+      validateFacilityInput(
+        { code: 'CS-DN-HC01', name: 'Cơ sở', address: '12 Bạch Đằng', imageUrl: 'javascript:alert(1)' },
+        existing,
+        null,
+      ).imageUrl,
+    ).toBeTruthy()
+    expect(
+      validateFacilityInput(
+        { code: 'CS-DN-HC01', name: 'Cơ sở', address: '12 Bạch Đằng', imageUrl: `https://example.com/${'a'.repeat(500)}` },
+        existing,
+        null,
+      ).imageUrl,
+    ).toBeTruthy()
   })
 })
 

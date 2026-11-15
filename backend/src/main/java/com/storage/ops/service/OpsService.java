@@ -134,7 +134,8 @@ public class OpsService {
     public List<FacilityDto> facilities() {
         return facilitiesInScope().stream()
                 .map(facility -> new FacilityDto(facility.getId(), facility.getCode(),
-                        facility.getName(), facility.getAddress(), facility.getStatus()))
+                        facility.getName(), facility.getAddress(), facility.getStatus(),
+                        facility.getImageUrl()))
                 .toList();
     }
 
@@ -142,7 +143,8 @@ public class OpsService {
     public List<UnitTypeDto> unitTypes() {
         return unitTypes.findAll(Sort.by("name")).stream()
                 .map(type -> new UnitTypeDto(type.getId(), type.getName(), type.getSizeM2(),
-                        type.getDescription(), type.getMinMonthlyPrice(), type.getMaxMonthlyPrice()))
+                        type.getDescription(), type.getMinMonthlyPrice(),
+                        type.getMaxMonthlyPrice(), type.getImageUrl()))
                 .toList();
     }
 

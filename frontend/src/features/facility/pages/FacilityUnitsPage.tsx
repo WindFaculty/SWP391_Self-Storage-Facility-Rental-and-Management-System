@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { FacilityImagesModal } from '../components/FacilityImagesModal'
 import { useSearchParams } from 'react-router-dom'
 import { useSession } from '../../../app/providers/SessionProvider'
 import { Button } from '../../../components/ui/Button'
@@ -21,6 +23,8 @@ type FilterKey = 'q' | 'type' | 'status' | 'price'
 type ModalState = { mode: 'create' } | { mode: 'edit'; unit: StorageUnit }
 
 export function FacilityUnitsPage() {
+  const queryClient = useQueryClient()
+  const [editingFacilityImages, setEditingFacilityImages] = useState(false)
   const { user, activeFacilityId, facilitiesInScope } = useSession()
   const { unitTypes } = useUnitTypes()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -85,6 +89,7 @@ export function FacilityUnitsPage() {
       setNotice(`Đã thêm kho ${created.unitCode}.`)
     }
     setModal(null)
+    await queryClient.invalidateQueries({ queryKey: ['catalog'] })
     await reload()
   }
 
@@ -113,14 +118,27 @@ export function FacilityUnitsPage() {
           </p>
         </div>
         {canManage && (
-          <Button onClick={() => setModal({ mode: 'create' })}>
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-              add
-            </span>
-            Thêm kho mới
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            {facility && <Button variant="outline" onClick={() => setEditingFacilityImages(true)}>Ảnh cơ sở</Button>}
+            <Button onClick={() => setModal({ mode: 'create' })}>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                add
+              </span>
+              Thêm kho mới
+            </Button>
+          </div>
         )}
       </div>
+
+      {editingFacilityImages && facility && <FacilityImagesModal key={facility.id} facility={facility}
+        onClose={() => setEditingFacilityImages(false)} onSaved={async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['workspace-facilities'] }),
+            queryClient.invalidateQueries({ queryKey: ['catalog'] }),
+            queryClient.invalidateQueries({ queryKey: ['management'] }),
+          ])
+          setNotice('Đã cập nhật bộ ảnh cơ sở.')
+        }} />}
 
       {notice && (
         <div

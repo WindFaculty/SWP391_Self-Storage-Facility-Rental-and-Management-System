@@ -82,7 +82,7 @@ export const appRoutes: RouteObject[] = [
       {
         path: 'operations/facilities',
         element: (
-          <RequireRole roles={['BUSINESS_MANAGER']}>
+          <RequireRole roles={['BUSINESS_MANAGER', 'ADMIN']}>
             <OperationsFacilitiesPage />
           </RequireRole>
         ),

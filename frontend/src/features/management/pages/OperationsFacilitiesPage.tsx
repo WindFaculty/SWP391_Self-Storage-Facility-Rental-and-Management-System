@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
+import { ImagePicker } from '../../../components/media/ImagePicker'
+import { imageDrafts, type ImageDraft } from '../../../components/media/images'
 import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Modal } from '../../../components/ui/Modal'
 import { formatNumber } from '../../../lib/format'
+import { handleWarehouseImageError, resolveFacilityImage } from '../../catalog/lib/catalogImages'
 import {
   createFacility,
   setFacilityStatus,
@@ -70,7 +73,12 @@ export function OperationsFacilitiesPage() {
       setNotice(`Đã tạo cơ sở ${input.code.toUpperCase()}.`)
     }
     setForm(null)
-    await queryClient.invalidateQueries({ queryKey: ['workspace-facilities'] })
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['workspace-facilities'] }),
+      queryClient.invalidateQueries({ queryKey: ['facilities'] }),
+      queryClient.invalidateQueries({ queryKey: ['facility'] }),
+      queryClient.invalidateQueries({ queryKey: ['catalog'] }),
+    ])
     await reload()
   }
 
@@ -229,8 +237,18 @@ export function OperationsFacilitiesPage() {
                   <tr key={facility.id} className="border-b border-border-subtle last:border-b-0">
                     <td className="px-space-lg py-space-md font-medium text-text-main">{facility.code}</td>
                     <td className="px-space-lg py-space-md">
-                      <span className="block text-text-main">{facility.name}</span>
-                      <span className="block text-badge-caption text-text-muted">{facility.address}</span>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={resolveFacilityImage(facility)}
+                          alt={`Ảnh ${facility.name}`}
+                          onError={handleWarehouseImageError}
+                          className="h-11 w-16 shrink-0 rounded-md border border-border-hairline bg-surface-muted object-cover"
+                        />
+                        <div>
+                          <span className="block text-text-main">{facility.name}</span>
+                          <span className="block text-badge-caption text-text-muted">{facility.address}</span>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-space-lg py-space-md text-right tabular-nums">
                       {formatNumber(facility.unitOccupied)}/{formatNumber(facility.unitTotal)}
@@ -332,12 +350,20 @@ function FacilityFormModal({ facility, existing, onClose, onSubmit }: FacilityFo
   const [code, setCode] = useState(facility?.code ?? '')
   const [name, setName] = useState(facility?.name ?? '')
   const [address, setAddress] = useState(facility?.address ?? '')
+  const [images, setImages] = useState<ImageDraft[]>(() => imageDrafts(facility?.images))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [imagesBusy, setImagesBusy] = useState(false)
 
   const handleSubmit = async () => {
-    const input: FacilityInput = { code: code.trim(), name: name.trim(), address: address.trim() }
+    if (submitting || imagesBusy) return
+    const input: FacilityInput = {
+      code: code.trim(),
+      name: name.trim(),
+      address: address.trim(),
+      imageDrafts: images,
+    }
     const validation = validateFacilityInput(input, existing, facility?.id ?? null)
     setErrors(validation)
     setSubmitError(null)
@@ -354,7 +380,7 @@ function FacilityFormModal({ facility, existing, onClose, onSubmit }: FacilityFo
   }
 
   return (
-    <Modal title={facility ? `Sửa cơ sở ${facility.code}` : 'Thêm cơ sở mới'} onClose={onClose}>
+    <Modal title={facility ? `Sửa cơ sở ${facility.code}` : 'Thêm cơ sở mới'} onClose={() => { if (!submitting) onClose() }}>
       <div>
         <label htmlFor="facility-code" className="text-label-help font-medium text-text-main">
           Mã cơ sở *
@@ -398,6 +424,8 @@ function FacilityFormModal({ facility, existing, onClose, onSubmit }: FacilityFo
         {errors.address && <p className="mt-1 text-label-help text-danger">{errors.address}</p>}
       </div>
 
+      <ImagePicker value={images} onChange={setImages} disabled={submitting} onBusyChange={setImagesBusy} />
+
       {submitError && (
         <p role="alert" className="mt-space-md text-label-help text-danger">
           {submitError}
@@ -408,7 +436,7 @@ function FacilityFormModal({ facility, existing, onClose, onSubmit }: FacilityFo
         <Button variant="outline" onClick={onClose} disabled={submitting}>
           Hủy
         </Button>
-        <Button disabled={submitting} onClick={() => void handleSubmit()}>
+        <Button disabled={submitting || imagesBusy} onClick={() => void handleSubmit()}>
           {submitting ? 'Đang lưu…' : facility ? 'Lưu thay đổi' : 'Tạo cơ sở'}
         </Button>
       </div>

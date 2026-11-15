@@ -19,16 +19,26 @@ public final class OpsDtos {
     }
 
     public record FacilityDto(Long id, String code, String name, String address,
-                              FacilityStatus status) {
+                              FacilityStatus status, String imageUrl,
+                              java.util.List<com.storage.media.MediaDtos.ImageDto> images) {
+        public FacilityDto(Long id, String code, String name, String address, FacilityStatus status, String imageUrl) {
+            this(id, code, name, address, status, imageUrl, java.util.List.of());
+        }
     }
 
     public record UnitTypeDto(Long id, String name, BigDecimal sizeM2, String description,
-                              BigDecimal minMonthlyPrice, BigDecimal maxMonthlyPrice) {
+                              BigDecimal minMonthlyPrice, BigDecimal maxMonthlyPrice,
+                              String imageUrl) {
     }
 
     public record StorageUnitDto(Long id, Long facilityId, Long unitTypeId, String unitCode,
                                  String locationLabel, BigDecimal monthlyPrice,
-                                 StorageUnitStatus status) {
+                                 StorageUnitStatus status, String imageUrl,
+                                 java.util.List<com.storage.media.MediaDtos.ImageDto> images) {
+        public StorageUnitDto(Long id, Long facilityId, Long unitTypeId, String unitCode,
+                              String locationLabel, BigDecimal monthlyPrice, StorageUnitStatus status) {
+            this(id, facilityId, unitTypeId, unitCode, locationLabel, monthlyPrice, status, null, java.util.List.of());
+        }
     }
 
     public record StorageUnitInput(Long facilityId, Long unitTypeId, String unitCode,

@@ -6,6 +6,8 @@ import { EmptyState } from '../../../components/ui/EmptyState';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
+import { ImageGallery } from '../../../components/media/ImageGallery';
+import { FacilityUnitGallery } from '../components/FacilityUnitGallery';
 import { formatDate } from '../../../lib/format';
 import { UnitTypeCard } from '../components/UnitTypeCard';
 import { useAvailability, useFacility, useFacilityUnitTypes } from '../hooks/useCatalog';
@@ -78,42 +80,46 @@ export const FacilityDetailPage = () => {
         Tìm kho & Cơ sở
       </Link>
 
-      <header className="mt-6 flex flex-col gap-4 border-b border-border-hairline pb-8">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <h1 className="text-page-title text-text-main">{facility.name}</h1>
-          <StatusLabel
-            label={facility.status === 'ACTIVE' ? 'Đang hoạt động' : 'Tạm dừng'}
-            tone={facility.status === 'ACTIVE' ? 'success' : 'neutral'}
-          />
+      <header className="mt-6 grid grid-cols-1 gap-6 border-b border-border-hairline pb-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <h1 className="text-page-title text-text-main">{facility.name}</h1>
+            <StatusLabel
+              label={facility.status === 'ACTIVE' ? 'Đang hoạt động' : 'Tạm dừng'}
+              tone={facility.status === 'ACTIVE' ? 'success' : 'neutral'}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-table text-text-muted">
+            {facility.address ? (
+              <span className="flex items-center gap-2">
+                <MapPin className="size-4 shrink-0" aria-hidden="true" />
+                {facility.address}
+              </span>
+            ) : null}
+            {facility.phone ? (
+              <span className="flex items-center gap-2">
+                <Phone className="size-4 shrink-0" aria-hidden="true" />
+                {facility.phone}
+              </span>
+            ) : null}
+          </div>
+
+          {facility.description ? (
+            <p className="max-w-3xl text-body text-text-muted">{facility.description}</p>
+          ) : null}
+
+          <p className="text-table text-text-muted">
+            Tồn kho cho kỳ <strong className="text-text-main">{formatDate(range.startDate)}</strong>{' '}
+            – <strong className="text-text-main">{formatDate(range.endDate)}</strong> (không gồm ngày
+            kết thúc).{' '}
+            <Link to={backLink} className="text-forest-700 hover:underline">
+              Đổi ngày
+            </Link>
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-table text-text-muted">
-          {facility.address ? (
-            <span className="flex items-center gap-2">
-              <MapPin className="size-4 shrink-0" aria-hidden="true" />
-              {facility.address}
-            </span>
-          ) : null}
-          {facility.phone ? (
-            <span className="flex items-center gap-2">
-              <Phone className="size-4 shrink-0" aria-hidden="true" />
-              {facility.phone}
-            </span>
-          ) : null}
-        </div>
-
-        {facility.description ? (
-          <p className="max-w-3xl text-body text-text-muted">{facility.description}</p>
-        ) : null}
-
-        <p className="text-table text-text-muted">
-          Tồn kho cho kỳ <strong className="text-text-main">{formatDate(range.startDate)}</strong>{' '}
-          – <strong className="text-text-main">{formatDate(range.endDate)}</strong> (không gồm ngày
-          kết thúc).{' '}
-          <Link to={backLink} className="text-forest-700 hover:underline">
-            Đổi ngày
-          </Link>
-        </p>
+        <ImageGallery images={facility.images} imageUrl={facility.imageUrl} title={facility.name} />
       </header>
 
       <section className="py-10">
@@ -159,6 +165,7 @@ export const FacilityDetailPage = () => {
           </div>
         )}
       </section>
+      {facility.status === 'ACTIVE' && <FacilityUnitGallery key={facilityId} facilityId={facilityId} unitTypes={unitTypesQuery.data ?? []} />}
     </div>
   );
 };

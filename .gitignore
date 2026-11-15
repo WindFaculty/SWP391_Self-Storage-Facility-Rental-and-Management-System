@@ -12,6 +12,8 @@ coverage/
 *.war
 *.log
 /.run/
+/uploads/
+/backend/uploads/
 
 # Test artifacts
 test-results/

@@ -1,16 +1,27 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Modal } from '../../../components/ui/Modal'
 import { Tabs } from '../../../components/ui/Tabs'
 import { formatArea, formatCurrency, formatDateTime } from '../../../lib/format'
+import { handleWarehouseImageError, resolveUnitTypeImage } from '../../catalog/lib/catalogImages'
 import { useUnitTypes } from '../../facility/hooks/useUnitTypes'
-import { createFeeType, updateBusinessPolicy, updateFeeType } from '../api/managementApi'
+import type { UnitType } from '../../facility/types'
+import {
+  createFeeType,
+  createUnitType,
+  updateBusinessPolicy,
+  updateFeeType,
+  updateUnitType,
+  type UnitTypeInput,
+} from '../api/managementApi'
 import { usePolicyData } from '../hooks/useManagement'
 import {
   validateFeeTypeCreateInput,
   validateFeeTypeInput,
   validatePolicy,
+  validateUnitTypeInput,
   type PolicyInput,
 } from '../managementRules'
 import type { FeeType } from '../types'
@@ -67,12 +78,15 @@ function formatPolicyValue(key: keyof PolicyInput, value: number): string {
 }
 
 export function OperationsPoliciesPage() {
+  const queryClient = useQueryClient()
   const { policy, fees, loading, error, reload } = usePolicyData()
-  const { unitTypes } = useUnitTypes()
+  const { unitTypes, reload: reloadUnitTypes } = useUnitTypes()
   const [tab, setTab] = useState<TabId>('policy')
   const [values, setValues] = useState<PolicyFormValues | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [showPreview, setShowPreview] = useState(false)
+  const [creatingUnitType, setCreatingUnitType] = useState(false)
+  const [editingUnitType, setEditingUnitType] = useState<UnitType | null>(null)
   const [creatingFee, setCreatingFee] = useState(false)
   const [editingFee, setEditingFee] = useState<FeeType | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -245,15 +259,28 @@ export function OperationsPoliciesPage() {
 
           {tab === 'pricing' && (
             <section className="mt-space-lg bg-surface rounded-xl border border-border-hairline overflow-hidden">
-              <div className="px-space-lg py-space-md border-b border-border-hairline">
-                <h2 className="text-subsection text-text-main">Khung giá niêm yết theo loại kho</h2>
-                <p className="text-label-help text-text-muted">
-                  Giá thuê từng kho phải nằm trong khoảng Min–Max của loại kho. Việc quản lý loại kho
-                  và giá cụ thể thuộc module Kho lưu trữ (BE1); màn hình này hiển thị dữ liệu hiện có.
-                </p>
+              <div className="px-space-lg py-space-md border-b border-border-hairline flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-subsection text-text-main">Khung giá niêm yết theo loại kho</h2>
+                  <p className="text-label-help text-text-muted">
+                    Giá thuê từng kho tại các cơ sở phải nằm trong khoảng Giá sàn – Giá trần của loại kho.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setActionError(null)
+                    setCreatingUnitType(true)
+                  }}
+                >
+                  Thêm loại kho
+                </Button>
               </div>
               {unitTypes.length === 0 ? (
-                <EmptyState title="Chưa tải được loại kho." description="Thử tải lại trang." />
+                <EmptyState
+                  title="Chưa có loại kho"
+                  description="Thêm mới loại kho và khung giá sàn – giá trần để áp dụng cho toàn hệ thống."
+                />
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-ui-table">
@@ -263,18 +290,41 @@ export function OperationsPoliciesPage() {
                         <th scope="col" className="px-space-lg py-space-md font-semibold">Diện tích</th>
                         <th scope="col" className="px-space-lg py-space-md font-semibold text-right">Giá sàn</th>
                         <th scope="col" className="px-space-lg py-space-md font-semibold text-right">Giá trần</th>
+                        <th scope="col" className="px-space-lg py-space-md font-semibold text-right">Thao tác</th>
                       </tr>
                     </thead>
                     <tbody>
                       {unitTypes.map((unitType) => (
                         <tr key={unitType.id} className="border-b border-border-subtle last:border-b-0">
-                          <td className="px-space-lg py-space-md font-medium text-text-main">{unitType.name}</td>
+                          <td className="px-space-lg py-space-md font-medium text-text-main">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={resolveUnitTypeImage(unitType)}
+                                alt={`Ảnh ${unitType.name}`}
+                                onError={handleWarehouseImageError}
+                                className="h-10 w-14 shrink-0 rounded-md border border-border-hairline bg-surface-muted object-cover"
+                              />
+                              <span>{unitType.name}</span>
+                            </div>
+                          </td>
                           <td className="px-space-lg py-space-md">{formatArea(unitType.sizeM2)}</td>
                           <td className="px-space-lg py-space-md text-right tabular-nums">
                             {formatCurrency(unitType.minMonthlyPrice)}
                           </td>
                           <td className="px-space-lg py-space-md text-right tabular-nums">
                             {formatCurrency(unitType.maxMonthlyPrice)}
+                          </td>
+                          <td className="px-space-lg py-space-md text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActionError(null)
+                                setEditingUnitType(unitType)
+                              }}
+                              className="text-label-help font-medium text-primary hover:underline"
+                            >
+                              Sửa
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -425,7 +475,238 @@ export function OperationsPoliciesPage() {
           }}
         />
       )}
+
+      {creatingUnitType && (
+        <UnitTypeFormModal
+          unitType={null}
+          existingUnitTypes={unitTypes}
+          onClose={() => setCreatingUnitType(false)}
+          onSubmit={async (input) => {
+            const created = await createUnitType(input)
+            setCreatingUnitType(false)
+            setNotice(`Đã thêm loại kho ${created.name}.`)
+            await Promise.all([
+              reloadUnitTypes(),
+              queryClient.invalidateQueries({ queryKey: ['unit-types'] }),
+              queryClient.invalidateQueries({ queryKey: ['facility-unit-types'] }),
+            ])
+          }}
+        />
+      )}
+
+      {editingUnitType && (
+        <UnitTypeFormModal
+          unitType={editingUnitType}
+          existingUnitTypes={unitTypes}
+          onClose={() => setEditingUnitType(null)}
+          onSubmit={async (input) => {
+            const updated = await updateUnitType(editingUnitType.id, input)
+            setEditingUnitType(null)
+            setNotice(`Đã cập nhật khung giá loại kho ${updated.name}.`)
+            await Promise.all([
+              reloadUnitTypes(),
+              queryClient.invalidateQueries({ queryKey: ['unit-types'] }),
+              queryClient.invalidateQueries({ queryKey: ['facility-unit-types'] }),
+            ])
+          }}
+        />
+      )}
     </div>
+  )
+}
+
+interface UnitTypeFormModalProps {
+  unitType: UnitType | null
+  existingUnitTypes: UnitType[]
+  onClose: () => void
+  onSubmit: (input: UnitTypeInput) => Promise<void>
+}
+
+function UnitTypeFormModal({
+  unitType,
+  existingUnitTypes,
+  onClose,
+  onSubmit,
+}: UnitTypeFormModalProps) {
+  const isEditing = unitType !== null
+  const [name, setName] = useState(unitType?.name ?? '')
+  const [sizeM2, setSizeM2] = useState(String(unitType?.sizeM2 ?? ''))
+  const [minMonthlyPrice, setMinMonthlyPrice] = useState(String(unitType?.minMonthlyPrice ?? ''))
+  const [maxMonthlyPrice, setMaxMonthlyPrice] = useState(String(unitType?.maxMonthlyPrice ?? ''))
+  const [description, setDescription] = useState(unitType?.description ?? '')
+  const [imageUrl, setImageUrl] = useState(unitType?.imageUrl ?? '')
+  const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const parsedSizePreview = Number(sizeM2)
+
+  const handleSubmit = async () => {
+    const parsedSize = Number(sizeM2)
+    const parsedMin = Number(minMonthlyPrice)
+    const parsedMax = Number(maxMonthlyPrice)
+    const trimmedImageUrl = imageUrl.trim()
+    const validationErrors = validateUnitTypeInput(
+      {
+        name,
+        sizeM2: parsedSize,
+        minMonthlyPrice: parsedMin,
+        maxMonthlyPrice: parsedMax,
+        imageUrl: trimmedImageUrl,
+      },
+      existingUnitTypes,
+      unitType?.id ?? null,
+    )
+    const firstError =
+      validationErrors.name ??
+      validationErrors.sizeM2 ??
+      validationErrors.minMonthlyPrice ??
+      validationErrors.maxMonthlyPrice ??
+      validationErrors.imageUrl
+    if (firstError) {
+      setError(firstError)
+      return
+    }
+    setSubmitting(true)
+    setError(null)
+    try {
+      await onSubmit({
+        name: name.trim(),
+        sizeM2: parsedSize,
+        minMonthlyPrice: parsedMin,
+        maxMonthlyPrice: parsedMax,
+        description: description.trim(),
+        imageUrl: trimmedImageUrl,
+      })
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Không lưu được loại kho.')
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <Modal
+      title={isEditing ? `Sửa khung giá ${unitType.name}` : 'Thêm loại kho mới'}
+      onClose={onClose}
+    >
+      <div>
+        <label htmlFor="unit-type-name" className="text-label-help font-medium text-text-main">
+          Tên loại kho *
+        </label>
+        <input
+          id="unit-type-name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="VD: Standard (10 m2)"
+          className={INPUT_CLASS}
+        />
+      </div>
+
+      <div className="mt-space-lg">
+        <label htmlFor="unit-type-size" className="text-label-help font-medium text-text-main">
+          Diện tích (m²) *
+        </label>
+        <input
+          id="unit-type-size"
+          type="number"
+          min={0.1}
+          step={0.5}
+          value={sizeM2}
+          onChange={(event) => setSizeM2(event.target.value)}
+          placeholder="VD: 10"
+          className={INPUT_CLASS}
+        />
+      </div>
+
+      <div className="mt-space-lg grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+        <div>
+          <label htmlFor="unit-type-min-price" className="text-label-help font-medium text-text-main">
+            Giá sàn (₫/tháng) *
+          </label>
+          <input
+            id="unit-type-min-price"
+            type="number"
+            min={0}
+            step={10_000}
+            value={minMonthlyPrice}
+            onChange={(event) => setMinMonthlyPrice(event.target.value)}
+            placeholder="VD: 1000000"
+            className={INPUT_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor="unit-type-max-price" className="text-label-help font-medium text-text-main">
+            Giá trần (₫/tháng) *
+          </label>
+          <input
+            id="unit-type-max-price"
+            type="number"
+            min={0}
+            step={10_000}
+            value={maxMonthlyPrice}
+            onChange={(event) => setMaxMonthlyPrice(event.target.value)}
+            placeholder="VD: 1500000"
+            className={INPUT_CLASS}
+          />
+        </div>
+      </div>
+
+      <div className="mt-space-lg">
+        <label htmlFor="unit-type-description" className="text-label-help font-medium text-text-main">
+          Mô tả
+        </label>
+        <textarea
+          id="unit-type-description"
+          rows={3}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Mô tả sức chứa hoặc đặc điểm loại kho (tùy chọn)"
+          className="mt-space-xs w-full rounded-lg border border-border-hairline bg-surface px-space-md py-space-sm text-body-default text-text-main focus:outline-none focus:ring-2 focus:ring-focus-ring"
+        />
+      </div>
+
+      <div className="mt-space-lg">
+        <label htmlFor="unit-type-image-url" className="text-label-help font-medium text-text-main">
+          Đường dẫn ảnh (URL)
+        </label>
+        <input
+          id="unit-type-image-url"
+          value={imageUrl}
+          onChange={(event) => setImageUrl(event.target.value)}
+          placeholder="Ví dụ: /images/unit-types/medium.jpg hoặc https://..."
+          className={INPUT_CLASS}
+        />
+        <p className="mt-1 text-badge-caption text-text-muted">
+          Để trống để dùng ảnh mặc định theo kích thước loại kho.
+        </p>
+        <div className="mt-space-sm aspect-[16/10] w-full max-w-[240px] overflow-hidden rounded-lg border border-border-hairline bg-surface-muted">
+          <img
+            src={resolveUnitTypeImage({
+              name,
+              sizeM2: Number.isFinite(parsedSizePreview) && parsedSizePreview > 0 ? parsedSizePreview : null,
+              imageUrl,
+            })}
+            alt="Xem trước ảnh loại kho"
+            onError={handleWarehouseImageError}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      </div>
+
+      {error && (
+        <p role="alert" className="mt-space-md text-label-help text-danger">
+          {error}
+        </p>
+      )}
+
+      <div className="mt-space-2xl flex justify-end gap-3">
+        <Button variant="outline" onClick={onClose} disabled={submitting}>
+          Hủy
+        </Button>
+        <Button disabled={submitting} onClick={() => void handleSubmit()}>
+          {submitting ? 'Đang lưu…' : isEditing ? 'Lưu thay đổi' : 'Tạo loại kho'}
+        </Button>
+      </div>
+    </Modal>
   )
 }
 

@@ -85,7 +85,7 @@ class ApiClient {
 
   private async request<T>(endpoint: string, options: RequestInit = {}, retried = false): Promise<T> {
     const headers = new Headers(options.headers);
-    if (!headers.has('Content-Type')) {
+    if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');
     }
     if (this.accessToken) {
@@ -135,11 +135,11 @@ class ApiClient {
   }
 
   post<T, B = unknown>(endpoint: string, body: B, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) });
+    return this.request<T>(endpoint, { ...options, method: 'POST', body: body instanceof FormData ? body : JSON.stringify(body) });
   }
 
   put<T, B = unknown>(endpoint: string, body: B, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) });
+    return this.request<T>(endpoint, { ...options, method: 'PUT', body: body instanceof FormData ? body : JSON.stringify(body) });
   }
 
   patch<T, B = unknown>(endpoint: string, body: B, options?: RequestInit): Promise<T> {

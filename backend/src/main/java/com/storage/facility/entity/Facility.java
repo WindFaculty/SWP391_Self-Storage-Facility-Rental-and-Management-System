@@ -33,6 +33,9 @@ public class Facility {
     @Column(nullable = false, length = 12)
     private FacilityStatus status = FacilityStatus.ACTIVE;
 
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     public Long getId() {
         return id;
     }
@@ -67,5 +70,13 @@ public class Facility {
 
     public void setStatus(FacilityStatus status) {
         this.status = status;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

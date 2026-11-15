@@ -1,4 +1,5 @@
 import { formatArea, formatCurrency } from '../../../lib/format'
+import { FALLBACK_WAREHOUSE_IMAGE, handleWarehouseImageError } from '../../catalog/lib/catalogImages'
 import type { StorageUnit, UnitType } from '../types'
 import { UnitStatusLabel } from './UnitStatusLabel'
 
@@ -34,7 +35,13 @@ export function UnitsTable({ units, unitTypes, onOpen }: UnitsTableProps) {
                 onClick={() => onOpen(unit)}
                 className="border-b border-border-subtle last:border-b-0 hover:bg-surface-muted/60 cursor-pointer"
               >
-                <td className="px-space-lg py-space-md font-medium text-text-main">{unit.unitCode}</td>
+                <td className="px-space-lg py-space-md font-medium text-text-main">
+                  <div className="flex items-center gap-3">
+                    <img src={unit.imageUrl ?? FALLBACK_WAREHOUSE_IMAGE} alt={`Ảnh kho ${unit.unitCode}`} onError={handleWarehouseImageError}
+                      className="h-11 w-16 rounded object-cover" />
+                    {unit.unitCode}
+                  </div>
+                </td>
                 <td className="px-space-lg py-space-md">{unitType?.name ?? '—'}</td>
                 <td className="px-space-lg py-space-md">{unitType ? formatArea(unitType.sizeM2) : '—'}</td>
                 <td className="px-space-lg py-space-md">{unit.locationLabel}</td>

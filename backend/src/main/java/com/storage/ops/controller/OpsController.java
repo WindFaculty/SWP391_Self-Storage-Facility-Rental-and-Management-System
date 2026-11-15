@@ -52,16 +52,18 @@ import java.util.Optional;
 public class OpsController {
 
     private final OpsService ops;
+    private final com.storage.media.WarehouseMediaService media;
 
-    public OpsController(OpsService ops) {
+    public OpsController(OpsService ops, com.storage.media.WarehouseMediaService media) {
         this.ops = ops;
+        this.media = media;
     }
 
     // ---------- catalog ----------
 
     @GetMapping("/facilities")
     public com.storage.shared.response.ApiResponse<List<FacilityDto>> facilities() {
-        return com.storage.shared.response.ApiResponse.success(ops.facilities());
+        return com.storage.shared.response.ApiResponse.success(media.workspaceFacilities(ops.facilities()));
     }
 
     @GetMapping("/unit-types")
@@ -79,30 +81,30 @@ public class OpsController {
             @RequestParam(required = false) StorageUnitStatus status,
             @RequestParam(required = false) String priceBand) {
         return com.storage.shared.response.ApiResponse.success(
-                ops.units(facilityId, search, unitTypeId, status, priceBand));
+                media.units(ops.units(facilityId, search, unitTypeId, status, priceBand)));
     }
 
-    @PostMapping("/units")
+    @PostMapping(value = "/units", consumes = "application/json")
     @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public org.springframework.http.ResponseEntity<com.storage.shared.response.ApiResponse<StorageUnitDto>> createUnit(
             @Valid @RequestBody StorageUnitInput input) {
         return org.springframework.http.ResponseEntity.status(
                         org.springframework.http.HttpStatus.CREATED)
-                .body(com.storage.shared.response.ApiResponse.success(ops.createUnit(input)));
+                .body(com.storage.shared.response.ApiResponse.success(media.unit(ops.createUnit(input))));
     }
 
-    @PutMapping("/units/{unitId}")
+    @PutMapping(value = "/units/{unitId}", consumes = "application/json")
     @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public com.storage.shared.response.ApiResponse<StorageUnitDto> updateUnit(
             @PathVariable Long unitId, @Valid @RequestBody StorageUnitInput input) {
-        return com.storage.shared.response.ApiResponse.success(ops.updateUnit(unitId, input));
+        return com.storage.shared.response.ApiResponse.success(media.unit(ops.updateUnit(unitId, input)));
     }
 
     @PatchMapping("/units/{unitId}/status")
     @PreAuthorize("hasAnyRole('ADMIN','BUSINESS_MANAGER','FACILITY_MANAGER')")
     public com.storage.shared.response.ApiResponse<StorageUnitDto> changeUnitStatus(
             @PathVariable Long unitId, @Valid @RequestBody UnitStatusInput input) {
-        return com.storage.shared.response.ApiResponse.success(ops.changeUnitStatus(unitId, input));
+        return com.storage.shared.response.ApiResponse.success(media.unit(ops.changeUnitStatus(unitId, input)));
     }
 
     // ---------- rentals ----------

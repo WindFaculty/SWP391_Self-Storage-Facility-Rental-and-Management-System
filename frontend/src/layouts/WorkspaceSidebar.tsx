@@ -55,7 +55,7 @@ const MENU_GROUPS: MenuGroup[] = [
         title: 'Mạng lưới cơ sở',
         path: '/operations/facilities',
         icon: 'domain',
-        roles: ['BUSINESS_MANAGER'],
+        roles: ['BUSINESS_MANAGER', 'ADMIN'],
       },
       {
         title: 'Chính sách & Bảng phí',

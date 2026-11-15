@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ImageGallery } from '../../../components/media/ImageGallery'
 import { Button } from '../../../components/ui/Button'
 import { Drawer } from '../../../components/ui/Drawer'
 import { formatArea, formatCurrency } from '../../../lib/format'
@@ -56,7 +57,8 @@ export function UnitDrawer({ unit, unitType, onClose, onEdit, onStatusChange }: 
         </Button>
       }
     >
-      <section>
+      <ImageGallery images={unit.images} imageUrl={unit.imageUrl} title={`kho ${unit.unitCode}`} />
+      <section className="mt-space-lg">
         <h3 className="text-subsection text-text-main">Thông số kho</h3>
         <dl className="mt-space-sm">
           <SpecRow label="Mã kho" value={unit.unitCode} />

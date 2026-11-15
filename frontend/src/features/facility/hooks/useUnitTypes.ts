@@ -6,5 +6,5 @@ export function useUnitTypes() {
     queryKey: ['ops', 'unit-types'],
     queryFn: listUnitTypes,
   })
-  return { unitTypes: query.data ?? [] }
+  return { unitTypes: query.data ?? [], reload: query.refetch }
 }
