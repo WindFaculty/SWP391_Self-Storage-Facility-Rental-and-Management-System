@@ -1,8 +1,10 @@
+import { Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useSession } from '../../../app/providers/SessionProvider'
+import { useSession } from '../../../app/providers/useSession'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
+import { NoticeBanner } from '../../../components/ui/NoticeBanner'
 import { Tabs } from '../../../components/ui/Tabs'
 import { PaymentStateLabel, TaskStatusLabel } from '../../facility/components/StatusLabels'
 import { TicketsPanel } from '../../facility/components/TicketsPanel'
@@ -122,22 +124,7 @@ export function StaffOperationsPage() {
         </div>
       </div>
 
-      {notice && (
-        <div
-          role="status"
-          className="mt-space-lg flex items-center justify-between gap-space-md rounded-lg bg-success-bg px-space-lg py-space-md text-label-help text-success"
-        >
-          <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-              check_circle
-            </span>
-            {notice}
-          </span>
-          <button type="button" onClick={() => setNotice(null)} aria-label="Đóng thông báo" className="hover:opacity-70">
-            <span className="material-symbols-outlined text-[18px]">close</span>
-          </button>
-        </div>
-      )}
+      <NoticeBanner message={notice} onDismiss={() => setNotice(null)} />
 
       <div className="mt-space-lg grid grid-cols-2 xl:grid-cols-4 gap-space-md">
         {kpis.map((kpi) => (
@@ -157,12 +144,10 @@ export function StaffOperationsPage() {
           <label htmlFor="task-search" className="sr-only">
             Tìm công việc
           </label>
-          <span
-            className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-text-muted"
+          <Search
+            className="size-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
             aria-hidden="true"
-          >
-            search
-          </span>
+          />
           <input
             id="task-search"
             type="search"

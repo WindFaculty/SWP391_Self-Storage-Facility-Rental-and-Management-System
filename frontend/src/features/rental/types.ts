@@ -7,7 +7,8 @@ export type RentalStatus =
   | 'RETURN_REQUESTED'
   | 'OVERDUE'
   | 'RETURNED'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'EXPIRED';
 
 export type EntityId = string | number
 

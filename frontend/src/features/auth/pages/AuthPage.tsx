@@ -1,20 +1,21 @@
 import { useState } from 'react';
-import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Boxes } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import { LoginForm } from '../components/LoginForm';
 import { RegisterForm } from '../components/RegisterForm';
-import { getDefaultRouteForRole } from '../roles';
+import { resolvePostAuthRoute } from '../roles';
 import { useAuth } from '../useAuth';
 import { SocialLogin } from '../components/SocialLogin';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { ThemeToggle } from '../../../components/ui/ThemeToggle';
-import warehouseIllustration from '../../../assets/warehouse-illustration.jpg';
+import warehouseIllustration from '../../../assets/warehouse-illustration.webp';
 
 type AuthTab = 'login' | 'register';
 
 export const AuthPage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const oauthError = searchParams.get('oauth_error');
   const oauthMessage = oauthError === 'email_conflict'
@@ -31,7 +32,7 @@ export const AuthPage = () => {
   }
 
   if (isAuthenticated && user) {
-    return <Navigate to={getDefaultRouteForRole(user.role)} replace />;
+    return <Navigate to={resolvePostAuthRoute(user.role, location.state)} replace />;
   }
 
   const tabClass = (active: boolean) =>

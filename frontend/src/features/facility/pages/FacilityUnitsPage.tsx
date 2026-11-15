@@ -1,10 +1,12 @@
+import { Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { FacilityImagesModal } from '../components/FacilityImagesModal'
 import { useSearchParams } from 'react-router-dom'
-import { useSession } from '../../../app/providers/SessionProvider'
+import { useSession } from '../../../app/providers/useSession'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
+import { NoticeBanner } from '../../../components/ui/NoticeBanner'
 import { formatNumber } from '../../../lib/format'
 import { changeUnitStatus, createUnit, updateUnit } from '../api/facilityUnitsApi'
 import { UnitDrawer } from '../components/UnitDrawer'
@@ -120,10 +122,7 @@ export function FacilityUnitsPage() {
         {canManage && (
           <div className="flex flex-wrap gap-3">
             {facility && <Button variant="outline" onClick={() => setEditingFacilityImages(true)}>Ảnh cơ sở</Button>}
-            <Button onClick={() => setModal({ mode: 'create' })}>
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-                add
-              </span>
+            <Button icon={Plus} onClick={() => setModal({ mode: 'create' })}>
               Thêm kho mới
             </Button>
           </div>
@@ -140,27 +139,7 @@ export function FacilityUnitsPage() {
           setNotice('Đã cập nhật bộ ảnh cơ sở.')
         }} />}
 
-      {notice && (
-        <div
-          role="status"
-          className="mt-space-lg flex items-center justify-between gap-space-md rounded-lg bg-success-bg px-space-lg py-space-md text-label-help text-success"
-        >
-          <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-              check_circle
-            </span>
-            {notice}
-          </span>
-          <button
-            type="button"
-            onClick={() => setNotice(null)}
-            aria-label="Đóng thông báo"
-            className="hover:opacity-70"
-          >
-            <span className="material-symbols-outlined text-[18px]">close</span>
-          </button>
-        </div>
-      )}
+      <NoticeBanner message={notice} onDismiss={() => setNotice(null)} />
 
       <div className="mt-space-lg grid grid-cols-2 xl:grid-cols-4 gap-space-md">
         {kpis.map((kpi) => (

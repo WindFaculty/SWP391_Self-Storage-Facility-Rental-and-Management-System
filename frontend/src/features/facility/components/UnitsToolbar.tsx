@@ -1,3 +1,4 @@
+import { FilterX, Search } from 'lucide-react'
 import { Button } from '../../../components/ui/Button'
 import { PRICE_BANDS, UNIT_STATUS_LABELS } from '../unitRules'
 import type { PriceBand, UnitFilters, UnitStatus, UnitType } from '../types'
@@ -25,12 +26,10 @@ export function UnitsToolbar({ filters, unitTypes, canReset, onChange, onReset }
         <label htmlFor="unit-search" className="sr-only">
           Tìm mã kho
         </label>
-        <span
-          className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-text-muted"
+        <Search
+          className="size-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
           aria-hidden="true"
-        >
-          search
-        </span>
+        />
         <input
           id="unit-search"
           type="search"
@@ -92,10 +91,7 @@ export function UnitsToolbar({ filters, unitTypes, canReset, onChange, onReset }
         ))}
       </select>
 
-      <Button variant="outline" onClick={onReset} disabled={!canReset} className="shrink-0">
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-          filter_alt_off
-        </span>
+      <Button variant="outline" icon={FilterX} onClick={onReset} disabled={!canReset} className="shrink-0">
         Xóa bộ lọc
       </Button>
     </div>

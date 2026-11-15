@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
-import { useSession } from '../../../app/providers/SessionProvider'
+import { useSession } from '../../../app/providers/useSession'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Modal } from '../../../components/ui/Modal'
-import { formatDateTime, formatNumber } from '../../../lib/format'
+import { NoticeBanner } from '../../../components/ui/NoticeBanner'
+import { formatDateTime, formatNumber, toDatetimeLocalValue } from '../../../lib/format'
 import { assignTicket, closeTicket } from '../api/supportTicketsApi'
 import { useStaffMembers, useTickets } from '../hooks/useRentalOps'
 import { TICKET_CATEGORY_LABELS, TICKET_STATUS_LABELS } from '../supportRules'
 import type { StaffMember, SupportTicket, TicketFilters, TicketStatus } from '../types'
-import { toDatetimeLocalValue } from './AssignTaskModal'
 import { TicketStatusLabel } from './StatusLabels'
 
 const STATUS_OPTIONS: TicketStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']
@@ -105,17 +105,7 @@ export function TicketsPanel({ facilityId, onMutated }: TicketsPanelProps) {
         </select>
       </div>
 
-      {notice && (
-        <div
-          role="status"
-          className="mx-space-lg mt-space-md flex items-center justify-between gap-space-md rounded-lg bg-success-bg px-space-lg py-space-md text-label-help text-success"
-        >
-          <span>{notice}</span>
-          <button type="button" onClick={() => setNotice(null)} aria-label="Đóng thông báo" className="hover:opacity-70">
-            <span className="material-symbols-outlined text-[18px]">close</span>
-          </button>
-        </div>
-      )}
+      <NoticeBanner message={notice} onDismiss={() => setNotice(null)} className="mx-space-lg mt-space-md" />
 
       {error && (
         <p role="alert" className="mx-space-lg mt-space-md text-label-help text-danger">

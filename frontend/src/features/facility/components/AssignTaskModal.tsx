@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '../../../components/ui/Button'
 import { Modal } from '../../../components/ui/Modal'
-import { formatDate } from '../../../lib/format'
+import { formatDate, toDatetimeLocalValue } from '../../../lib/format'
 import { TASK_TYPE_LABELS } from '../rentalRules'
 import type { Rental, StaffMember, TaskType } from '../types'
 
@@ -15,12 +15,6 @@ function getAllowedTaskTypes(status: Rental['status']): TaskType[] {
   }
   if (status === 'RETURNED') return ['UNIT_INSPECTION']
   return []
-}
-
-export function toDatetimeLocalValue(iso: string): string {
-  const date = new Date(iso)
-  const pad = (value: number) => String(value).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 export interface AssignTaskFormInput {

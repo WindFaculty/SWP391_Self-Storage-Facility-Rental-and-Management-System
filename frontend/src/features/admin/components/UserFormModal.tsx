@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ROLE_LABELS } from '../../../app/providers/SessionProvider'
+import { ROLE_LABELS } from '../../../app/providers/session-context'
 import { Button } from '../../../components/ui/Button'
 import { Modal } from '../../../components/ui/Modal'
 import type { UserRole } from '../../facility/types'

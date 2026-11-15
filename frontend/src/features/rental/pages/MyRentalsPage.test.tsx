@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MyRentalsPage } from './MyRentalsPage';
@@ -68,5 +68,18 @@ describe('MyRentalsPage', () => {
     expect(screen.getByRole('button', { name: 'Thanh toán' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Hủy giữ chỗ' })).toBeInTheDocument();
     expect(screen.getByText(/Hết hạn giữ chỗ lúc/)).toBeInTheDocument();
+  });
+
+  it('renders expired holds in the history tab without crashing', async () => {
+    stubApi({
+      '/rentals/me': [{ ...pendingRental, id: 'r-exp', status: 'EXPIRED' }],
+    });
+    renderPage();
+
+    await screen.findByText('Bạn không có đơn giữ chỗ nào đang chờ thanh toán.');
+    fireEvent.click(screen.getByRole('button', { name: 'Lịch sử' }));
+
+    expect(await screen.findByText('Cơ sở Cầu Giấy')).toBeInTheDocument();
+    expect(screen.getByText('Hết hạn giữ chỗ')).toBeInTheDocument();
   });
 });

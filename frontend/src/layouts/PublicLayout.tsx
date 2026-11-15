@@ -19,10 +19,12 @@ export const PublicLayout = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    const loggedOut = await logout();
     setMobileMenuOpen(false);
-    navigate('/auth');
+    if (loggedOut) {
+      navigate('/auth');
+    }
   };
 
   return (
@@ -70,7 +72,7 @@ export const PublicLayout = () => {
                 <span className="hidden text-label text-text-muted sm:inline">
                   Xin chào, {user.fullName}
                 </span>
-                <Button variant="outline" size="sm" icon={LogOut} onClick={handleLogout}>
+                <Button variant="outline" size="sm" icon={LogOut} onClick={() => void handleLogout()}>
                   Đăng xuất
                 </Button>
               </>

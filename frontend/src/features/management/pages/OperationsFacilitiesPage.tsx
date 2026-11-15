@@ -1,3 +1,4 @@
+import { Plus, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { ImagePicker } from '../../../components/media/ImagePicker'
 import { imageDrafts, type ImageDraft } from '../../../components/media/images'
@@ -5,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Modal } from '../../../components/ui/Modal'
+import { NoticeBanner } from '../../../components/ui/NoticeBanner'
 import { formatNumber } from '../../../lib/format'
 import { handleWarehouseImageError, resolveFacilityImage } from '../../catalog/lib/catalogImages'
 import {
@@ -117,17 +119,7 @@ export function OperationsFacilitiesPage() {
         </p>
       </div>
 
-      {notice && (
-        <div
-          role="status"
-          className="mt-space-lg flex items-center justify-between gap-space-md rounded-lg bg-success-bg px-space-lg py-space-md text-label-help text-success"
-        >
-          <span>{notice}</span>
-          <button type="button" onClick={() => setNotice(null)} aria-label="Đóng thông báo" className="hover:opacity-70">
-            <span className="material-symbols-outlined text-[18px]">close</span>
-          </button>
-        </div>
-      )}
+      <NoticeBanner message={notice} onDismiss={() => setNotice(null)} />
 
       <div className="mt-space-lg grid grid-cols-2 xl:grid-cols-4 gap-space-md">
         {kpis.map((kpi) => (
@@ -143,12 +135,10 @@ export function OperationsFacilitiesPage() {
           <label htmlFor="facility-search" className="sr-only">
             Tìm cơ sở
           </label>
-          <span
-            className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-text-muted"
+          <Search
+            className="size-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
             aria-hidden="true"
-          >
-            search
-          </span>
+          />
           <input
             id="facility-search"
             type="search"
@@ -187,10 +177,7 @@ export function OperationsFacilitiesPage() {
             </button>
           ))}
         </div>
-        <Button onClick={() => setForm({ mode: 'create' })} className="shrink-0">
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-            add
-          </span>
+        <Button icon={Plus} onClick={() => setForm({ mode: 'create' })} className="shrink-0">
           Thêm cơ sở mới
         </Button>
       </div>

@@ -29,4 +29,9 @@ describe('merged app routes', () => {
     renderAt('/facility/dashboard');
     expect(await screen.findByRole('heading', { name: /Chào mừng bạn quay lại/ })).toBeTruthy();
   });
+
+  it('requires login before opening the reservation flow', async () => {
+    renderAt('/reservation/new?facilityId=1&unitTypeId=2');
+    expect(await screen.findByRole('heading', { name: /Chào mừng bạn quay lại/ })).toBeTruthy();
+  });
 });

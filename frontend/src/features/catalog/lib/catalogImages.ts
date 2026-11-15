@@ -1,5 +1,5 @@
 import type { SyntheticEvent } from 'react';
-import warehouseIllustration from '../../../assets/warehouse-illustration.jpg';
+import warehouseIllustration from '../../../assets/warehouse-illustration.webp';
 
 export const FALLBACK_WAREHOUSE_IMAGE = warehouseIllustration;
 

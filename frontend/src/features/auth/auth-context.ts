@@ -7,7 +7,7 @@ export interface AuthContextValue {
   isLoading: boolean;
   login: (payload: LoginRequest) => Promise<AuthUser>;
   register: (payload: RegisterRequest) => Promise<AuthUser>;
-  logout: () => void;
+  logout: () => Promise<boolean>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
