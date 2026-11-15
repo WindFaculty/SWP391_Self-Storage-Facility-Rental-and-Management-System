@@ -36,7 +36,7 @@ export const Select = ({ label, options, error, className, id, ...props }: Selec
           {...props}
         >
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={option.value} value={option.value} className="bg-surface text-text-main">
               {option.label}
             </option>
           ))}

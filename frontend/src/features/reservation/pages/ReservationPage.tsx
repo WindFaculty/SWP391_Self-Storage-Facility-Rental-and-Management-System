@@ -241,7 +241,7 @@ export const ReservationPage = () => {
                 className={cn(
                   'flex size-7 items-center justify-center rounded-full text-badge font-semibold',
                   state === 'current'
-                    ? 'bg-primary text-white'
+                    ? 'bg-primary text-on-primary'
                     : state === 'done'
                       ? 'bg-forest-tint text-primary'
                       : 'bg-surface-muted text-text-muted',

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { ROLE_LABELS, useSession } from '../app/providers/SessionProvider'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 
 const PAGE_META: Record<string, { title: string; category: string }> = {
   '/facility/dashboard': { title: 'Tổng quan cơ sở', category: 'Cơ sở vận hành' },
@@ -55,7 +56,7 @@ export function WorkspaceTopbar() {
             {switcherOpen && (
               <div
                 role="listbox"
-                className="absolute left-0 mt-1.5 w-64 bg-surface rounded-xl shadow-xl border border-border-hairline py-1.5 z-50"
+                className="absolute left-0 mt-1.5 w-64 bg-surface rounded-xl shadow-popover border border-border-hairline py-1.5 z-50"
               >
                 {facilitiesInScope.map((facility) => (
                   <button
@@ -95,6 +96,7 @@ export function WorkspaceTopbar() {
       </div>
 
       <div className="flex items-center gap-2.5">
+        <ThemeToggle showLabel />
         <div className="hidden md:flex flex-col text-right">
           <span className="text-[12.5px] font-semibold text-text-main leading-tight">{user.fullName}</span>
           <span className="text-[10.5px] text-text-muted leading-tight">{ROLE_LABELS[user.role]}</span>

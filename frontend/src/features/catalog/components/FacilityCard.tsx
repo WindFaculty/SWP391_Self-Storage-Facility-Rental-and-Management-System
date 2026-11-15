@@ -25,7 +25,7 @@ export const FacilityCard = ({
         alt={`Hình ảnh ${facility.name}`}
         loading="lazy"
         onError={handleWarehouseImageError}
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] dark:brightness-[0.92]"
       />
     </Link>
 
@@ -64,7 +64,7 @@ export const FacilityCard = ({
 
       <Link
         to={`/facilities/${facility.id}`}
-        className="mt-auto inline-flex items-center gap-1.5 pt-1 text-label font-medium text-forest-700 transition-colors hover:text-primary-hover"
+        className="mt-auto inline-flex items-center gap-1.5 pt-1 text-label font-medium text-primary transition-colors hover:text-primary-hover"
       >
         Xem kho & giá
         <ArrowRight className="size-4" aria-hidden="true" />

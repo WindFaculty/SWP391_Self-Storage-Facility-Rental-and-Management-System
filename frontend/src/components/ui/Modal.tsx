@@ -26,7 +26,7 @@ export const Modal = ({ open = true, title, onClose, children, footer }: ModalPr
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-text-main/40 backdrop-blur-xs"
+        className="absolute inset-0 bg-backdrop backdrop-blur-xs"
         onClick={onClose}
         aria-hidden="true"
       />

@@ -800,7 +800,7 @@ function FeeFormModal({ fee, existingCodes, onClose, onSubmit }: FeeFormModalPro
           type="checkbox"
           checked={active}
           onChange={(event) => setActive(event.target.checked)}
-          className="accent-[#24553E]"
+          className="accent-primary"
         />
         Đang áp dụng
       </label>

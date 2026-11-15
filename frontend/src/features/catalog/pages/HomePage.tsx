@@ -166,7 +166,7 @@ export const HomePage = () => {
           <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-3">
             {STEPS.map((step) => (
               <div key={step.number} className="flex flex-col gap-3">
-                <span className="font-serif text-[44px] font-semibold leading-none text-primary/30">
+                <span className="font-serif text-[44px] font-semibold leading-none text-primary/35 dark:text-primary/45">
                   {step.number}
                 </span>
                 <h3 className="text-subsection text-text-main">{step.title}</h3>

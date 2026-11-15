@@ -25,7 +25,7 @@ export const Drawer = ({ open = true, title, onClose, children, footer }: Drawer
 
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-text-main/40" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-backdrop" onClick={onClose} aria-hidden="true" />
       <aside
         role="dialog"
         aria-modal="true"

@@ -8,7 +8,7 @@ export function ImageGallery({ images = [], title, imageUrl }: { images?: Wareho
   return (
     <div>
       <img src={selected?.url ?? imageUrl ?? FALLBACK_WAREHOUSE_IMAGE} alt={`Hình ảnh ${title}`}
-        onError={handleWarehouseImageError} className="aspect-[16/9] w-full rounded-lg bg-surface-muted object-cover" />
+        onError={handleWarehouseImageError} className="aspect-[16/9] w-full rounded-lg bg-surface-muted object-cover dark:brightness-[0.92]" />
       {images.length > 1 && <div className="mt-2 flex gap-2 overflow-x-auto pb-1" aria-label={`Bộ ảnh ${title}`}>
         {images.map((image, index) => <button key={image.id} type="button" aria-label={`Xem ảnh ${index + 1} của ${title}`}
           aria-pressed={image.id === selected?.id} onClick={() => setSelectedId(image.id)}

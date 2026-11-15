@@ -19,7 +19,7 @@ export const UnitTypeCard = ({ unitType, availableCount, onSelect }: UnitTypeCar
         alt={`Minh họa ${unitType.name}`}
         loading="lazy"
         onError={handleWarehouseImageError}
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] dark:brightness-[0.92]"
       />
     </div>
 

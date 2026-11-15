@@ -113,7 +113,7 @@ export const FacilityDetailPage = () => {
             Tồn kho cho kỳ <strong className="text-text-main">{formatDate(range.startDate)}</strong>{' '}
             – <strong className="text-text-main">{formatDate(range.endDate)}</strong> (không gồm ngày
             kết thúc).{' '}
-            <Link to={backLink} className="text-forest-700 hover:underline">
+            <Link to={backLink} className="text-primary hover:underline">
               Đổi ngày
             </Link>
           </p>
