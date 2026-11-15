@@ -33,11 +33,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await authApi.cookieRegister(payload);
     return acceptSession();
   };
-  const logout = (): void => {
+  const logout = async (): Promise<boolean> => {
     setLogoutError('');
-    void authApi.logout().then(() => {
-      apiClient.clearTokens(); setUser(null);
-    }).catch(() => setLogoutError('Không thể đăng xuất. Vui lòng thử lại.'));
+    try {
+      await authApi.logout();
+      apiClient.clearTokens();
+      setUser(null);
+      return true;
+    } catch {
+      setLogoutError('Không thể đăng xuất. Vui lòng thử lại.');
+      return false;
+    }
   };
   return <AuthContext.Provider value={{ user, isAuthenticated: Boolean(user), isLoading,
     login, register, logout }}>

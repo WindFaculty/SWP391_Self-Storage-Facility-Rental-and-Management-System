@@ -49,6 +49,10 @@ services:
       VNPAY_RETURN_URL: ${VNPAY_RETURN_URL:?set VNPAY_RETURN_URL}
       VNPAY_FRONTEND_RETURN_URL: ${VNPAY_FRONTEND_RETURN_URL:?set VNPAY_FRONTEND_RETURN_URL}
       JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=55.0
+      MEDIA_STORAGE_DIR: /app/uploads
+      MEDIA_PUBLIC_BASE_URL: https://${API_HOST}/api/v1/media
+    volumes:
+      - media-data:/app/uploads
     expose:
       - "8080"
     mem_limit: 1536m
@@ -80,6 +84,7 @@ services:
         max-file: "3"
 
 volumes:
+  media-data:
   mysql-data:
   caddy-data:
   caddy-config:

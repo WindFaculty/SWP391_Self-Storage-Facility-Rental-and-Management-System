@@ -76,6 +76,14 @@
   --color-neutral-badge-bg: #ebefeb;
   --color-neutral-badge-text: #526158;
 
+  --color-backdrop: rgb(32 42 36 / 40%);
+  --color-secondary-text: #173c2d;
+  --color-danger-action: #943b31;
+  --color-on-danger: #ffffff;
+  --color-brand-hero-bg: #173c2d;
+  --color-brand-hero-text: #ffffff;
+  --color-brand-hero-tint: #e2eee4;
+
   --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
   --font-serif: "Noto Serif", Georgia, serif;
 
@@ -168,4 +176,84 @@
   --shadow-popover: 0 18px 48px rgb(23 60 45 / 12%);
 
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  --color-background: #101411;
+  --color-surface: #171c18;
+  --color-surface-muted: #1f2621;
+  --color-forest-900: #112a1f;
+  --color-forest-700: #5ab485;
+  --color-forest-tint: #1a3125;
+  --color-sage-500: #86a389;
+  --color-text-main: #e8ede9;
+  --color-text-muted: #9ba89e;
+  --color-border-hairline: #2e3830;
+  --color-border-strong: #5e6f62;
+  --color-focus-ring: #6fd09d;
+
+  --color-primary: #5ab485;
+  --color-primary-hover: #6ec497;
+
+  --color-success: #6bc795;
+  --color-success-bg: #183325;
+  --color-warning: #e8b05c;
+  --color-warning-bg: #332613;
+  --color-danger: #ee8277;
+  --color-danger-bg: #3a1b19;
+  --color-info: #6bb7d8;
+  --color-info-bg: #172d38;
+  --color-neutral-strong: #b2beb5;
+  --color-neutral-bg: #252c27;
+
+  --color-surface-container-low: #141915;
+  --color-surface-container: #171c18;
+  --color-surface-container-high: #1f2621;
+  --color-surface-container-highest: #273029;
+  --color-surface-container-lowest: #0d110e;
+  --color-surface-subtle: #1a211c;
+  --color-surface-bright: #252d27;
+  --color-surface-dim: #101411;
+  --color-surface-variant: #252d27;
+  --color-surface-tint: #5ab485;
+  --color-inverse-surface: #e8ede9;
+  --color-inverse-primary: #24553e;
+  --color-inverse-on-surface: #171c18;
+  --color-on-surface: #e8ede9;
+  --color-on-surface-variant: #9ba89e;
+  --color-on-background: #e8ede9;
+  --color-on-primary: #071910;
+  --color-on-primary-container: #b2e2c7;
+  --color-on-secondary: #071910;
+  --color-on-secondary-container: #b2e2c7;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #ffdad6;
+  --color-primary-container: #1a3125;
+  --color-secondary: #86a389;
+  --color-secondary-container: #1f3325;
+  --color-error: #ee8277;
+  --color-error-container: #3a1b19;
+  --color-outline: #7c8b7f;
+  --color-outline-variant: #2e3830;
+  --color-border-subtle: #232b25;
+  --color-badge-green: #183325;
+  --color-neutral-badge-bg: #252c27;
+  --color-neutral-badge-text: #b2beb5;
+
+  --color-backdrop: rgb(4 8 6 / 72%);
+  --color-secondary-text: #b2e2c7;
+  --color-danger-action: #b93f36;
+  --color-on-danger: #ffffff;
+  --color-brand-hero-bg: #112a1f;
+  --color-brand-hero-text: #f0f5f1;
+  --color-brand-hero-tint: #d5eadb;
+
+  --shadow-raised: 0 10px 30px rgb(0 0 0 / 38%);
+  --shadow-popover: 0 18px 48px rgb(0 0 0 / 55%);
 }

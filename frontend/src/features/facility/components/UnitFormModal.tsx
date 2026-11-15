@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react'
+import { ImagePicker } from '../../../components/media/ImagePicker'
+import { imageDrafts, type ImageDraft } from '../../../components/media/images'
 import { Button } from '../../../components/ui/Button'
 import { Modal } from '../../../components/ui/Modal'
 import { formatArea } from '../../../lib/format'
@@ -21,20 +23,24 @@ export function UnitFormModal({ unit, facilityId, unitTypes, onClose, onSubmit }
   const [unitTypeId, setUnitTypeId] = useState<number>(unit?.unitTypeId ?? unitTypes[0]?.id ?? 0)
   const [locationLabel, setLocationLabel] = useState(unit?.locationLabel ?? '')
   const [priceText, setPriceText] = useState(unit ? String(unit.monthlyPrice) : '')
+  const [images, setImages] = useState<ImageDraft[]>(() => imageDrafts(unit?.images))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [imagesBusy, setImagesBusy] = useState(false)
 
   const selectedType = unitTypes.find((unitType) => unitType.id === unitTypeId)
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
+    if (submitting || imagesBusy) return
     const input: StorageUnitInput = {
       facilityId,
       unitTypeId,
       unitCode: unitCode.trim(),
       locationLabel: locationLabel.trim(),
       monthlyPrice: Number(priceText),
+      imageDrafts: images,
     }
     const validation = validateUnitInput(input, unitTypes, [], unit?.id ?? null)
     setErrors(validation)
@@ -53,7 +59,7 @@ export function UnitFormModal({ unit, facilityId, unitTypes, onClose, onSubmit }
   }
 
   return (
-    <Modal title={unit ? `Sửa kho ${unit.unitCode}` : 'Thêm kho mới'} onClose={onClose}>
+    <Modal title={unit ? `Sửa kho ${unit.unitCode}` : 'Thêm kho mới'} onClose={() => { if (!submitting) onClose() }}>
       <form onSubmit={handleSubmit} noValidate>
         <div>
           <label htmlFor="unit-code" className="text-label-help font-medium text-text-main">
@@ -128,6 +134,8 @@ export function UnitFormModal({ unit, facilityId, unitTypes, onClose, onSubmit }
           {errors.monthlyPrice && <p className="mt-1 text-label-help text-danger">{errors.monthlyPrice}</p>}
         </div>
 
+        <ImagePicker value={images} onChange={setImages} disabled={submitting} onBusyChange={setImagesBusy} />
+
         {submitError && (
           <p role="alert" className="mt-space-md text-label-help text-danger">
             {submitError}
@@ -138,7 +146,7 @@ export function UnitFormModal({ unit, facilityId, unitTypes, onClose, onSubmit }
           <Button variant="outline" onClick={onClose} disabled={submitting}>
             Hủy
           </Button>
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" disabled={submitting || imagesBusy}>
             {submitting ? 'Đang lưu…' : unit ? 'Lưu thay đổi' : 'Tạo kho'}
           </Button>
         </div>

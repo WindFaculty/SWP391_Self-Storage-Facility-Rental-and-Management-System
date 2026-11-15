@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { ApiError } from '../../../api/client';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { getDefaultRouteForRole } from '../roles';
+import { resolvePostAuthRoute } from '../roles';
 import { useAuth } from '../useAuth';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,6 +13,7 @@ const MIN_PASSWORD_LENGTH = 8;
 export const RegisterForm = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -50,7 +51,7 @@ export const RegisterForm = () => {
     setError(null);
     try {
       const user = await register({ fullName: fullName.trim(), phone: phone.trim(), email, password });
-      navigate(getDefaultRouteForRole(user.role), { replace: true });
+      navigate(resolvePostAuthRoute(user.role, location.state), { replace: true });
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : 'Không thể kết nối tới máy chủ. Vui lòng thử lại.',

@@ -73,8 +73,68 @@ export function validateFeeTypeCreateInput(
   return errors
 }
 
+function validateImageUrl(imageUrl?: string): string | null {
+  const trimmed = imageUrl?.trim() ?? ''
+  if (!trimmed) {
+    return null
+  }
+  if (trimmed.length > 500) {
+    return 'Đường dẫn ảnh tối đa 500 ký tự.'
+  }
+  if (!/^(https?:\/\/|\/)/i.test(trimmed)) {
+    return 'Đường dẫn ảnh phải bắt đầu bằng http://, https:// hoặc /.'
+  }
+  return null
+}
+
+export function validateUnitTypeInput(
+  input: {
+    name: string
+    sizeM2: number
+    minMonthlyPrice: number
+    maxMonthlyPrice: number
+    imageUrl?: string
+  },
+  existing: Array<{ id: number; name: string }> = [],
+  editingId: number | null = null,
+): Record<string, string> {
+  const errors: Record<string, string> = {}
+  const name = input.name.trim()
+  if (!name) {
+    errors.name = 'Nhập tên loại kho.'
+  } else if (name.length > 80) {
+    errors.name = 'Tên loại kho tối đa 80 ký tự.'
+  } else if (
+    existing.some(
+      (item) => item.id !== editingId && item.name.trim().toLowerCase() === name.toLowerCase(),
+    )
+  ) {
+    errors.name = 'Tên loại kho đã tồn tại.'
+  }
+  if (!Number.isFinite(input.sizeM2) || input.sizeM2 <= 0) {
+    errors.sizeM2 = 'Diện tích phải lớn hơn 0.'
+  }
+  if (!Number.isFinite(input.minMonthlyPrice) || input.minMonthlyPrice <= 0) {
+    errors.minMonthlyPrice = 'Giá sàn phải lớn hơn 0.'
+  }
+  if (!Number.isFinite(input.maxMonthlyPrice) || input.maxMonthlyPrice <= 0) {
+    errors.maxMonthlyPrice = 'Giá trần phải lớn hơn 0.'
+  } else if (
+    Number.isFinite(input.minMonthlyPrice) &&
+    input.minMonthlyPrice > 0 &&
+    input.maxMonthlyPrice < input.minMonthlyPrice
+  ) {
+    errors.maxMonthlyPrice = 'Giá trần phải lớn hơn hoặc bằng giá sàn.'
+  }
+  const imageError = validateImageUrl(input.imageUrl)
+  if (imageError) {
+    errors.imageUrl = imageError
+  }
+  return errors
+}
+
 export function validateFacilityInput(
-  input: { code: string; name: string; address: string },
+  input: { code: string; name: string; address: string; imageUrl?: string },
   existing: Array<{ id: number; code: string }>,
   editingId: number | null,
 ): Record<string, string> {
@@ -94,6 +154,10 @@ export function validateFacilityInput(
   }
   if (!input.address.trim()) {
     errors.address = 'Nhập địa chỉ cơ sở.'
+  }
+  const imageError = validateImageUrl(input.imageUrl)
+  if (imageError) {
+    errors.imageUrl = imageError
   }
   return errors
 }

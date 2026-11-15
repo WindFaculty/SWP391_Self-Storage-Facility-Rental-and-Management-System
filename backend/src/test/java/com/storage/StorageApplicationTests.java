@@ -30,8 +30,8 @@ class StorageApplicationTests {
                 SELECT COUNT(*) FROM information_schema.tables
                 WHERE table_schema = DATABASE() AND table_name <> 'flyway_schema_history'
                 """, Integer.class);
-        // V009 adds social_identities while keeping all fourteen existing business tables.
-        assertThat(tables).isEqualTo(15);
+        // V012 adds warehouse_images to the fifteen existing business tables.
+        assertThat(tables).isEqualTo(16);
     }
 
     @Test

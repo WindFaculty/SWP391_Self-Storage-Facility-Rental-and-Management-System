@@ -1,3 +1,5 @@
+import type { ImageDraft, WarehouseImage } from '../../components/media/images'
+
 export type UnitStatus = 'AVAILABLE' | 'OCCUPIED' | 'INSPECTION' | 'MAINTENANCE'
 
 export type PriceBand = 'low' | 'mid' | 'high'
@@ -14,6 +16,8 @@ export interface Facility {
   code: string
   name: string
   address: string
+  imageUrl?: string | null
+  images?: WarehouseImage[]
   status: 'ACTIVE' | 'INACTIVE'
 }
 
@@ -21,6 +25,8 @@ export interface UnitType {
   id: number
   name: string
   sizeM2: number
+  description?: string | null
+  imageUrl?: string | null
   minMonthlyPrice: number
   maxMonthlyPrice: number
 }
@@ -33,6 +39,8 @@ export interface StorageUnit {
   locationLabel: string
   monthlyPrice: number
   status: UnitStatus
+  imageUrl?: string | null
+  images?: WarehouseImage[]
 }
 
 export interface StorageUnitInput {
@@ -41,6 +49,7 @@ export interface StorageUnitInput {
   unitCode: string
   locationLabel: string
   monthlyPrice: number
+  imageDrafts?: ImageDraft[]
 }
 
 export interface UnitFilters {

@@ -35,6 +35,9 @@ public class UnitType {
     @Column
     private String description;
 
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     public Long getId() {
         return id;
     }
@@ -77,5 +80,13 @@ public class UnitType {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

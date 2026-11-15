@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useSession } from '../../../app/providers/SessionProvider'
+import { useSession } from '../../../app/providers/useSession'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { formatCurrency, formatDate, formatNumber } from '../../../lib/format'

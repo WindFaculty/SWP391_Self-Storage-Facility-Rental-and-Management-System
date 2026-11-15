@@ -12,10 +12,12 @@ export function useFacilityDashboard(facilityId: number) {
     queryKey: ['ops', 'dashboard-revenue', facilityId],
     queryFn: () => getFacilityRevenueSeries(facilityId, 6),
   })
+  const { refetch: refetchDash } = dash
+  const { refetch: refetchRevenue } = revenue
 
   const reload = useCallback(async () => {
-    await Promise.all([dash.refetch(), revenue.refetch()])
-  }, [dash.refetch, revenue.refetch])
+    await Promise.all([refetchDash(), refetchRevenue()])
+  }, [refetchDash, refetchRevenue])
 
   return {
     dashboard: dash.data ?? null,

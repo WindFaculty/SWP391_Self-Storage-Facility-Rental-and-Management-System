@@ -9,6 +9,8 @@ import com.storage.management.dto.ManagementDtos.FeeTypeUpdateRequest;
 import com.storage.management.dto.ManagementDtos.PolicyRequest;
 import com.storage.management.dto.ManagementDtos.PolicyResponse;
 import com.storage.management.dto.ManagementDtos.ReportSummary;
+import com.storage.management.dto.ManagementDtos.UnitTypeInputRequest;
+import com.storage.management.dto.ManagementDtos.UnitTypeResponse;
 import com.storage.management.service.ManagementOpsService;
 import com.storage.shared.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -35,9 +37,11 @@ import java.util.List;
 public class ManagementOpsController {
 
     private final ManagementOpsService managementOpsService;
+    private final com.storage.media.WarehouseMediaService media;
 
-    public ManagementOpsController(ManagementOpsService managementOpsService) {
+    public ManagementOpsController(ManagementOpsService managementOpsService, com.storage.media.WarehouseMediaService media) {
         this.managementOpsService = managementOpsService;
+        this.media = media;
     }
 
     @GetMapping("/policy")
@@ -68,28 +72,42 @@ public class ManagementOpsController {
         return ApiResponse.success(managementOpsService.updateFeeType(feeTypeId, request));
     }
 
-    @GetMapping("/facilities")
-    public ApiResponse<List<FacilityOverviewResponse>> facilityOverviews() {
-        return ApiResponse.success(managementOpsService.facilityOverviews());
+    @PostMapping("/unit-types")
+    public ResponseEntity<ApiResponse<UnitTypeResponse>> createUnitType(
+            @Valid @RequestBody UnitTypeInputRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(managementOpsService.createUnitType(request)));
     }
 
-    @PostMapping("/facilities")
+    @PutMapping("/unit-types/{unitTypeId}")
+    public ApiResponse<UnitTypeResponse> updateUnitType(
+            @PathVariable Long unitTypeId,
+            @Valid @RequestBody UnitTypeInputRequest request) {
+        return ApiResponse.success(managementOpsService.updateUnitType(unitTypeId, request));
+    }
+
+    @GetMapping("/facilities")
+    public ApiResponse<List<FacilityOverviewResponse>> facilityOverviews() {
+        return ApiResponse.success(media.overviews(managementOpsService.facilityOverviews()));
+    }
+
+    @PostMapping(value = "/facilities", consumes = "application/json")
     public ResponseEntity<ApiResponse<FacilityOverviewResponse>> createFacility(
             @Valid @RequestBody FacilityInputRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(managementOpsService.createFacility(request)));
+                .body(ApiResponse.success(media.saveLegacyFacility(null, request)));
     }
 
-    @PutMapping("/facilities/{facilityId}")
+    @PutMapping(value = "/facilities/{facilityId}", consumes = "application/json")
     public ApiResponse<FacilityOverviewResponse> updateFacility(@PathVariable Long facilityId,
             @Valid @RequestBody FacilityInputRequest request) {
-        return ApiResponse.success(managementOpsService.updateFacility(facilityId, request));
+        return ApiResponse.success(media.saveLegacyFacility(facilityId, request));
     }
 
     @PatchMapping("/facilities/{facilityId}/status")
     public ApiResponse<FacilityOverviewResponse> changeFacilityStatus(
             @PathVariable Long facilityId, @Valid @RequestBody FacilityStatusRequest request) {
-        return ApiResponse.success(managementOpsService.changeFacilityStatus(facilityId, request));
+        return ApiResponse.success(media.overviews(List.of(managementOpsService.changeFacilityStatus(facilityId, request))).getFirst());
     }
 
     @GetMapping("/reports")

@@ -9,7 +9,7 @@ import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
 import { cn } from '../../../lib/cn';
 import { formatArea, formatCurrency, formatDate, formatDateTime } from '../../../lib/format';
-import { INVOICE_STATUS_DISPLAY, RENTAL_STATUS_DISPLAY } from '../../../lib/statusMappings';
+import { getRentalStatusDisplay, INVOICE_STATUS_DISPLAY } from '../../../lib/statusMappings';
 import { useCreateVnPayUrl } from '../../billing/hooks/usePayment';
 import {
   CatalogFilters,
@@ -154,7 +154,7 @@ export const ReservationPage = () => {
 
   if (holdResult) {
     const { rental, invoice } = holdResult;
-    const rentalStatus = RENTAL_STATUS_DISPLAY[rental.status];
+    const rentalStatus = getRentalStatusDisplay(rental.status);
     return (
       <section className="page-container px-4 py-16 sm:px-6 lg:px-10">
         <div className="flex flex-col items-center gap-3 text-center">
@@ -241,7 +241,7 @@ export const ReservationPage = () => {
                 className={cn(
                   'flex size-7 items-center justify-center rounded-full text-badge font-semibold',
                   state === 'current'
-                    ? 'bg-primary text-white'
+                    ? 'bg-primary text-on-primary'
                     : state === 'done'
                       ? 'bg-forest-tint text-primary'
                       : 'bg-surface-muted text-text-muted',

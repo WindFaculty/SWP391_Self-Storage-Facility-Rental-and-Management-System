@@ -4,12 +4,8 @@ import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { ApiError } from '../../../api/client';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { getDefaultRouteForRole } from '../roles';
+import { resolvePostAuthRoute } from '../roles';
 import { useAuth } from '../useAuth';
-
-interface LocationState {
-  from?: { pathname?: string };
-}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -38,8 +34,7 @@ export const LoginForm = () => {
     setError(null);
     try {
       const user = await login({ email, password });
-      const from = (location.state as LocationState | null)?.from?.pathname;
-      navigate(from ?? getDefaultRouteForRole(user.role), { replace: true });
+      navigate(resolvePostAuthRoute(user.role, location.state), { replace: true });
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : 'Không thể kết nối tới máy chủ. Vui lòng thử lại.',

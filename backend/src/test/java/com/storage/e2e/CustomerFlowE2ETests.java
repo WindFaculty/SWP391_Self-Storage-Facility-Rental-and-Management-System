@@ -259,6 +259,84 @@ class CustomerFlowE2ETests {
                 .isEqualTo("SUCCESS");
     }
 
+    @Test
+    void failedSignedIpnCanBeRetriedWithinTheOriginalHoldWindow() throws Exception {
+        String token = registerAndLogin("retry-" + suffix);
+        Instant beforeHold = Instant.now();
+        String hold = http("POST", "/rentals/holds", token, """
+                {"facilityId":%d,"unitTypeId":%d,"startDate":"%s","rentalMonths":1}
+                """.formatted(facilityId, unitTypeId, LocalDate.now(ZoneOffset.UTC).plusDays(1)), 200);
+        long rentalId = JsonPath.<Number>read(hold, "$.data.rental.id").longValue();
+        long invoiceId = JsonPath.<Number>read(hold, "$.data.invoice.id").longValue();
+        String deadline = JsonPath.read(hold, "$.data.rental.holdExpiresAt");
+        org.assertj.core.api.Assertions.assertThat(Instant.parse(deadline))
+                .isBetween(beforeHold.plusSeconds(900), Instant.now().plusSeconds(900));
+
+        String firstCheckout = http("POST", "/payments/vnpay/url", token,
+                "{\"invoiceId\":" + invoiceId + "}", 200);
+        String firstUrl = JsonPath.read(firstCheckout, "$.data.paymentUrl");
+        String firstRef = queryParams(firstUrl).get("vnp_TxnRef");
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<String>read(
+                http("GET", signedIpn(firstUrl, false), null, null, 200), "$.RspCode"))
+                .isEqualTo("00");
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<String>read(
+                http("GET", "/payments/attempts/" + firstRef, token, null, 200), "$.data.status"))
+                .isEqualTo("FAILED");
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<String>read(
+                http("GET", "/rentals/" + rentalId, token, null, 200), "$.data.status"))
+                .isEqualTo("PENDING_PAYMENT");
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<String>read(
+                http("GET", "/invoices/" + invoiceId, token, null, 200), "$.data.status"))
+                .isEqualTo("PENDING");
+
+        String retryCheckout = http("POST", "/payments/vnpay/url", token,
+                "{\"invoiceId\":" + invoiceId + "}", 200);
+        String retryUrl = JsonPath.read(retryCheckout, "$.data.paymentUrl");
+        org.assertj.core.api.Assertions.assertThat(queryParams(retryUrl).get("vnp_TxnRef"))
+                .isNotEqualTo(firstRef);
+        org.assertj.core.api.Assertions.assertThat(queryParams(retryUrl).get("vnp_ExpireDate"))
+                .isEqualTo(queryParams(firstUrl).get("vnp_ExpireDate"));
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<String>read(
+                http("GET", signedIpn(retryUrl, true), null, null, 200), "$.RspCode"))
+                .isEqualTo("00");
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<String>read(
+                http("GET", "/rentals/" + rentalId, token, null, 200), "$.data.status"))
+                .isEqualTo("RESERVED");
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<String>read(
+                http("GET", "/invoices/" + invoiceId, token, null, 200), "$.data.status"))
+                .isEqualTo("PAID");
+    }
+
+    private static java.util.Map<String, String> queryParams(String url) {
+        java.util.Map<String, String> params = new java.util.HashMap<>();
+        for (String part : java.net.URI.create(url).getRawQuery().split("&")) {
+            String[] pair = part.split("=", 2);
+            params.put(pair[0], URLDecoder.decode(pair[1], StandardCharsets.UTF_8));
+        }
+        return params;
+    }
+
+    // Simulated gateway callback, signed with the isolated test profile secret.
+    private String signedIpn(String paymentUrl, boolean success) throws Exception {
+        java.util.Map<String, String> payment = queryParams(paymentUrl);
+        java.util.Map<String, String> callback = new java.util.TreeMap<>();
+        for (String key : java.util.List.of("vnp_TxnRef", "vnp_TmnCode", "vnp_Amount")) {
+            callback.put(key, payment.get(key));
+        }
+        callback.put("vnp_ResponseCode", success ? "00" : "24");
+        callback.put("vnp_TransactionStatus", success ? "00" : "02");
+        callback.put("vnp_TransactionNo", "RETRY-TXN-" + suffix + (success ? "-ok" : "-fail"));
+        String query = callback.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + java.net.URLEncoder.encode(
+                        entry.getValue(), StandardCharsets.UTF_8))
+                .collect(java.util.stream.Collectors.joining("&"));
+        javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA512");
+        mac.init(new javax.crypto.spec.SecretKeySpec(
+                "test-hash-secret".getBytes(StandardCharsets.UTF_8), "HmacSHA512"));
+        return "/payments/vnpay/ipn?" + query + "&vnp_SecureHash="
+                + java.util.HexFormat.of().formatHex(mac.doFinal(query.getBytes(StandardCharsets.UTF_8)));
+    }
+
     private String http(String method, String path, String token, String body, int expectedStatus)
             throws Exception {
         java.net.http.HttpRequest.Builder request = java.net.http.HttpRequest.newBuilder(
@@ -289,6 +367,7 @@ class CustomerFlowE2ETests {
                                 """.formatted(facilityId, unitTypeId, start)))
                 .andExpect(status().isOk()).andReturn();
         Long rentalId = readLong(hold, "$.data.rental.id");
+        Long invoiceId = readLong(hold, "$.data.invoice.id");
         // Move the deadline into the past without waiting 15 minutes. Written as a
         // UTC string on purpose: java.sql.Timestamp would be converted through the
         // JVM timezone (+07) and land 7 hours in the future instead.
@@ -302,6 +381,17 @@ class CustomerFlowE2ETests {
                         .param("endDate", start.plusMonths(1).toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].availableCount").value(2));
+        mvc.perform(get("/rentals/" + rentalId).header("Authorization", bearer(customerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("EXPIRED"));
+        mvc.perform(get("/invoices/" + invoiceId).header("Authorization", bearer(customerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("EXPIRED"));
+        mvc.perform(post("/payments/vnpay/url")
+                        .header("Authorization", bearer(customerToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"invoiceId\":%d}".formatted(invoiceId)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -31,7 +31,11 @@ const matchesTab = (rental: Rental, tab: RentalTab): boolean => {
       rental.status === 'OVERDUE'
     );
   }
-  return rental.status === 'RETURNED' || rental.status === 'CANCELLED';
+  return (
+    rental.status === 'RETURNED' ||
+    rental.status === 'CANCELLED' ||
+    rental.status === 'EXPIRED'
+  );
 };
 
 const EMPTY_MESSAGES: Record<RentalTab, string> = {

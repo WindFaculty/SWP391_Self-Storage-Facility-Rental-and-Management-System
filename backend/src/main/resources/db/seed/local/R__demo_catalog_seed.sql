@@ -12,20 +12,39 @@
 INSERT IGNORE INTO business_policies (id, deposit_percent, renewal_notice_days, cancellation_fee, return_notice_days, overdue_grace_days, overdue_fee_per_day, max_discount_percent)
 VALUES (1, 15.00, 7, 0.00, 7, 3, 50000.00, 10.00);
 
-INSERT IGNORE INTO facilities (code, name, address, status) VALUES
+INSERT IGNORE INTO facilities (code, name, address, status, image_url) VALUES
     ('DEMO-HCM-01', 'Demo Facility - Ho Chi Minh City',
-     '12 Nguyen Van Bao, Go Vap, Ho Chi Minh City', 'ACTIVE'),
+     '12 Nguyen Van Bao, Go Vap, Ho Chi Minh City', 'ACTIVE', '/images/facilities/hcm-go-vap.jpg'),
     ('FAC-HAN-01', 'Cơ sở Cầu Giấy - Hà Nội',
-     'Số 68 Đường Cầu Giấy, Phường Quan Hoa, Quận Cầu Giấy, Hà Nội', 'ACTIVE'),
+     'Số 68 Đường Cầu Giấy, Phường Quan Hoa, Quận Cầu Giấy, Hà Nội', 'ACTIVE', '/images/facilities/hn-cau-giay.jpg'),
     ('FAC-DAD-01', 'Cơ sở Hải Châu - Đà Nẵng',
-     'Số 120 Đường Nguyễn Văn Linh, Phường Nam Dương, Quận Hải Châu, Đà Nẵng', 'ACTIVE'),
+     'Số 120 Đường Nguyễn Văn Linh, Phường Nam Dương, Quận Hải Châu, Đà Nẵng', 'ACTIVE', '/images/facilities/dn-hai-chau.jpg'),
     ('FAC-SGN-02', 'Cơ sở Bình Thạnh - TP. Hồ Chí Minh',
-     'Số 215 Đường Điện Biên Phủ, Phường 15, Quận Bình Thạnh, TP. Hồ Chí Minh', 'ACTIVE');
+     'Số 215 Đường Điện Biên Phủ, Phường 15, Quận Bình Thạnh, TP. Hồ Chí Minh', 'ACTIVE', '/images/facilities/hcm-binh-thanh.jpg');
 
-INSERT IGNORE INTO unit_types (name, size_m2, min_monthly_price, max_monthly_price, description) VALUES
-    ('Demo Small (5 m2)',   5.00,  500000.00,  800000.00, 'Demo catalog size - local profile only'),
-    ('Demo Medium (12 m2)', 12.00, 1200000.00, 1800000.00, 'Demo catalog size - local profile only'),
-    ('Demo Large (20 m2)',  20.00, 2000000.00, 3000000.00, 'Demo catalog size - local profile only');
+-- NULL can mean an operator deliberately cleared the gallery; do not restore it.
+UPDATE facilities SET image_url = '/images/facilities/hcm-go-vap.jpg' WHERE code = 'DEMO-HCM-01' AND image_url LIKE '/images/facilities/%.svg';
+UPDATE facilities SET image_url = '/images/facilities/hn-cau-giay.jpg' WHERE code = 'FAC-HAN-01' AND image_url LIKE '/images/facilities/%.svg';
+UPDATE facilities SET image_url = '/images/facilities/dn-hai-chau.jpg' WHERE code = 'FAC-DAD-01' AND image_url LIKE '/images/facilities/%.svg';
+UPDATE facilities SET image_url = '/images/facilities/hcm-binh-thanh.jpg' WHERE code = 'FAC-SGN-02' AND image_url LIKE '/images/facilities/%.svg';
+
+UPDATE warehouse_images i JOIN facilities f ON f.id = i.facility_id
+SET i.legacy_url = f.image_url
+WHERE i.legacy_url LIKE '/images/facilities/%.svg' AND f.image_url IS NOT NULL;
+
+INSERT INTO warehouse_images (id, facility_id, legacy_url, sort_order)
+SELECT UUID(), f.id, f.image_url, 0 FROM facilities f
+WHERE f.image_url IS NOT NULL AND TRIM(f.image_url) <> ''
+AND NOT EXISTS (SELECT 1 FROM warehouse_images i WHERE i.facility_id = f.id);
+
+INSERT IGNORE INTO unit_types (name, size_m2, min_monthly_price, max_monthly_price, description, image_url) VALUES
+    ('Demo Small (5 m2)',   5.00,  500000.00,  800000.00, 'Demo catalog size - local profile only', '/images/unit-types/small.jpg'),
+    ('Demo Medium (12 m2)', 12.00, 1200000.00, 1800000.00, 'Demo catalog size - local profile only', '/images/unit-types/medium.jpg'),
+    ('Demo Large (20 m2)',  20.00, 2000000.00, 3000000.00, 'Demo catalog size - local profile only', '/images/unit-types/large.jpg');
+
+UPDATE unit_types SET image_url = '/images/unit-types/small.jpg' WHERE name = 'Demo Small (5 m2)' AND (image_url IS NULL OR image_url LIKE '/images/unit-types/%.svg');
+UPDATE unit_types SET image_url = '/images/unit-types/medium.jpg' WHERE name = 'Demo Medium (12 m2)' AND (image_url IS NULL OR image_url LIKE '/images/unit-types/%.svg');
+UPDATE unit_types SET image_url = '/images/unit-types/large.jpg' WHERE name = 'Demo Large (20 m2)' AND (image_url IS NULL OR image_url LIKE '/images/unit-types/%.svg');
 
 -- DEMO-HCM-01 (Gò Vấp)
 INSERT IGNORE INTO storage_units (facility_id, unit_type_id, unit_code, location_label, monthly_price, status)

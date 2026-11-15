@@ -40,13 +40,39 @@ public final class ManagementDtos {
     public record FeeTypeCreateRequest(String code, String name, BigDecimal defaultAmount, boolean active) {
     }
 
+    public record UnitTypeResponse(Long id, String name, BigDecimal sizeM2, String description,
+                                   BigDecimal minMonthlyPrice, BigDecimal maxMonthlyPrice,
+                                   String imageUrl) {
+    }
+
+    public record UnitTypeInputRequest(String name, BigDecimal sizeM2, BigDecimal minMonthlyPrice,
+                                       BigDecimal maxMonthlyPrice, String description,
+                                       String imageUrl) {
+        public UnitTypeInputRequest(String name, BigDecimal sizeM2, BigDecimal minMonthlyPrice,
+                                    BigDecimal maxMonthlyPrice, String description) {
+            this(name, sizeM2, minMonthlyPrice, maxMonthlyPrice, description, null);
+        }
+    }
+
     public record FacilityOverviewResponse(Long id, String code, String name, String address,
                                            String status, String managerName, long unitTotal,
                                            long unitOccupied, double occupancyRate,
-                                           long activeRentals, long overdueRentals) {
+                                           long activeRentals, long overdueRentals,
+                                           String imageUrl,
+                                           java.util.List<com.storage.media.MediaDtos.ImageDto> images) {
+        public FacilityOverviewResponse(Long id, String code, String name, String address,
+                                        String status, String managerName, long unitTotal,
+                                        long unitOccupied, double occupancyRate, long activeRentals,
+                                        long overdueRentals, String imageUrl) {
+            this(id, code, name, address, status, managerName, unitTotal, unitOccupied,
+                    occupancyRate, activeRentals, overdueRentals, imageUrl, java.util.List.of());
+        }
     }
 
-    public record FacilityInputRequest(String code, String name, String address) {
+    public record FacilityInputRequest(String code, String name, String address, String imageUrl) {
+        public FacilityInputRequest(String code, String name, String address) {
+            this(code, name, address, null);
+        }
     }
 
     public record FacilityStatusRequest(String status) {

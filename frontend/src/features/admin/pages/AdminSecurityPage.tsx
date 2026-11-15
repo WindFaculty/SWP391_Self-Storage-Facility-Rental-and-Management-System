@@ -1,8 +1,11 @@
+import { Search, UserPlus } from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
-import { ROLE_LABELS, useSession } from '../../../app/providers/SessionProvider'
+import { ROLE_LABELS } from '../../../app/providers/session-context'
+import { useSession } from '../../../app/providers/useSession'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { Modal } from '../../../components/ui/Modal'
+import { NoticeBanner } from '../../../components/ui/NoticeBanner'
 import { Tabs } from '../../../components/ui/Tabs'
 import { formatDateTime, formatNumber } from '../../../lib/format'
 import type { UserRole } from '../../facility/types'
@@ -107,17 +110,7 @@ export function AdminSecurityPage() {
         </p>
       </div>
 
-      {notice && (
-        <div
-          role="status"
-          className="mt-space-lg flex items-center justify-between gap-space-md rounded-lg bg-success-bg px-space-lg py-space-md text-label-help text-success"
-        >
-          <span>{notice}</span>
-          <button type="button" onClick={() => setNotice(null)} aria-label="Đóng thông báo" className="hover:opacity-70">
-            <span className="material-symbols-outlined text-[18px]">close</span>
-          </button>
-        </div>
-      )}
+      <NoticeBanner message={notice} onDismiss={() => setNotice(null)} />
 
       <div className="mt-space-lg">
         <Tabs
@@ -146,12 +139,10 @@ export function AdminSecurityPage() {
               <label htmlFor="user-search" className="sr-only">
                 Tìm tài khoản
               </label>
-              <span
-                className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-text-muted"
+              <Search
+                className="size-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
                 aria-hidden="true"
-              >
-                search
-              </span>
+              />
               <input
                 id="user-search"
                 type="search"
@@ -208,10 +199,7 @@ export function AdminSecurityPage() {
               <option value="ACTIVE">{USER_STATUS_LABELS.ACTIVE}</option>
               <option value="DISABLED">{USER_STATUS_LABELS.DISABLED}</option>
             </select>
-            <Button onClick={() => setFormUser('create')} className="shrink-0">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-                person_add
-              </span>
+            <Button icon={UserPlus} onClick={() => setFormUser('create')} className="shrink-0">
               Tạo tài khoản
             </Button>
           </div>
@@ -316,12 +304,10 @@ export function AdminSecurityPage() {
               <label htmlFor="log-search" className="sr-only">
                 Tìm nhật ký
               </label>
-              <span
-                className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-text-muted"
+              <Search
+                className="size-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
                 aria-hidden="true"
-              >
-                search
-              </span>
+              />
               <input
                 id="log-search"
                 type="search"

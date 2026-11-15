@@ -31,6 +31,18 @@ class LocalSeedTests {
         Integer units = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM storage_units", Integer.class);
         assertThat(facilities).isEqualTo(1);
-        assertThat(units).isEqualTo(16);
+        // The local expansion adds three units at each of the other three facilities.
+        assertThat(units).isEqualTo(25);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM warehouse_images", Integer.class)).isEqualTo(4);
+
+        Long facilityId = jdbc.queryForObject("SELECT id FROM facilities WHERE code='DEMO-HCM-01'", Long.class);
+        jdbc.update("DELETE FROM warehouse_images WHERE facility_id=?", facilityId);
+        jdbc.update("UPDATE facilities SET image_url=NULL WHERE id=?", facilityId);
+        new org.springframework.jdbc.datasource.init.ResourceDatabasePopulator(
+                new org.springframework.core.io.ClassPathResource("db/seed/local/R__demo_catalog_seed.sql"))
+                .execute(java.util.Objects.requireNonNull(jdbc.getDataSource()));
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM warehouse_images WHERE facility_id=?", Integer.class, facilityId)).isZero();
+        assertThat(jdbc.queryForObject("SELECT image_url FROM facilities WHERE id=?", String.class, facilityId)).isNull();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM storage_units", Integer.class)).isEqualTo(25);
     }
 }

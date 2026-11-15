@@ -17,19 +17,21 @@ import java.util.List;
 public class FacilityController {
 
     private final FacilityService facilityService;
+    private final com.storage.media.WarehouseMediaService media;
 
-    public FacilityController(FacilityService facilityService) {
+    public FacilityController(FacilityService facilityService, com.storage.media.WarehouseMediaService media) {
         this.facilityService = facilityService;
+        this.media = media;
     }
 
     @GetMapping("/facilities")
     public ApiResponse<List<FacilityResponse>> listFacilities() {
-        return ApiResponse.success(facilityService.listFacilities());
+        return ApiResponse.success(media.publicFacilities(facilityService.listFacilities()));
     }
 
     @GetMapping("/facilities/{facilityId}")
     public ApiResponse<FacilityResponse> getFacility(@PathVariable Long facilityId) {
-        return ApiResponse.success(facilityService.getFacility(facilityId));
+        return ApiResponse.success(media.publicFacility(facilityService.getFacility(facilityId)));
     }
 
     @GetMapping("/facilities/{facilityId}/unit-types")

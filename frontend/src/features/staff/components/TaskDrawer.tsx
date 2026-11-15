@@ -379,7 +379,7 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
                           name="inspection-result"
                           checked={inspectionResult === 'PASS'}
                           onChange={() => setInspectionResult('PASS')}
-                          className="accent-[#24553E]"
+                          className="accent-primary"
                         />
                         Đạt — chuyển kho về Sẵn sàng
                       </label>
@@ -389,7 +389,7 @@ export function TaskDrawer({ task: initialTask, onClose, onMutated, onCompleted 
                           name="inspection-result"
                           checked={inspectionResult === 'FAIL'}
                           onChange={() => setInspectionResult('FAIL')}
-                          className="accent-[#24553E]"
+                          className="accent-primary"
                         />
                         Không đạt — chuyển Bảo trì
                       </label>
@@ -572,7 +572,7 @@ function Checklist<T extends string>({
             type="checkbox"
             checked={values[item.key]}
             onChange={(event) => onToggle(item.key, event.target.checked)}
-            className="mt-1 accent-[#24553E]"
+            className="mt-1 accent-primary"
           />
           {item.label}
         </label>

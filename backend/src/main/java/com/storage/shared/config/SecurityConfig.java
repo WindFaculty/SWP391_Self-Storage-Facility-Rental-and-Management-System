@@ -87,7 +87,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/payments/vnpay/ipn", "/payments/vnpay/return").permitAll()
                         .requestMatchers(HttpMethod.GET, "/facilities", "/facilities/*",
-                                "/facilities/*/unit-types", "/unit-types", "/availability")
+                                "/facilities/*/unit-types", "/facilities/*/units", "/media/*", "/unit-types", "/availability")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/management/**").hasAnyRole("ADMIN", "BUSINESS_MANAGER")

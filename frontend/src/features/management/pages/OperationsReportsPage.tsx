@@ -1,6 +1,7 @@
+import { ArrowDown, ArrowUp, Download } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useSession } from '../../../app/providers/SessionProvider'
+import { useSession } from '../../../app/providers/useSession'
 import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { formatCurrency, formatNumber } from '../../../lib/format'
@@ -169,12 +170,10 @@ export function OperationsReportsPage() {
         <div className="lg:ml-auto">
           <Button
             variant="outline"
+            icon={Download}
             disabled={!summary || sortedRows.length === 0}
             onClick={() => summary && exportCsv(sortedRows, period)}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-              download
-            </span>
             Xuất CSV
           </Button>
         </div>
@@ -323,9 +322,11 @@ export function OperationsReportsPage() {
                           >
                             {column.label}
                             {sortKey === column.key && (
-                              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
-                                {sortAsc ? 'arrow_upward' : 'arrow_downward'}
-                              </span>
+                              sortAsc ? (
+                                <ArrowUp className="size-3.5" aria-hidden="true" />
+                              ) : (
+                                <ArrowDown className="size-3.5" aria-hidden="true" />
+                              )
                             )}
                           </button>
                         </th>

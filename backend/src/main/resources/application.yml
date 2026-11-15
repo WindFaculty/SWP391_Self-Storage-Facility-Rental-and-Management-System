@@ -8,6 +8,10 @@ server:
         same-site: lax
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 55MB
   application:
     name: storage-backend
   profiles:
@@ -26,6 +30,9 @@ spring:
     default-property-inclusion: non_null
 
 app:
+  media:
+    storage-dir: ${MEDIA_STORAGE_DIR:./uploads}
+    public-base-url: ${MEDIA_PUBLIC_BASE_URL:/api/v1/media}
   auth:
     cookie-secure: ${AUTH_COOKIE_SECURE:false}
     cookie-same-site: ${AUTH_COOKIE_SAME_SITE:Lax}

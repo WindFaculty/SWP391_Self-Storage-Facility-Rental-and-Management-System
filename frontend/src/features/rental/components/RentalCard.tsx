@@ -3,7 +3,7 @@ import { ApiError } from '../../../api/client';
 import { Button } from '../../../components/ui/Button';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
 import { formatCurrency, formatDate, formatDateTime } from '../../../lib/format';
-import { RENTAL_STATUS_DISPLAY } from '../../../lib/statusMappings';
+import { getRentalStatusDisplay } from '../../../lib/statusMappings';
 import { useCreateVnPayUrl } from '../../billing/hooks/usePayment';
 import { useCancelRental } from '../hooks/useRentals';
 import type { Rental } from '../types';
@@ -21,7 +21,7 @@ export const RentalCard = ({ rental, onOpenDetail, onRenew, onReturn }: RentalCa
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const status = RENTAL_STATUS_DISPLAY[rental.status];
+  const status = getRentalStatusDisplay(rental.status);
   const isPending = rental.status === 'PENDING_PAYMENT';
   const canRenew = rental.status === 'ACTIVE' || rental.status === 'OVERDUE';
   const canReturn = rental.status === 'ACTIVE' || rental.status === 'OVERDUE';

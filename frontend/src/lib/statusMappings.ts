@@ -16,7 +16,11 @@ export const RENTAL_STATUS_DISPLAY: Record<RentalStatus, StatusDisplay> = {
   OVERDUE: { label: 'Quá hạn', tone: 'danger' },
   RETURNED: { label: 'Đã trả kho', tone: 'neutral' },
   CANCELLED: { label: 'Đã hủy', tone: 'neutral' },
+  EXPIRED: { label: 'Hết hạn giữ chỗ', tone: 'neutral' },
 };
+
+export const getRentalStatusDisplay = (status: RentalStatus | string): StatusDisplay =>
+  RENTAL_STATUS_DISPLAY[status as RentalStatus] ?? { label: status, tone: 'neutral' };
 
 export const INVOICE_STATUS_DISPLAY: Record<InvoiceStatus, StatusDisplay> = {
   PENDING: { label: 'Chờ thanh toán', tone: 'warning' },

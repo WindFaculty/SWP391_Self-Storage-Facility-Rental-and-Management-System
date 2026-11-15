@@ -2,9 +2,9 @@ import { Drawer } from '../../../components/ui/Drawer';
 import { StatusLabel } from '../../../components/ui/StatusLabel';
 import { formatCurrency, formatDate, formatDateTime } from '../../../lib/format';
 import {
+  getRentalStatusDisplay,
   INVOICE_STATUS_DISPLAY,
   INVOICE_TYPE_LABELS,
-  RENTAL_STATUS_DISPLAY,
 } from '../../../lib/statusMappings';
 import type { Invoice } from '../../billing/types';
 import type { Rental } from '../types';
@@ -18,7 +18,7 @@ interface RentalDetailDrawerProps {
 export const RentalDetailDrawer = ({ rental, invoices, onClose }: RentalDetailDrawerProps) => {
   if (!rental) return null;
 
-  const status = RENTAL_STATUS_DISPLAY[rental.status];
+  const status = getRentalStatusDisplay(rental.status);
   const relatedInvoices = invoices.filter((invoice) => String(invoice.rentalId) === String(rental.id));
 
   return (

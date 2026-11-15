@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Boxes, LogOut, Menu, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { useAuth } from '../features/auth/useAuth';
 import { cn } from '../lib/cn';
 
@@ -18,10 +19,12 @@ export const PublicLayout = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    const loggedOut = await logout();
     setMobileMenuOpen(false);
-    navigate('/auth');
+    if (loggedOut) {
+      navigate('/auth');
+    }
   };
 
   return (
@@ -29,7 +32,7 @@ export const PublicLayout = () => {
       <header className="sticky top-0 z-40 border-b border-border-hairline bg-surface/95 backdrop-blur">
         <div className="page-container flex h-[72px] items-center justify-between gap-6 px-4 sm:px-6 lg:px-10">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center rounded-md bg-primary text-white">
+            <span className="flex size-8 items-center justify-center rounded-md bg-primary text-on-primary">
               <Boxes className="size-4" aria-hidden="true" />
             </span>
             <span className="flex flex-col leading-none">
@@ -62,13 +65,14 @@ export const PublicLayout = () => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             {isAuthenticated && user ? (
               <>
                 <span className="hidden text-label text-text-muted sm:inline">
                   Xin chào, {user.fullName}
                 </span>
-                <Button variant="outline" size="sm" icon={LogOut} onClick={handleLogout}>
+                <Button variant="outline" size="sm" icon={LogOut} onClick={() => void handleLogout()}>
                   Đăng xuất
                 </Button>
               </>

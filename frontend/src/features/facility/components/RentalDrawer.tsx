@@ -1,3 +1,4 @@
+import { ClipboardPlus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '../../../components/ui/Button'
 import { Drawer } from '../../../components/ui/Drawer'
@@ -20,10 +21,7 @@ export function RentalDrawer({ rental, tasks, tasksLoading, onClose, onAssign }:
       title={`Hợp đồng #${rental.id}`}
       onClose={onClose}
       footer={
-        <Button variant="outline" onClick={onAssign}>
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-            assignment_add
-          </span>
+        <Button variant="outline" icon={ClipboardPlus} onClick={onAssign}>
           Phân công công việc
         </Button>
       }

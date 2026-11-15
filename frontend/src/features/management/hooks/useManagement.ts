@@ -30,10 +30,12 @@ export function usePolicyData() {
     queryKey: ['management', 'fee-types'],
     queryFn: listFeeTypes,
   })
+  const { refetch: refetchPolicy } = policyQuery
+  const { refetch: refetchFees } = feesQuery
 
   const reload = useCallback(async () => {
-    await Promise.all([policyQuery.refetch(), feesQuery.refetch()])
-  }, [policyQuery.refetch, feesQuery.refetch])
+    await Promise.all([refetchPolicy(), refetchFees()])
+  }, [refetchPolicy, refetchFees])
 
   return {
     policy: policyQuery.data ?? null,

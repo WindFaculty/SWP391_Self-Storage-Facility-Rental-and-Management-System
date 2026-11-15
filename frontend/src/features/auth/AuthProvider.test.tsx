@@ -45,6 +45,15 @@ describe('cookie authentication', () => {
     await screen.findByText('anonymous');
     expect(authApi.logout).toHaveBeenCalledOnce();
   });
+  it('keeps the user signed in and shows an alert when server logout fails', async () => {
+    vi.mocked(authApi.me).mockResolvedValue(customer);
+    vi.mocked(authApi.logout).mockRejectedValue(new Error('Network error'));
+    render(<AuthProvider><SessionProbe /></AuthProvider>);
+    await screen.findByText('CUSTOMER');
+    fireEvent.click(screen.getByText('Logout'));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Không thể đăng xuất');
+    expect(screen.getByText('CUSTOMER')).toBeInTheDocument();
+  });
   it('responds to expired cookie sessions by clearing protected-route state', async () => {
     vi.mocked(authApi.me).mockResolvedValue(customer);
     render(<AuthProvider><SessionProbe /></AuthProvider>);

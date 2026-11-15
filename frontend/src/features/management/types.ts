@@ -1,3 +1,5 @@
+import type { WarehouseImage } from '../../components/media/images'
+
 export interface BusinessPolicy {
   depositPercent: number
   renewalNoticeDays: number
@@ -23,6 +25,8 @@ export interface FacilityOverview {
   code: string
   name: string
   address: string
+  imageUrl?: string | null
+  images?: WarehouseImage[]
   status: 'ACTIVE' | 'INACTIVE'
   managerName: string | null
   unitTotal: number
