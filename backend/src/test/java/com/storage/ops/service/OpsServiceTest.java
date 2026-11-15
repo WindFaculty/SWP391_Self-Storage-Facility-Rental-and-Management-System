@@ -26,14 +26,18 @@ import com.storage.rental.repository.RentalRepository;
 import com.storage.rental.repository.StaffTaskRepository;
 import com.storage.rental.service.RentalService;
 import com.storage.shared.exception.BusinessException;
+import com.storage.shared.security.UserPrincipal;
 import com.storage.shared.service.Analytics;
 import com.storage.support.entity.SupportTicket;
 import com.storage.support.repository.SupportTicketRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
@@ -74,6 +78,11 @@ class OpsServiceTest {
     void setUp() {
         service = new OpsService(facilities, unitTypes, units, rentals, staffTasks, users,
                 invoices, tickets, facilityAccess, analytics, rentalService);
+    }
+
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -145,6 +154,7 @@ class OpsServiceTest {
     @Test
     void startAndCompleteSupportTaskSyncsSupportTicketLifecycle() {
         User staff = user(7L, 1L, UserRole.FACILITY_STAFF, "Nhân viên A");
+        authenticate(staff);
         User customer = user(90L, null, UserRole.CUSTOMER, "Khách Hỗ Trợ");
         SupportTicket ticket = SupportTicket.open(90L, 1L, null, SupportTicket.Category.ACCESS,
                 "Lỗi mã PIN", "Không vào được kho");
@@ -168,6 +178,24 @@ class OpsServiceTest {
         assertThat(completed.notes()).isEqualTo("Đã cấp lại mã");
         assertThat(ticket.getStatus()).isEqualTo(SupportTicket.Status.RESOLVED);
         verify(facilityAccess, times(2)).requireFacilityAccess(1L);
+    }
+
+    @Test
+    void unassignedStaffCannotStartOrCompleteAnotherStaffMembersSupportTask() {
+        StaffTask task = new StaffTask(7L, null, 66L, TaskType.SUPPORT, Instant.now());
+        when(staffTasks.findById(11L)).thenReturn(Optional.of(task));
+        authenticate(user(8L, 1L, UserRole.FACILITY_STAFF, "Nhân viên B"));
+
+        assertThatThrownBy(() -> service.startTask(11L))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("phân công cho mình");
+        assertThatThrownBy(() -> service.completeTask(11L, "Không được phép"))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("phân công cho mình");
+        assertThat(task.getStatus()).isEqualTo(TaskStatus.ASSIGNED);
+        assertThat(task.getCompletedAt()).isNull();
+        assertThat(task.getNotes()).isNull();
+        verify(tickets, never()).findById(any());
     }
 
     @Test
@@ -233,5 +261,11 @@ class OpsServiceTest {
         user.setFullName(name);
         user.setEmail("u" + id + "@demo.local");
         return user;
+    }
+
+    private static void authenticate(User user) {
+        UserPrincipal principal = UserPrincipal.create(user);
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities()));
     }
 }

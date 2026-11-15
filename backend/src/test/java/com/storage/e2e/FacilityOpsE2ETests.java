@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import com.storage.rental.entity.AccessMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -611,7 +612,18 @@ class FacilityOpsE2ETests {
         runCheckInHandover(AccessMethod.KEY, true);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"FACILITY_MANAGER", "ADMIN", "BUSINESS_MANAGER"})
+    void managersCanConfirmStaffMembersHandover(String role) throws Exception {
+        runCheckInHandover(AccessMethod.KEY, false, role);
+    }
+
     private void runCheckInHandover(AccessMethod method, boolean probeUnassignedStaff) throws Exception {
+        runCheckInHandover(method, probeUnassignedStaff, null);
+    }
+
+    private void runCheckInHandover(AccessMethod method, boolean probeUnassignedStaff,
+                                  String managerRole) throws Exception {
         Long unitId = createUnitViaOps("FLOW2-" + suffix, "900000.00");
         String customer = registerCustomer("flow2-customer-" + suffix);
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
@@ -666,18 +678,35 @@ class FacilityOpsE2ETests {
                 {"accessMethod":"%s","handoverCondition":"Identity checked; access handed over; unit inspected"}
                 """.formatted(method.name());
         if (probeUnassignedStaff) {
+            mvc.perform(post("/ops/tasks/" + taskId + "/start")
+                            .header("Authorization", bearer(otherStaff)))
+                    .andExpect(status().isForbidden());
+            mvc.perform(post("/ops/tasks/" + taskId + "/complete")
+                            .header("Authorization", bearer(otherStaff))
+                            .contentType(MediaType.APPLICATION_JSON).content("{\"notes\":\"Not assigned\"}"))
+                    .andExpect(status().isForbidden());
             mvc.perform(post("/ops/tasks/" + taskId + "/handover")
                             .header("Authorization", bearer(otherStaff))
                             .contentType(MediaType.APPLICATION_JSON).content(handover))
                     .andExpect(status().isForbidden());
-            return;
+            org.junit.jupiter.api.Assertions.assertEquals("ASSIGNED", jdbc.queryForObject(
+                    "select status from staff_tasks where id = ?", String.class, taskId));
+            org.junit.jupiter.api.Assertions.assertEquals("RESERVED", jdbc.queryForObject(
+                    "select status from rentals where id = ?", String.class, rentalId));
+            org.junit.jupiter.api.Assertions.assertEquals("AVAILABLE", jdbc.queryForObject(
+                    "select status from storage_units where id = ?", String.class, unitId));
         }
+        String actorToken = managerRole == null ? staffToken : switch (managerRole) {
+            case "FACILITY_MANAGER" -> managerToken;
+            case "ADMIN" -> adminToken;
+            default -> createUserAndLogin("flow2-business-" + suffix, managerRole, null);
+        };
         mvc.perform(post("/ops/tasks/" + taskId + "/start")
-                        .header("Authorization", bearer(staffToken)))
+                        .header("Authorization", bearer(actorToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"));
         mvc.perform(post("/ops/tasks/" + taskId + "/handover")
-                        .header("Authorization", bearer(staffToken))
+                        .header("Authorization", bearer(actorToken))
                         .contentType(MediaType.APPLICATION_JSON).content(handover))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.task.status").value("DONE"))
@@ -694,7 +723,7 @@ class FacilityOpsE2ETests {
                 "select status from storage_units where id = ?", String.class, unitId));
         // Replaying handover cannot check the same customer in twice.
         mvc.perform(post("/ops/tasks/" + taskId + "/handover")
-                        .header("Authorization", bearer(staffToken))
+                        .header("Authorization", bearer(actorToken))
                         .contentType(MediaType.APPLICATION_JSON).content(handover))
                 .andExpect(status().isBadRequest());
         org.junit.jupiter.api.Assertions.assertEquals("DONE", jdbc.queryForObject(

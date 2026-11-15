@@ -51,6 +51,7 @@ import com.storage.shared.exception.BusinessException;
 import com.storage.shared.exception.ErrorCode;
 import com.storage.shared.exception.NotFoundException;
 import com.storage.shared.security.SecurityUtils;
+import com.storage.shared.security.UserPrincipal;
 import com.storage.shared.service.Analytics;
 import com.storage.shared.text.Strings;
 import com.storage.support.entity.SupportTicket;
@@ -652,6 +653,7 @@ public class OpsService {
     }
 
     private void requireTaskAccess(StaffTask task) {
+        requireTaskAssignee(task);
         if (task.getRentalId() == null) {
             throw new BusinessException(ErrorCode.BAD_REQUEST,
                     "Việc này không được gắn hợp đồng kèm");
@@ -659,6 +661,7 @@ public class OpsService {
     }
 
     private void requireTaskFacilityAccess(StaffTask task) {
+        requireTaskAssignee(task);
         if (task.getRentalId() != null) {
             requireAccess(facilityIdOf(rentalOf(task.getRentalId())));
             return;
@@ -672,6 +675,16 @@ public class OpsService {
         User staff = users.findById(task.getAssignedStaffId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         requireAccess(staff.getFacilityId());
+    }
+
+    private void requireTaskAssignee(StaffTask task) {
+        UserPrincipal principal = SecurityUtils.getCurrentUserPrincipal()
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
+        if (principal.getRole() == UserRole.FACILITY_STAFF
+                && !Objects.equals(principal.getId(), task.getAssignedStaffId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN,
+                    "Bạn chỉ được xử lý công việc được phân công cho mình");
+        }
     }
 
     private void validateAssignableTaskType(TaskType taskType, Rental rental) {
