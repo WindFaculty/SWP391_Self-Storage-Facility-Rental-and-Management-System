@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Building2, Check, ChevronDown, Menu } from 'lucide-react'
+import { Building2, Check, ChevronDown, Globe, Menu } from 'lucide-react'
 import { ROLE_LABELS } from '../app/providers/session-context'
 import { useSession } from '../app/providers/useSession'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
@@ -13,6 +13,7 @@ const PAGE_META: Record<string, { title: string; category: string }> = {
   '/operations/facilities': { title: 'Mạng lưới cơ sở', category: 'Trụ sở & Quản trị' },
   '/operations/policies': { title: 'Chính sách & Bảng phí', category: 'Trụ sở & Quản trị' },
   '/operations/reports': { title: 'Báo cáo toàn mạng', category: 'Trụ sở & Quản trị' },
+  '/admin/dashboard': { title: 'Dashboard hệ thống', category: 'Quản trị hệ thống' },
   '/admin/security': { title: 'Quản trị & Bảo mật', category: 'Quản trị hệ thống' },
 }
 
@@ -27,6 +28,7 @@ export function WorkspaceTopbar({ onOpenMobileNav }: WorkspaceTopbarProps) {
 
   const meta = PAGE_META[location.pathname] ?? { title: 'Hệ thống', category: 'Kho Việt Ops' }
   const activeFacility = facilitiesInScope.find((facility) => facility.id === activeFacilityId)
+  const isSystemScope = location.pathname.startsWith('/admin/')
 
   return (
     <header className="fixed top-0 left-0 lg:left-[248px] right-0 h-[68px] bg-surface/95 backdrop-blur-md z-40 border-b border-border-hairline px-4 sm:px-6 flex items-center justify-between">
@@ -54,7 +56,12 @@ export function WorkspaceTopbar({ onOpenMobileNav }: WorkspaceTopbarProps) {
 
         <div className="h-4 w-px bg-border-hairline hidden md:block" />
 
-        {facilitiesInScope.length > 1 ? (
+        {isSystemScope ? (
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-muted text-[12.5px] text-text-main font-medium">
+            <Globe className="size-4 text-primary shrink-0" aria-hidden="true" />
+            <span>Toàn hệ thống</span>
+          </div>
+        ) : facilitiesInScope.length > 1 ? (
           <div className="relative hidden sm:block">
             <button
               type="button"

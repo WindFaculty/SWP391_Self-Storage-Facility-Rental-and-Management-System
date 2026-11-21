@@ -33,7 +33,10 @@ class LocalSeedTests {
         assertThat(facilities).isEqualTo(1);
         // The local expansion adds three units at each of the other three facilities.
         assertThat(units).isEqualTo(25);
-        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM warehouse_images", Integer.class)).isEqualTo(4);
+        assertThat(jdbc.queryForObject(
+                "SELECT COUNT(*) FROM warehouse_images WHERE facility_id IS NOT NULL", Integer.class)).isEqualTo(4);
+        assertThat(jdbc.queryForObject(
+                "SELECT COUNT(DISTINCT storage_unit_id) FROM warehouse_images", Integer.class)).isEqualTo(25);
 
         Long facilityId = jdbc.queryForObject("SELECT id FROM facilities WHERE code='DEMO-HCM-01'", Long.class);
         jdbc.update("DELETE FROM warehouse_images WHERE facility_id=?", facilityId);

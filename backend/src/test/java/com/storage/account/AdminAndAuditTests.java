@@ -195,6 +195,20 @@ class AdminAndAuditTests {
 
         mvc.perform(get("/admin/activity-logs"))
                 .andExpect(status().isUnauthorized());
+
+        mvc.perform(get("/admin/usage")
+                        .header("Authorization", bearer(adminToken))
+                        .param("days", "7"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.periodDays").value(7))
+                .andExpect(jsonPath("$.data.overview.totalUsers").isNumber())
+                .andExpect(jsonPath("$.data.auth.loginFailedCount").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)))
+                .andExpect(jsonPath("$.data.dailyActivity.length()").value(7))
+                .andExpect(jsonPath("$.data.usersByRole.length()").value(5))
+                .andExpect(jsonPath("$.data.recentEvents.length()").value(org.hamcrest.Matchers.greaterThan(0)));
+
+        mvc.perform(get("/admin/usage").header("Authorization", bearer(businessToken)))
+                .andExpect(status().isForbidden());
     }
 
     private String bearer(String token) {

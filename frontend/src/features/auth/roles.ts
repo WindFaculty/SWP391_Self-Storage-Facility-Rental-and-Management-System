@@ -9,7 +9,7 @@ const WORKSPACE_PREFIXES = ['/facility/', '/staff/', '/operations/', '/admin/'];
 export const getDefaultRouteForRole = (role: UserRole): string => {
   switch (role) {
     case 'ADMIN':
-      return '/admin/security';
+      return '/admin/dashboard';
     case 'BUSINESS_MANAGER':
       return '/operations/facilities';
     case 'FACILITY_MANAGER':

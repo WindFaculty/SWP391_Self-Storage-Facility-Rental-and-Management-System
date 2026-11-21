@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-for (const path of ['/facility/dashboard', '/facility/units', '/facility/rentals', '/staff/operations', '/operations/facilities', '/operations/policies', '/operations/reports', '/admin/security']) {
+for (const path of ['/facility/dashboard', '/facility/units', '/facility/rentals', '/staff/operations', '/operations/facilities', '/operations/policies', '/operations/reports', '/admin/dashboard', '/admin/security']) {
   test('anonymous access requires real login: ' + path, async ({ page }) => {
     await page.goto(path)
     await expect(page).toHaveURL(/\/auth$/)
