@@ -1,9 +1,18 @@
 import { api, withQuery } from '../../../api/api'
 import type { ActivityLog } from '../../facility/types'
 import type { UserInput } from '../adminRules'
-import type { AdminUser, LogFilters, UserFilters, UserStatus } from '../types'
+import type {
+  AdminUser,
+  LogFilters,
+  SystemUsageDashboard,
+  UsagePeriodDays,
+  UserFilters,
+  UserStatus,
+} from '../types'
 
 export interface UserSummary { total: number; active: number; disabled: number; elevated: number }
+export const getSystemUsage = (days: UsagePeriodDays = 30): Promise<SystemUsageDashboard> =>
+  api.get(withQuery('/admin/usage', { days }))
 export const listUsers = (filters: UserFilters): Promise<{ items: AdminUser[]; summary: UserSummary }> => api.get(withQuery('/admin/users', filters))
 export const createUser = (input: UserInput): Promise<AdminUser> => api.post('/admin/users', input)
 export const updateUser = (id: number, input: UserInput): Promise<AdminUser> => api.put(`/admin/users/${id}`, input)

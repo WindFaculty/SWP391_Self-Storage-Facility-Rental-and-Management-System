@@ -41,6 +41,11 @@ const SupportPage = lazy(() =>
   import('../../features/support/pages/SupportPage').then((m) => ({ default: m.SupportPage })),
 );
 
+const AdminDashboardPage = lazy(() =>
+  import('../../features/admin/pages/AdminDashboardPage').then((m) => ({
+    default: m.AdminDashboardPage,
+  })),
+);
 const AdminSecurityPage = lazy(() =>
   import('../../features/admin/pages/AdminSecurityPage').then((m) => ({
     default: m.AdminSecurityPage,
@@ -182,6 +187,14 @@ const workspaceRoutes: RouteObject[] = [
     element: (
       <RequireRole roles={['BUSINESS_MANAGER']}>
         <OperationsReportsPage />
+      </RequireRole>
+    ),
+  },
+  {
+    path: '/admin/dashboard',
+    element: (
+      <RequireRole roles={['ADMIN']}>
+        <AdminDashboardPage />
       </RequireRole>
     ),
   },

@@ -13,7 +13,7 @@ export interface CatalogFilterValue {
   months: number;
 }
 
-const MONTH_OPTIONS = [1, 3, 6, 12];
+const MONTH_OPTIONS = [1,2, 3, 6, 12];
 
 interface CatalogFiltersProps {
   facilities: Facility[];

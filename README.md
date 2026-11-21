@@ -59,15 +59,33 @@ $env:DB_PASSWORD = 'mat-khau-mysql-cua-ban'
 
 Có thể thay đổi các giá trị mặc định trong `backend/src/main/resources/application-local.yml`. Tài khoản cần quyền tạo database nếu `storage_local` chưa tồn tại; Flyway sẽ tạo các bảng và dữ liệu mẫu khi backend khởi động.
 
-Các tài khoản mẫu chỉ dành cho local, cùng mật khẩu `Demo12345!`:
+### Tài khoản và danh mục kho demo
 
-| Email | Vai trò |
-|---|---|
-| `customer@demo.local` | Khách hàng |
-| `manager@demo.local` | Quản lý cơ sở Demo HCM |
-| `admin@demo.local` | Quản trị viên |
+Năm tài khoản dưới đây dùng mật khẩu `123` trên profile `local`.
 
-Seed không ghi đè tài khoản đã tồn tại cùng email.
+| Email | Vai trò | Phạm vi |
+|---|---|---|
+| `admin@gmail.com` | Quản trị viên (`ADMIN`) | Toàn hệ thống |
+| `khoa@gmail.com` | Quản lý kinh doanh (`BUSINESS_MANAGER`) | Toàn hệ thống |
+| `thien@gmail.com` | Quản lý cơ sở (`FACILITY_MANAGER`) | Gò Vấp |
+| `thanh@gmail.com` | Nhân viên cơ sở (`FACILITY_STAFF`) | Gò Vấp |
+| `tinh@gmail.com` | Khách hàng (`CUSTOMER`) | Danh mục công khai và đơn thuê của mình |
+
+Khi nâng cấp database local, Flyway chuyển các tài khoản seed cũ còn dùng mật khẩu ban đầu sang email mới nếu email đích còn trống. ID tài khoản được giữ để các hồ sơ thuê và công việc vẫn liên kết đúng.
+
+Danh mục mặc định gồm 25 kho thuộc bốn cơ sở Gò Vấp (4), Bình Thạnh (7), Cầu Giấy (7) và Hải Châu (7). Ba loại kho có diện tích 5, 12 và 20 m², với giá từng kho từ 550.000 đến 2.600.000 đồng/tháng. Địa chỉ, giá và ảnh trong danh mục dùng để minh họa. Mô tả công dụng tham khảo dịch vụ kho tự quản của [MyStorage](https://mystorage.vn/vi/tong-quan-dich-vu-cho-thue-kho-chuyen-nha/kho-tu-quan/) và [Asia Relocation](https://www.asia-relocation.com/vietnam/storage/self-storage/).
+
+Ảnh lưu trong `frontend/public/images` để demo có thể tải ảnh từ chính ứng dụng. Các ảnh dưới đây đã được chỉnh kích thước và nén lại. Ảnh kho nhỏ được chuyển sang JPEG.
+
+| Tệp | Tác giả | Ảnh gốc và giấy phép |
+|---|---|---|
+| `facilities/hcm-go-vap.jpg` | Alexshteiman | [ACSS outside.JPG](https://commons.wikimedia.org/wiki/File:ACSS_outside.JPG), [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| `facilities/hcm-binh-thanh.jpg` | Alexshteiman | [ACSS inside.JPG](https://commons.wikimedia.org/wiki/File:ACSS_inside.JPG), [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| `facilities/hn-cau-giay.jpg` | Hankwang | [Self storage units.jpg](https://commons.wikimedia.org/wiki/File:Self_storage_units.jpg), [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
+| `facilities/dn-hai-chau.jpg` | Wikideas1 | [Self storage building and garages.jpg](https://commons.wikimedia.org/wiki/File:Self_storage_building_and_garages.jpg), [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `unit-types/small.jpg` | Jiwoahn | [Open Empty Storage Unit.webp](https://commons.wikimedia.org/wiki/File:Open_Empty_Storage_Unit.webp), [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `unit-types/medium.jpg` | Webmarketingatoutbox | [Box de 8m².jpg](https://commons.wikimedia.org/wiki/File:Box_de_8m%C2%B2.jpg), [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `unit-types/large.jpg` | BORNTHISWAYMEDIA | [Storage vault.jpg](https://commons.wikimedia.org/wiki/File:Storage_vault.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 
 ## Test
 

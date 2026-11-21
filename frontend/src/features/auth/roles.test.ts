@@ -7,7 +7,7 @@ describe('auth role routing helpers', () => {
     expect(getDefaultRouteForRole('FACILITY_STAFF')).toBe('/staff/operations');
     expect(getDefaultRouteForRole('FACILITY_MANAGER')).toBe('/facility/dashboard');
     expect(getDefaultRouteForRole('BUSINESS_MANAGER')).toBe('/operations/facilities');
-    expect(getDefaultRouteForRole('ADMIN')).toBe('/admin/security');
+    expect(getDefaultRouteForRole('ADMIN')).toBe('/admin/dashboard');
   });
 
   it('preserves pathname and query string when redirecting back after login', () => {
@@ -24,7 +24,7 @@ describe('auth role routing helpers', () => {
     ).toBe('/');
     expect(resolvePostAuthRoute('CUSTOMER', { from: { pathname: '/auth' } })).toBe('/');
     expect(resolvePostAuthRoute('ADMIN', { from: { pathname: '/forbidden' } })).toBe(
-      '/admin/security',
+      '/admin/dashboard',
     );
   });
 });

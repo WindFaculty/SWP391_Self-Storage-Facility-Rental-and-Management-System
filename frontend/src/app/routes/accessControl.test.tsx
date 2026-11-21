@@ -52,6 +52,16 @@ describe('authenticated workspace session', () => {
     renderWorkspace()
     expect(await screen.findByText('Chưa được phân công cơ sở')).toBeTruthy()
   })
+  it('shows the redesigned two-page admin sidebar with Dashboard first and Security second', async () => {
+    auth.user = { id: 1, email: 'admin@example.invalid', fullName: 'Quản trị viên', role: 'ADMIN' }; auth.isAuthenticated = true
+    renderWorkspace()
+    const dashboardLink = await screen.findByRole('link', { name: /Dashboard hệ thống/ })
+    const securityLink = screen.getByRole('link', { name: /Quản trị & Bảo mật/ })
+    expect(dashboardLink.getAttribute('href')).toBe('/admin/dashboard')
+    expect(securityLink.getAttribute('href')).toBe('/admin/security')
+    expect(screen.queryByRole('link', { name: /Mạng lưới cơ sở/ })).toBeNull()
+    expect(dashboardLink.compareDocumentPosition(securityLink) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
   it('shows a retryable error when the facilities API fails', async () => {
     auth.user = { id: 1, email: 'test@example.invalid', fullName: 'Test', role: 'ADMIN' }; auth.isAuthenticated = true
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Offline')))

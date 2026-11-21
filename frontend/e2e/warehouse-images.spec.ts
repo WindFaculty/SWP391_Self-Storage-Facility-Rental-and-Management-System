@@ -12,18 +12,18 @@ async function login(page: import('@playwright/test').Page, email: string) {
   expect(csrf.ok()).toBe(true)
   const login = await page.request.post('/api/v1/auth/cookie/login', {
     headers: { 'X-XSRF-TOKEN': (await csrf.json()).data.token },
-    data: { email, password: 'Demo12345!' },
+    data: { email, password: '123' },
   })
   expect(login.ok()).toBe(true)
 }
 
 test('manager uploads, edits and clears unit and facility photos; customers view the galleries', async ({ page }) => {
-  await login(page, 'manager@demo.local')
+  await login(page, 'thien@gmail.com')
   await page.goto('/facility/units')
   await page.getByRole('button', { name: 'Thêm kho mới', exact: true }).click()
   const code = 'IMG-' + Date.now().toString().slice(-9)
   await page.getByLabel('Mã định danh kho').fill(code)
-  await page.locator('#unit-type').selectOption({ label: 'Demo Small (5 m2)' })
+  await page.locator('#unit-type').selectOption({ label: 'Kho nhỏ (5 m²)' })
   await page.getByLabel('Vị trí / Tầng').fill('Tầng 1')
   await page.getByLabel('Giá thuê niêm yết').fill('650000')
   await page.getByLabel('Thêm ảnh từ máy').setInputFiles([small, medium])
@@ -62,13 +62,13 @@ test('manager uploads, edits and clears unit and facility photos; customers view
   await page.goto(`/facilities/${unit.facilityId}`)
   await expect(page.getByRole('heading', { name: 'Ảnh từng kho' })).toBeVisible()
   await expect(page.getByRole('heading', { name: `Kho ${code}`, exact: true })).toBeVisible()
-  const hero = page.getByRole('img', { name: 'Hình ảnh Demo Facility - Ho Chi Minh City', exact: true })
+  const hero = page.getByRole('img', { name: 'Hình ảnh Kho tự quản Gò Vấp', exact: true })
   await expect.poll(() => hero.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0)
   await page.screenshot({ path: 'test-results/warehouse-images-customer.png', fullPage: true })
   await page.setViewportSize({ width: 390, height: 844 })
   await page.screenshot({ path: 'test-results/warehouse-images-mobile.png', fullPage: true })
 
-  await login(page, 'manager@demo.local')
+  await login(page, 'thien@gmail.com')
   await page.goto('/facility/units')
   await page.getByRole('button', { name: 'Ảnh cơ sở', exact: true }).click()
   await page.getByRole('button', { name: 'Xóa ảnh 1', exact: true }).click()
@@ -82,7 +82,7 @@ test('manager uploads, edits and clears unit and facility photos; customers view
 })
 
 test('admin creates and edits a facility with photos', async ({ page }) => {
-  await login(page, 'admin@demo.local')
+  await login(page, 'admin@gmail.com')
   await page.goto('/operations/facilities')
   await page.getByRole('button', { name: 'Thêm cơ sở mới' }).click()
   const code = 'PHOTO-' + Date.now().toString().slice(-9)

@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { useAuth } from '../features/auth/useAuth';
 import { cn } from '../lib/cn';
+import { PublicFooter } from './PublicFooter';
 
 const NAV_LINKS = [
   { to: '/', label: 'Trang chủ', end: true },
@@ -128,11 +129,7 @@ export const PublicLayout = () => {
         <Outlet />
       </main>
 
-      <footer className="border-t border-border-hairline bg-surface">
-        <div className="page-container flex items-center justify-between px-4 py-6 text-badge text-text-muted sm:px-6 lg:px-10">
-          <span>© 2026 Kho Việt — Hệ thống cho thuê kho tự lưu trữ (SWP391)</span>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 };

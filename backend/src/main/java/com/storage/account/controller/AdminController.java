@@ -1,9 +1,11 @@
 package com.storage.account.controller;
 
+import com.storage.account.dto.AdminDtos.SystemUsageDashboard;
 import com.storage.account.dto.AdminDtos.UserStatusRequest;
 import com.storage.account.entity.UserRole;
 import com.storage.account.entity.UserStatus;
 import com.storage.account.service.AdminOpsService;
+import com.storage.account.service.AdminUsageService;
 import com.storage.ops.dto.OpsDtos;
 import com.storage.ops.dto.OpsDtos.ActivityLogDto;
 import com.storage.ops.dto.OpsDtos.AdminUserDto;
@@ -25,16 +27,25 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Admin account management. Paths match frontend/src/features/admin/api/adminApi.ts.
+ * Admin system usage dashboard and account management.
+ * Paths match frontend/src/features/admin/api/adminApi.ts.
  */
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
     private final AdminOpsService adminOpsService;
+    private final AdminUsageService adminUsageService;
 
-    public AdminController(AdminOpsService adminOpsService) {
+    public AdminController(AdminOpsService adminOpsService, AdminUsageService adminUsageService) {
         this.adminOpsService = adminOpsService;
+        this.adminUsageService = adminUsageService;
+    }
+
+    @GetMapping("/usage")
+    public ApiResponse<SystemUsageDashboard> systemUsage(
+            @RequestParam(defaultValue = "30") Integer days) {
+        return ApiResponse.success(adminUsageService.getSystemUsage(days));
     }
 
     @GetMapping("/users")

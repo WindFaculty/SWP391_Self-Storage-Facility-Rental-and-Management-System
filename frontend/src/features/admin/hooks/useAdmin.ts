@@ -1,8 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
-import { listActivityLogs, listUsers, type UserSummary } from '../api/adminApi'
-import type { LogFilters, UserFilters } from '../types'
+import { getSystemUsage, listActivityLogs, listUsers, type UserSummary } from '../api/adminApi'
+import type { LogFilters, UsagePeriodDays, UserFilters } from '../types'
 
 const EMPTY_USER_SUMMARY: UserSummary = { total: 0, active: 0, disabled: 0, elevated: 0 }
+
+export function useSystemUsage(days: UsagePeriodDays) {
+  const query = useQuery({
+    queryKey: ['admin', 'usage', days],
+    queryFn: () => getSystemUsage(days),
+  })
+  return {
+    dashboard: query.data ?? null,
+    loading: query.isPending,
+    refreshing: query.isFetching && !query.isPending,
+    error: query.error ? 'Không tải được dữ liệu dashboard sử dụng hệ thống. Vui lòng thử lại.' : null,
+    reload: query.refetch,
+  }
+}
 
 export function useUsers(filters: UserFilters) {
   const query = useQuery({

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
+  Activity,
   BadgePercent,
   BarChart3,
   Building2,
@@ -69,7 +70,7 @@ const MENU_GROUPS: MenuGroup[] = [
         title: 'Mạng lưới cơ sở',
         path: '/operations/facilities',
         icon: Building2,
-        roles: ['BUSINESS_MANAGER', 'ADMIN'],
+        roles: ['BUSINESS_MANAGER'],
       },
       {
         title: 'Chính sách & Bảng phí',
@@ -82,6 +83,18 @@ const MENU_GROUPS: MenuGroup[] = [
         path: '/operations/reports',
         icon: BarChart3,
         roles: ['BUSINESS_MANAGER'],
+      },
+    ],
+  },
+  {
+    label: 'Quản trị hệ thống',
+    badge: 'Admin',
+    items: [
+      {
+        title: 'Dashboard hệ thống',
+        path: '/admin/dashboard',
+        icon: Activity,
+        roles: ['ADMIN'],
       },
       {
         title: 'Quản trị & Bảo mật',
